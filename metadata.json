@@ -1,0 +1,8 @@
+{
+  "name": "TU Market Hub",
+  "description": "Premium multi-vendor campus marketplace designed for college students in Nigeria to buy, sell, and swap electronics, textbooks, hostel utensils, and academic essentials commission-free.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

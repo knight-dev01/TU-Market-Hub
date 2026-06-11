@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Catch-All Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // 2. Reusable Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "greatifet12@gmail.com" || 
+        request.auth.token.email == "aroneefashion@gmail.com" || 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    // 3. Category Validation Blueprints
+    function isValidCategory(data) {
+      return data.keys().hasAll(['name', 'image', 'productCount', 'createdAt']) && 
+             data.keys().size() == 4 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.image is string && data.image.size() <= 2048 &&
+             data.productCount is int && data.productCount >= 0 &&
+             data.createdAt is timestamp;
+    }
+    
+    // 4. Product Validation Blueprints (Hardened with strict type checks)
+    function isValidProduct(data) {
+      return data.keys().hasAll([
+               'name', 'description', 'price', 'images', 'category', 'stock', 
+               'featured', 'status', 'vendorId', 'vendorName', 'vendorWhatsApp', 
+               'condition', 'dealType', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().size() == 15 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
+             data.description is string && data.description.size() <= 2000 &&
+             (data.price is int || data.price is float) && data.price >= 0 &&
+             data.images is list && data.images.size() > 0 && data.images.size() <= 10 &&
+             data.images[0] is string &&
+             data.category is string && data.category.size() <= 128 &&
+             data.stock is int && data.stock >= 0 &&
+             data.featured is bool &&
+             data.status is string && data.status in ['active', 'draft', 'out_of_stock'] &&
+             data.vendorId is string && data.vendorId.size() <= 128 &&
+             data.vendorName is string && data.vendorName.size() <= 150 &&
+             data.vendorWhatsApp is string && data.vendorWhatsApp.size() <= 40 &&
+             data.condition is string && data.condition in ['new', 'used', 'like_new'] &&
+             data.dealType is string && data.dealType in ['sell', 'swap', 'both'] &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
+    }
+    
+    // 5. Settings Validation Blueprints
+    function isValidSettings(data) {
+      return data.keys().hasAll(['whatsappNumber', 'contactAddress', 'contactEmail', 'instagramUrl', 'facebookUrl', 'businessHours']) &&
+             data.keys().size() == 6 &&
+             data.whatsappNumber is string && data.whatsappNumber.size() > 0 && data.whatsappNumber.size() <= 30 &&
+             data.contactAddress is string && data.contactAddress.size() <= 500 &&
+             data.contactEmail is string && data.contactEmail.size() <= 150 &&
+             data.instagramUrl is string && data.instagramUrl.size() <= 500 &&
+             data.facebookUrl is string && data.facebookUrl.size() <= 500 &&
+             data.businessHours is string && data.businessHours.size() <= 200;
+    }
+    
+    // 6. Admin Record Validation
+    function isValidAdmin(data) {
+      return data.keys().hasAll(['email', 'addedAt']) &&
+             data.keys().size() == 2 &&
+             data.email is string && data.addedAt is timestamp;
+    }
+    
+    // --- Collection Routes ---
+    
+    // Categories Collection
+    match /categories/{categoryId} {
+      allow list, get: if true;
+      allow create: if isVerifiedUser() && isAdmin() && isValidId(categoryId) && isValidCategory(incoming()) && incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() && isAdmin() && isValidId(categoryId) && isValidCategory(incoming()) && incoming().createdAt == existing().createdAt;
+      allow delete: if isVerifiedUser() && isAdmin() && isValidId(categoryId);
+    }
+    
+    // Products Collection
+    match /products/{productId} {
+      // Allow general users to see only active and out of stock, admins can see all
+      allow list: if !('status' in resource.data) || resource.data.status in ['active', 'out_of_stock'] || isAdmin();
+      allow get: if true;
+      allow create: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == request.time && incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == existing().createdAt && incoming().updatedAt == request.time;
+      allow delete: if isVerifiedUser() && isAdmin() && isValidId(productId);
+    }
+    
+    // Settings Collection
+    match /settings/{settingsId} {
+      allow list, get: if true;
+      allow create: if isVerifiedUser() && isAdmin() && isValidId(settingsId) && isValidSettings(incoming());
+      allow update: if isVerifiedUser() && isAdmin() && isValidId(settingsId) && isValidSettings(incoming());
+      allow delete: if isVerifiedUser() && isAdmin() && isValidId(settingsId);
+    }
+    
+    // Admins Collection
+    match /admins/{adminId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == adminId);
+      allow write: if isVerifiedUser() && isAdmin();
+    }
+  }
+}

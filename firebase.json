@@ -1,0 +1,12 @@
+{
+  "firestore": [
+    {
+      "database": "(default)",
+      "rules": "firestore.rules"
+    },
+    {
+      "database": "remixed-firestore-database-id",
+      "rules": "firestore.rules"
+    }
+  ]
+}
