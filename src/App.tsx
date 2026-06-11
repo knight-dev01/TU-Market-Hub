@@ -4,8 +4,9 @@ import {
 } from 'firebase/firestore';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
-import { db, auth, loginWithGoogle, logoutUser } from './firebase';
+import { db, auth, loginWithGoogle, logoutUser, handleFirestoreError, OperationType } from './firebase';
 import { Product, Category, StoreSettings } from './types';
 import { checkAndSeedDatabase, defaultCategories, defaultProducts } from './data/seed';
 
@@ -17,6 +18,7 @@ import AboutView from './components/AboutView';
 import ContactView from './components/ContactView';
 import ProductDetailView from './components/ProductDetailView';
 import AdminView from './components/AdminView';
+import WhatsAppOrderForm from './components/WhatsAppOrderForm';
 
 interface CartItem {
   product: Product;
@@ -58,6 +60,18 @@ export default function App() {
   // Shopper's Order Draft (Cart Drawer) States
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [checkoutGroup, setCheckoutGroup] = useState<{
+    vendorId: string;
+    vendorName: string;
+    vendorNumber: string;
+    items: CartItem[];
+  } | null>(null);
+
+  useEffect(() => {
+    if (!isCartOpen) {
+      setCheckoutGroup(null);
+    }
+  }, [isCartOpen]);
 
   // 1. Listen for auth changes
   useEffect(() => {
@@ -144,6 +158,7 @@ export default function App() {
       },
       (err) => {
         console.error("Products subscriber error:", err);
+        handleFirestoreError(err, OperationType.GET, 'products');
       }
     );
 
@@ -165,6 +180,7 @@ export default function App() {
       },
       (err) => {
         console.error("Categories subscriber error:", err);
+        handleFirestoreError(err, OperationType.GET, 'categories');
       }
     );
 
@@ -195,6 +211,7 @@ export default function App() {
       },
       (err) => {
         console.error("Settings subscriber error:", err);
+        handleFirestoreError(err, OperationType.GET, 'settings/current');
       }
     );
 
@@ -270,7 +287,13 @@ export default function App() {
   };
 
   // Compile and Dispatch consolidated chat message FOR A SPECIFIC VENDOR
-  const handleLaunchWhatsAppForVendor = (vendorId: string, vendorName: string, vendorNumber: string, items: CartItem[]) => {
+  const handleLaunchWhatsAppForVendor = (
+    vendorId: string, 
+    vendorName: string, 
+    vendorNumber: string, 
+    items: CartItem[],
+    buyerInfo?: { name: string; hostel: string; phone: string }
+  ) => {
     if (items.length === 0) return;
     
     let totalVal = 0;
@@ -285,13 +308,17 @@ export default function App() {
       orderDetailLines += `- ${item.product.name}${sizeStr}${conditionStr}${dealStr}\n  Qty: ${item.quantity} x ₦${item.product.price.toLocaleString()} = ₦${rowSum.toLocaleString()}\n\n`;
     });
 
+    const buyerSection = buyerInfo
+      ? `*Buyer Contact Information:*\n- *Name:* ${buyerInfo.name}\n- *Hostel Location:* ${buyerInfo.hostel}\n- *Phone/WhatsApp:* ${buyerInfo.phone}\n\n`
+      : '';
+
     const bodyText = `Hello student seller ${vendorName},
 
 I saw your listing on the TU MARKET HUB and would like to purchase these items:
 
 ${orderDetailLines}*Total Listed Value:* ₦${totalVal.toLocaleString()}
 
-Where is your hostel meetup point on campus? Please let me know when you are free!`;
+${buyerSection}Where is your hostel meetup point on campus? Please let me know when you are free!`;
 
     const encoded = encodeURIComponent(bodyText);
     const whatsappClean = vendorNumber ? vendorNumber.replace(/\+/g, '') : (settings?.whatsappNumber?.replace(/\+/g, '') || '');
@@ -458,155 +485,191 @@ Where is your hostel meetup point on campus? Please let me know when you are fre
       )}
 
       {/* 8. SHOPPING CART / WhatsApp Multiple-Item Draft DRAWER OVERLAY */}
-      {isCartOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden font-sans hover:outline-none select-none animate-fade-in text-xs">
-          
-          {/* Backdrop */}
-          <div onClick={() => setIsCartOpen(false)} className="absolute inset-0 bg-black/45 backdrop-blur-3xs" />
+      <AnimatePresence>
+        {isCartOpen && (
+          <div className="fixed inset-0 z-50 overflow-hidden font-sans hover:outline-none text-xs flex justify-end items-center p-3 sm:p-4 pointer-events-none">
+            
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsCartOpen(false)} 
+              className="absolute inset-0 bg-black/40 backdrop-blur-3xs cursor-pointer pointer-events-auto" 
+            />
 
-          {/* Drawer Body container */}
-          <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between border-l border-gray-150 animate-slide-left h-full">
-              
-              {/* Drawer Header */}
-              <div className="p-6 border-b border-gray-150 flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base text-slate-brand font-display">My Deal Cart Offer Board</h3>
-                  <p className="text-[10px] text-slate-brand/50 font-medium">Grouped by student stalls for easy secure exchange!</p>
-                </div>
-                <button onClick={() => setIsCartOpen(false)} className="p-2 text-slate-brand/40 hover:text-red-700 cursor-pointer">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Drawer Items Center scrolling */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                {cartItems.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-12">
-                    <div className="w-16 h-16 bg-slate-50 text-slate-300 border border-gray-200 rounded-full flex items-center justify-center">
-                      <ShoppingBag className="w-8 h-8" />
-                    </div>
+            {/* Draggable/Animated Floating Panel */}
+            <motion.div 
+               initial={{ x: '110%', opacity: 0.9 }}
+               animate={{ x: 0, opacity: 1 }}
+               exit={{ x: '110%', opacity: 0.9 }}
+               transition={{ type: 'spring', damping: 28, stiffness: 240 }}
+               className="pointer-events-auto w-full max-w-md bg-white shadow-3xl flex flex-col justify-between border border-gray-150 h-full rounded-2.5xl sm:rounded-3xl overflow-hidden relative"
+            >
+              {checkoutGroup ? (
+                <WhatsAppOrderForm
+                  vendorName={checkoutGroup.vendorName}
+                  itemsCount={checkoutGroup.items.reduce((acc, curr) => acc + curr.quantity, 0)}
+                  totalPrice={checkoutGroup.items.reduce((acc, curr) => acc + (curr.product.price * curr.quantity), 0)}
+                  onClose={() => setCheckoutGroup(null)}
+                  onSubmit={(buyerInfo) => {
+                    handleLaunchWhatsAppForVendor(
+                      checkoutGroup.vendorId,
+                      checkoutGroup.vendorName,
+                      checkoutGroup.vendorNumber,
+                      checkoutGroup.items,
+                      buyerInfo
+                    );
+                    setCheckoutGroup(null);
+                  }}
+                />
+              ) : (
+                <>
+                  {/* Drawer Header */}
+                  <div className="p-5 sm:p-6 border-b border-gray-150 flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-slate-brand/70 leading-none">Your Offer List is Empty</p>
-                      <p className="text-[10.5px] text-slate-brand/45 leading-relaxed mt-1 max-w-[200px] mx-auto">
-                        Explore study tools, hostellers mattress options, or shoes to add here!
-                      </p>
+                      <h3 className="font-bold text-sm sm:text-base text-slate-brand font-display">My Deal Cart Offer Board</h3>
+                      <p className="text-[10px] text-slate-brand/50 font-medium">Grouped by student stalls for easy secure exchange!</p>
                     </div>
+                    <button onClick={() => setIsCartOpen(false)} className="p-2 text-slate-brand/40 hover:text-red-700 cursor-pointer transition-colors rounded-full hover:bg-slate-50">
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
-                ) : (
-                  <div className="space-y-6">
-                    {Object.keys(vendorGroups).map((vId) => {
-                      const group = vendorGroups[vId];
-                      return (
-                        <div key={vId} className="border border-emerald-100 bg-emerald-50/20 p-4 rounded-3xl space-y-3.5">
-                          {/* Vendor Group Header */}
-                          <div className="flex items-center justify-between border-b border-gray-150/60 pb-2">
-                            <div className="flex items-center space-x-1.5 min-w-0">
-                              <Store className="w-4 h-4 text-emerald-brand shrink-0" />
-                              <span className="font-bold text-[11px] text-slate font-display truncate">Stall: {group.name}</span>
-                            </div>
-                            <span className="text-[9px] font-mono font-bold bg-white text-emerald-brand px-2 py-0.5 border border-emerald-100 rounded-full shrink-0">
-                              {group.items.length} item(s)
-                            </span>
-                          </div>
 
-                          {/* Items belonging to this vendor */}
-                          <div className="space-y-2.5">
-                            {group.items.map((item) => {
-                              // Find exact global index of this item in state array so we can increment/remove it
-                              const originalIdx = cartItems.findIndex(ci => ci.product.id === item.product.id && ci.size === item.size);
-                              return (
-                                <div key={`${item.product.id}-${item.size}`} className="flex items-start space-x-3 bg-white p-2.5 rounded-xl border border-gray-150/40 relative">
-                                  <img
-                                    src={item.product.images[0]}
-                                    alt=""
-                                    className="w-10 h-10 object-cover rounded-lg shrink-0 border border-gray-100"
-                                  />
-                                  <div className="flex-grow min-w-0 pr-4">
-                                    <h4 className="font-bold text-[11px] text-slate-brand truncate leading-tight">{item.product.name}</h4>
-                                    <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                                      {item.size && (
-                                        <span className="bg-slate-100 text-slate-600 text-[8px] font-mono font-bold px-1 rounded">
-                                          {item.size}
-                                        </span>
-                                      )}
-                                      <span className="text-[10px] font-mono font-bold text-slate-brand">
-                                        &#8358;{item.product.price.toLocaleString()}
-                                      </span>
-                                    </div>
-
-                                    {/* Incrementor */}
-                                    <div className="flex items-center space-x-2 pt-1.5">
-                                      <button
-                                        onClick={() => handleUpdateCartQty(originalIdx, -1)}
-                                        className="w-4.5 h-4.5 rounded bg-slate-50 border border-gray-250 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand"
-                                      >
-                                        -
-                                      </button>
-                                      <span className="font-bold text-xs px-1 text-slate-brand">{item.quantity}</span>
-                                      <button
-                                        onClick={() => handleUpdateCartQty(originalIdx, 1)}
-                                        className="w-4.5 h-4.5 rounded bg-slate-50 border border-gray-250 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand"
-                                      >
-                                        +
-                                      </button>
-                                    </div>
-                                  </div>
-
-                                  {/* Absolute delete button */}
-                                  <button
-                                    onClick={() => handleRemoveFromCart(originalIdx)}
-                                    className="absolute top-2 right-2 p-1 text-slate-brand/35 hover:text-red-700 cursor-pointer"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          {/* Quick Message Button for this SPECIFIC Vendor */}
-                          <button
-                            onClick={() => handleLaunchWhatsAppForVendor(vId, group.name, group.whatsapp, group.items)}
-                            className="w-full bg-emerald-brand hover:bg-emerald-700 text-white font-bold text-[10px] py-2 px-3 rounded-xl tracking-wider uppercase flex items-center justify-center space-x-2 shadow-3xs cursor-pointer"
-                          >
-                            <MessageSquare className="w-3.5 h-3.5 fill-white stroke-none" />
-                            <span>Discuss with {group.name}</span>
-                            <ArrowUpRight className="w-3.5 h-3.5" />
-                          </button>
+                  {/* Drawer Items Center scrolling */}
+                  <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
+                    {cartItems.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-12">
+                        <div className="w-16 h-16 bg-slate-50 text-slate-300 border border-gray-200 rounded-full flex items-center justify-center">
+                          <ShoppingBag className="w-8 h-8" />
                         </div>
-                      );
-                    })}
+                        <div>
+                          <p className="font-bold text-slate-brand/70 leading-none">Your Offer List is Empty</p>
+                          <p className="text-[10.5px] text-slate-brand/45 leading-relaxed mt-1 max-w-[200px] mx-auto">
+                            Explore study tools, hostellers mattress options, or shoes to add here!
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {Object.keys(vendorGroups).map((vId) => {
+                          const group = vendorGroups[vId];
+                          return (
+                            <div key={vId} className="border border-emerald-100 bg-emerald-50/20 p-4 rounded-3xl space-y-3.5">
+                              {/* Vendor Group Header */}
+                              <div className="flex items-center justify-between border-b border-gray-150/60 pb-2">
+                                <div className="flex items-center space-x-1.5 min-w-0">
+                                  <Store className="w-4 h-4 text-emerald-brand shrink-0" />
+                                  <span className="font-bold text-[11px] text-slate font-display truncate">Stall: {group.name}</span>
+                                </div>
+                                <span className="text-[9px] font-mono font-bold bg-white text-emerald-brand px-2 py-0.5 border border-emerald-100 rounded-full shrink-0">
+                                  {group.items.length} item(s)
+                                </span>
+                              </div>
+
+                              {/* Items belonging to this vendor */}
+                              <div className="space-y-2.5">
+                                {group.items.map((item) => {
+                                  // Find exact global index of this item in state array so we can increment/remove it
+                                  const originalIdx = cartItems.findIndex(ci => ci.product.id === item.product.id && ci.size === item.size);
+                                  return (
+                                    <div key={`${item.product.id}-${item.size}`} className="flex items-start space-x-3 bg-white p-2.5 rounded-xl border border-gray-150/40 relative">
+                                      <img
+                                        src={item.product.images[0]}
+                                        alt=""
+                                        className="w-10 h-10 object-cover rounded-lg shrink-0 border border-gray-100"
+                                      />
+                                      <div className="flex-grow min-w-0 pr-4">
+                                        <h4 className="font-bold text-[11px] text-slate-brand truncate leading-tight">{item.product.name}</h4>
+                                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                          {item.size && (
+                                            <span className="bg-slate-100 text-slate-600 text-[8px] font-mono font-bold px-1 rounded">
+                                              {item.size}
+                                            </span>
+                                          )}
+                                          <span className="text-[10px] font-mono font-bold text-slate-brand">
+                                            &#8358;{item.product.price.toLocaleString()}
+                                          </span>
+                                        </div>
+
+                                        {/* Incrementor */}
+                                        <div className="flex items-center space-x-2 pt-1.5">
+                                          <button
+                                            onClick={() => handleUpdateCartQty(originalIdx, -1)}
+                                            className="w-4.5 h-4.5 rounded bg-slate-50 border border-gray-250 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand"
+                                          >
+                                            -
+                                          </button>
+                                          <span className="font-bold text-xs px-1 text-slate-brand">{item.quantity}</span>
+                                          <button
+                                            onClick={() => handleUpdateCartQty(originalIdx, 1)}
+                                            className="w-4.5 h-4.5 rounded bg-slate-50 border border-gray-250 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand"
+                                          >
+                                            +
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      {/* Absolute delete button */}
+                                      <button
+                                        onClick={() => handleRemoveFromCart(originalIdx)}
+                                        className="absolute top-2 right-2 p-1 text-slate-brand/35 hover:text-red-700 cursor-pointer"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {/* Quick Message Button for this SPECIFIC Vendor */}
+                              <button
+                                onClick={() => setCheckoutGroup({
+                                  vendorId: vId,
+                                  vendorName: group.name,
+                                  vendorNumber: group.whatsapp,
+                                  items: group.items
+                                })}
+                                className="w-full bg-emerald-brand hover:bg-emerald-700 text-white font-bold text-[10px] py-2 px-3 rounded-xl tracking-wider uppercase flex items-center justify-center space-x-2 shadow-3xs cursor-pointer"
+                              >
+                                <MessageSquare className="w-3.5 h-3.5 fill-white stroke-none" />
+                                <span>Discuss with {group.name}</span>
+                                <ArrowUpRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {/* Drawer Footer summary & Info */}
-              <div className="p-6 border-t border-gray-150 bg-slate-50 space-y-4">
-                
-                {cartItems.length > 0 && (
-                  <div className="space-y-1.5 text-xs text-left">
-                    <div className="flex justify-between font-medium text-slate-brand/60">
-                      <span>Total draft items checklist:</span>
-                      <span className="font-mono">{cartItemTotalCount} units</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-sm text-slate-brand pt-1 border-t border-gray-200">
-                      <span>Consolidated Estimate:</span>
-                      <span className="font-mono text-emerald-brand text-base">&#8358; {cartItemsTotalPrice.toLocaleString()}</span>
-                    </div>
+                  {/* Drawer Footer summary & Info */}
+                  <div className="p-5 sm:p-6 border-t border-gray-150 bg-slate-50 space-y-4">
+                    
+                    {cartItems.length > 0 && (
+                      <div className="space-y-1.5 text-xs text-left">
+                        <div className="flex justify-between font-medium text-slate-brand/60">
+                          <span>Total draft items checklist:</span>
+                          <span className="font-mono">{cartItemTotalCount} units</span>
+                        </div>
+                        <div className="flex justify-between font-bold text-sm text-slate-brand pt-1 border-t border-gray-200">
+                          <span>Consolidated Estimate:</span>
+                          <span className="font-mono text-emerald-brand text-base">&#8358; {cartItemsTotalPrice.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <p className="text-[10px] text-slate-brand/40 text-center leading-relaxed">
+                      Start your order now by selecting items from the shop!
+                    </p>
                   </div>
-                )}
-
-                <p className="text-[10px] text-slate-brand/40 text-center leading-relaxed">
-                  Start your order now by selecting items from the shop!
-                </p>
-              </div>
-
-            </div>
+                </>
+              )}
+            </motion.div>
           </div>
-          
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* DISCLAIMER OVERLAY */}
       {!hasAcceptedTerms && (

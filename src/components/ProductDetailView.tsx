@@ -237,7 +237,7 @@ Is this item still available? I would like to arrange a purchase.`;
                 {/* 1. Direct WhatsApp Purchase (Primary CTA) */}
                 <button
                   onClick={handleWhatsAppOrder}
-                  className="flex-1 bg-slate-900 border border-slate-900 text-white font-bold text-xs tracking-widest uppercase py-4.5 px-6 transition-colors hover:bg-slate-800 cursor-pointer flex items-center justify-center space-x-2 w-full"
+                  className="flex-1 bg-slate-900 border border-slate-900 text-white font-bold text-xs tracking-widest uppercase py-4.5 px-6 rounded-full transition-colors hover:bg-slate-800 cursor-pointer flex items-center justify-center space-x-2 w-full"
                 >
                   <MessageSquare className="w-4 h-4 fill-white stroke-none" />
                   <span>Trade / WhatsApp Seller</span>
@@ -246,7 +246,7 @@ Is this item still available? I would like to arrange a purchase.`;
                 {/* 2. Add to Order Draft/Cart */}
                 <button
                   onClick={handleAddToCartClick}
-                  className="bg-transparent border border-gray-300 text-slate-brand font-bold text-xs tracking-widest uppercase py-4 px-6 transition-colors hover:bg-gray-50 cursor-pointer flex items-center justify-center space-x-2"
+                  className="bg-transparent border border-gray-300 text-slate-brand font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-colors hover:bg-gray-50 cursor-pointer flex items-center justify-center space-x-2"
                 >
                   <ShoppingBag className="w-4 h-4 text-slate-brand/80" />
                   <span>Draft Offer</span>

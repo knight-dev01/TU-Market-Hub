@@ -119,6 +119,18 @@
         }
       },
       "required": ["email", "addedAt"]
+    },
+    "vendor": {
+      "title": "Vendor",
+      "description": "Stall owner contact preferences and identity properties.",
+      "type": "object",
+      "properties": {
+        "whatsapp": {
+          "type": "string",
+          "description": "The custom WhatsApp contact number used for trade inquiries."
+        }
+      },
+      "required": ["whatsapp"]
     }
   },
   "firestore": {
@@ -137,6 +149,10 @@
     "/admins/{adminId}": {
       "schema": "admin",
       "description": "Allowed administrator users for Dashboard access."
+    },
+    "/vendors/{vendorId}": {
+      "schema": "vendor",
+      "description": "Allowed vendors with their WhatsApp number linkages."
     }
   }
 }

@@ -42,7 +42,7 @@ export default function Header({
           
           {/* Brand Logo & Name */}
           <div className="flex-shrink-0 cursor-pointer flex items-center space-x-2.5" onClick={() => handleNavClick('home')}>
-            <div className="w-10 h-10 rounded-md bg-emerald-brand flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-emerald-brand flex items-center justify-center">
               <ShoppingBag className="text-white w-5 h-5" />
             </div>
             <div className="flex flex-col">
@@ -67,7 +67,7 @@ export default function Header({
                 >
                   {item.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-emerald-brand rounded-sm" />
+                    <span className="absolute bottom-0 left-0 w-full h-[2.5px] bg-emerald-brand rounded-full" />
                   )}
                 </button>
               );
@@ -80,12 +80,12 @@ export default function Header({
             <button
               id="cart-trigger"
               onClick={onCartToggle}
-              className="relative p-2.5 rounded-md hover:bg-gray-100 text-slate-brand/80 hover:text-emerald-brand transition-colors cursor-pointer border border-gray-100"
+              className="relative p-2.5 rounded-xl hover:bg-gray-100 text-slate-brand/80 hover:text-emerald-brand transition-colors cursor-pointer border border-gray-100"
               title="Shopping Cart"
             >
               <ShoppingBag className="w-5 h-5 text-slate-brand/70" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-md flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-full flex items-center justify-center shadow-xs">
                   {cartCount}
                 </span>
               )}
@@ -93,8 +93,8 @@ export default function Header({
 
             {/* Admin Dashboard Indicator or Login */}
             {user ? (
-              <div className="flex items-center space-x-3 bg-emerald-brand/5 px-4 py-2 rounded-md border border-emerald-brand/15">
-                <div className="w-6 h-6 rounded-md bg-emerald-brand/10 flex items-center justify-center">
+              <div className="flex items-center space-x-3 bg-emerald-brand/5 px-4 py-2 rounded-xl border border-emerald-brand/15">
+                <div className="w-6 h-6 rounded-lg bg-emerald-brand/10 flex items-center justify-center">
                   {isAdmin ? <ShieldCheck className="w-4 h-4 text-emerald-brand" /> : <User className="w-4 h-4 text-emerald-brand" />}
                 </div>
                 <div className="flex flex-col text-left">
@@ -107,7 +107,7 @@ export default function Header({
                 </div>
                 <button
                   onClick={() => handleNavClick('admin')}
-                  className="text-[10px] bg-emerald-brand hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-md cursor-pointer leading-none uppercase tracking-wider flex items-center gap-1"
+                  className="text-[10px] bg-emerald-brand hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg cursor-pointer leading-none uppercase tracking-wider flex items-center gap-1"
                 >
                   <Sparkles className="w-3 h-3" />
                   <span>Stall</span>
@@ -117,7 +117,7 @@ export default function Header({
               <button
                 id="btn-login"
                 onClick={onLoginClick}
-                className="text-xs font-bold text-emerald-brand hover:text-white border border-emerald-brand/30 hover:bg-emerald-brand rounded-md py-2.5 px-5 transition-all cursor-pointer uppercase tracking-wider"
+                className="text-xs font-bold text-emerald-brand hover:text-white border border-emerald-brand/30 hover:bg-emerald-brand rounded-xl py-2.5 px-5 transition-all cursor-pointer uppercase tracking-wider"
               >
                 Login
               </button>
@@ -129,11 +129,11 @@ export default function Header({
             {/* Mobile Cart Icon */}
             <button
               onClick={onCartToggle}
-              className="relative p-2 text-slate-brand/80 hover:text-emerald-brand cursor-pointer border border-gray-100 rounded-md"
+              className="relative p-2 text-slate-brand/80 hover:text-emerald-brand cursor-pointer border border-gray-100 rounded-xl"
             >
               <ShoppingBag className="w-5 h-5 text-slate-brand/70" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-md flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
@@ -143,7 +143,7 @@ export default function Header({
             <button
               id="mobile-nav-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-brand/80 hover:text-emerald-brand focus:outline-none cursor-pointer border border-gray-100 rounded-md"
+              className="p-2 text-slate-brand/80 hover:text-emerald-brand focus:outline-none cursor-pointer border border-gray-100 rounded-xl"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -188,7 +188,7 @@ export default function Header({
                 </div>
                 <button
                   onClick={() => handleNavClick('admin')}
-                  className="bg-emerald-brand hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg leading-none cursor-pointer uppercase tracking-wider"
+                  className="bg-emerald-brand hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl leading-none cursor-pointer uppercase tracking-wider"
                 >
                   My Store
                 </button>
@@ -199,7 +199,7 @@ export default function Header({
                   onLoginClick();
                   setMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center bg-emerald-brand/5 border border-emerald-brand/30 text-emerald-brand font-bold text-sm tracking-wide rounded-lg py-3 hover:bg-emerald-brand hover:text-white transition-all cursor-pointer uppercase"
+                className="w-full flex items-center justify-center bg-emerald-brand/5 border border-emerald-brand/30 text-emerald-brand font-bold text-sm tracking-wide rounded-xl py-3 hover:bg-emerald-brand hover:text-white transition-all cursor-pointer uppercase"
               >
                 Login
               </button>

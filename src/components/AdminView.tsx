@@ -412,7 +412,7 @@ export default function AdminView({
 
           <button
             onClick={onLogin}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs tracking-wider uppercase py-4 rounded-md transition-all cursor-pointer flex items-center justify-center space-x-2.5"
+            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs tracking-wider uppercase py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2.5"
           >
             <span>Sign In with student Google Mail</span>
           </button>
@@ -486,7 +486,7 @@ export default function AdminView({
                 setActiveTab(t.value);
                 if (t.value === 'settings' && !settingsForm) initSettingsForm();
               }}
-              className={`flex items-center space-x-2 text-xs font-bold py-2.5 px-4.5 rounded-md tracking-wider uppercase transition-all cursor-pointer ${
+              className={`flex items-center space-x-2 text-xs font-bold py-2.5 px-4.5 rounded-xl tracking-wider uppercase transition-all cursor-pointer ${
                 isSelected
                   ? 'bg-emerald-brand text-white shadow-sm font-bold'
                   : 'bg-slate-50 text-slate-brand hover:bg-emerald-brand/5 border border-gray-150'
@@ -565,7 +565,7 @@ export default function AdminView({
               <button
                 type="submit"
                 disabled={actionLoading}
-                className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs tracking-wider uppercase px-6 py-3.5 rounded-md transition-all cursor-pointer flex items-center space-x-2"
+                className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs tracking-wider uppercase px-6 py-3.5 rounded-xl transition-all cursor-pointer flex items-center space-x-2"
               >
                 <Save className="w-4 h-4" />
                 <span>Synchronize Stall Info</span>
@@ -628,7 +628,7 @@ export default function AdminView({
               </p>
               <button
                 onClick={() => openProductForm()}
-                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-5 rounded-md cursor-pointer uppercase tracking-wider"
+                className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-5 rounded-xl cursor-pointer uppercase tracking-wider"
               >
                 Upload First Listing
               </button>
@@ -884,7 +884,7 @@ export default function AdminView({
             <button
               type="submit"
               disabled={actionLoading}
-              className="bg-slate-900 border border-slate-900 text-white hover:bg-slate-800 font-semibold text-xs tracking-wider uppercase px-6 py-3.5 rounded-md transition-colors cursor-pointer flex items-center space-x-2"
+              className="bg-slate-900 border border-slate-900 text-white hover:bg-slate-800 font-semibold text-xs tracking-wider uppercase px-6 py-3.5 rounded-xl transition-colors cursor-pointer flex items-center space-x-2"
             >
               <Save className="w-4 h-4" />
               <span>Lock Configuration</span>
@@ -1058,7 +1058,7 @@ export default function AdminView({
                 <button
                   type="button"
                   onClick={() => setIsProductFormOpen(false)}
-                  className="px-5 py-3 rounded-md border border-gray-300 hover:bg-slate-50 text-slate-brand text-xs font-bold uppercase tracking-wider cursor-pointer"
+                  className="px-5 py-3 rounded-xl border border-gray-300 hover:bg-slate-50 text-slate-brand text-xs font-bold uppercase tracking-wider cursor-pointer"
                 >
                   Cancel
                 </button>

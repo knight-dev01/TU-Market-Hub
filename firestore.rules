@@ -91,6 +91,13 @@ service cloud.firestore {
              data.email is string && data.addedAt is timestamp;
     }
     
+    // 7. Vendor Record Validation
+    function isValidVendor(data) {
+      return data.keys().hasAll(['whatsapp']) &&
+             data.keys().size() == 1 &&
+             data.whatsapp is string && data.whatsapp.size() <= 40;
+    }
+    
     // --- Collection Routes ---
     
     // Categories Collection
@@ -104,7 +111,7 @@ service cloud.firestore {
     // Products Collection
     match /products/{productId} {
       // Allow general users to see only active and out of stock, admins can see all
-      allow list: if !('status' in resource.data) || resource.data.status in ['active', 'out_of_stock'] || isAdmin();
+      allow list: if resource.data.status in ['active', 'out_of_stock'] || isAdmin();
       allow get: if true;
       allow create: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == request.time && incoming().updatedAt == request.time;
       allow update: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == existing().createdAt && incoming().updatedAt == request.time;
@@ -123,6 +130,14 @@ service cloud.firestore {
     match /admins/{adminId} {
       allow read: if isAdmin() || (isSignedIn() && request.auth.uid == adminId);
       allow write: if isVerifiedUser() && isAdmin();
+    }
+    
+    // Vendors Collection
+    match /vendors/{vendorId} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create, update: if isVerifiedUser() && (request.auth.uid == vendorId || isAdmin()) && isValidVendor(incoming());
+      allow delete: if isVerifiedUser() && (request.auth.uid == vendorId || isAdmin());
     }
   }
 }

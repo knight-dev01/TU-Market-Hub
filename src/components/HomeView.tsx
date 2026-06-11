@@ -178,7 +178,7 @@ export default function HomeView({
             <div
               key={cat.id}
               onClick={() => onViewChange('shop')}
-              className="group relative h-40 flex flex-col items-center justify-center cursor-pointer transition-all border border-slate-200 bg-white hover:border-emerald-brand hover:bg-emerald-50"
+              className="group relative h-40 flex flex-col items-center justify-center cursor-pointer transition-all border border-slate-200 bg-white hover:border-emerald-brand hover:bg-emerald-50 rounded-2xl"
             >
               <div className="mb-3 text-slate-400 group-hover:text-emerald-brand transition-colors">
                 {getCategoryIcon(cat.id, "w-10 h-10")}
@@ -274,7 +274,7 @@ export default function HomeView({
                     <span className="text-xs sm:text-sm font-extrabold text-slate-brand font-mono">
                       &#8358; {product.price.toLocaleString()}
                     </span>
-                    <button className="text-[10px] font-bold border border-slate-300 text-slate-600 py-1 px-2.5 rounded-sm hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer">
+                    <button className="text-[10px] font-bold border border-slate-300 text-slate-600 py-1 px-2.5 rounded-xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer">
                       View Deal
                     </button>
                   </div>
@@ -400,7 +400,7 @@ export default function HomeView({
                     <span className="text-xs sm:text-sm font-extrabold text-slate-brand font-mono">
                       &#8358; {product.price.toLocaleString()}
                     </span>
-                    <button className="text-[10px] font-bold border border-slate-300 text-slate-600 py-1 px-2.5 rounded-sm hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer">
+                    <button className="text-[10px] font-bold border border-slate-300 text-slate-600 py-1 px-2.5 rounded-xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer">
                       View Deal
                     </button>
                   </div>
@@ -413,7 +413,7 @@ export default function HomeView({
 
       {/* 6. Call To Action (Student sign up) */}
       <section id="banner-cta" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="relative bg-slate-900 border border-slate-800 p-8 sm:p-12 md:p-16 text-center text-white space-y-6">
+        <div className="relative bg-slate-900 border border-slate-800 p-8 sm:p-12 md:p-16 text-center text-white space-y-6 rounded-3xl">
           <div className="absolute top-4 right-4 text-slate-700 font-bold text-7xl font-sans tracking-wide uppercase select-none pointer-events-none">
             TU HUB
           </div>
