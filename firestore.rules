@@ -110,9 +110,8 @@ service cloud.firestore {
     
     // Products Collection
     match /products/{productId} {
-      // Allow general users to see only active and out of stock, admins can see all
-      allow list: if resource.data.status in ['active', 'out_of_stock'] || isAdmin();
-      allow get: if true;
+      // Allow general list and read, write is protected for admins
+      allow list, get: if true;
       allow create: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == request.time && incoming().updatedAt == request.time;
       allow update: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == existing().createdAt && incoming().updatedAt == request.time;
       allow delete: if isVerifiedUser() && isAdmin() && isValidId(productId);

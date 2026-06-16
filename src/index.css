@@ -72,6 +72,7 @@ h1, h2, h3, h4, h5, h6 {
 .dark .border-gray-150,
 .dark .border-gray-150\/70,
 .dark .border-gray-200,
+.dark .border-gray-250,
 .dark .border-slate-200,
 .dark .border-slate-100 {
   border-color: #374151 !important; /* Tailwind gray-700 */
