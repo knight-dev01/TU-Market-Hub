@@ -104,7 +104,7 @@ export default function HomeView({
                 <div className="opacity-80 text-emerald-brand">
                   <Icon className="w-12 h-12 sm:w-16 sm:h-16 stroke-1 mx-auto" />
                 </div>
-                <span className="inline-block bg-white shadow-xs text-slate-800 font-mono font-bold text-[10px] sm:text-xs tracking-widest px-4 py-1.5 uppercase rounded-full border border-gray-100">
+                <span className="inline-block bg-white shadow-xs text-slate-800 dark:text-slate-200 font-mono font-bold text-[10px] sm:text-xs tracking-widest px-4 py-1.5 uppercase rounded-full border border-gray-100">
                   {slide.badge}
                 </span>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-display leading-tight tracking-tight text-slate-900">

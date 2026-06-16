@@ -39,6 +39,7 @@ h1, h2, h3, h4, h5, h6 {
 .dark h5, 
 .dark h6, 
 .dark .text-slate-brand, 
+.dark .text-slate-800, 
 .dark .text-slate-900 {
   color: #f8fafc !important;
 }
