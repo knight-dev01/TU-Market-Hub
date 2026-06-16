@@ -13,14 +13,104 @@
   --color-gray-brand: #ffffff;
 }
 
+@variant dark (&:where(.dark, .dark *));
+
 body {
   font-family: var(--font-sans);
   background-color: #ffffff;
   color: var(--color-slate-brand);
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark body {
+  background-color: #0b0f19;
+  color: #f1f5f9;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
+
+/* Custom dark mode semantic utility overrides */
+.dark h1, 
+.dark h2, 
+.dark h3, 
+.dark h4, 
+.dark h5, 
+.dark h6, 
+.dark .text-slate-brand, 
+.dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.dark p, 
+.dark .text-slate-brand\/60, 
+.dark .text-slate-brand\/70, 
+.dark .text-slate-600, 
+.dark .text-slate-700 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-500, 
+.dark .text-slate-brand\/50,
+.dark .text-slate-brand\/40 {
+  color: #64748b !important;
+}
+
+.dark .bg-white {
+  background-color: #111827 !important; /* Tailwind gray-900 / dark mode theme background */
+}
+
+.dark .bg-slate-50, 
+.dark .bg-slate-50\/40,
+.dark .bg-slate-100 {
+  background-color: #1f2937 !important; /* Tailwind gray-800 */
+}
+
+.dark .border-gray-50,
+.dark .border-gray-100,
+.dark .border-gray-150,
+.dark .border-gray-150\/70,
+.dark .border-gray-200,
+.dark .border-slate-200,
+.dark .border-slate-100 {
+  border-color: #374151 !important; /* Tailwind gray-700 */
+}
+
+/* Hover adaptivity in dark mode */
+.dark .hover\:bg-gray-50:hover, 
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-gray-100:hover,
+.dark .hover\:bg-slate-100:hover {
+  background-color: #374151 !important;
+}
+
+.dark .hover\:bg-emerald-50:hover {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  border-color: #10b981 !important;
+}
+
+/* Inputs, Textareas, and Dropdown Select fields */
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: #030712 !important;
+  border-color: #374151 !important;
+  color: #f9fafb !important;
+}
+
+.dark input::placeholder, 
+.dark select::placeholder, 
+.dark textarea::placeholder {
+  color: #4b5563 !important;
+}
+
+.dark input:focus, 
+.dark select:focus, 
+.dark textarea:focus {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
+}
+
 
 

@@ -28,6 +28,29 @@ interface CartItem {
 
 export default function App() {
   
+  // Dark Theme State
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        return savedTheme === 'dark';
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (isDarkMode) {
+      root.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      root.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
   // Views navigation and Selection
   const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'admin'>('home');
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
@@ -392,7 +415,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
   });
 
   return (
-    <div id="application-root" className="min-h-screen bg-white flex flex-col justify-between font-sans leading-normal tracking-normal text-slate-800">
+    <div id="application-root" className="min-h-screen bg-white dark:bg-[#0b0f19] flex flex-col justify-between font-sans leading-normal tracking-normal text-slate-800 dark:text-slate-100 transition-colors duration-200">
       
       {/* Dynamic Header Component */}
       <Header
@@ -403,6 +426,8 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
         onLoginClick={() => handleViewChange('admin')}
         cartCount={cartItemTotalCount}
         onCartToggle={() => setIsCartOpen(!isCartOpen)}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       />
 
       {/* Main Content Area containing state wrappers */}
@@ -505,7 +530,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                animate={{ x: 0, opacity: 1 }}
                exit={{ x: '110%', opacity: 0.9 }}
                transition={{ type: 'spring', damping: 28, stiffness: 240 }}
-               className="pointer-events-auto w-full max-w-md bg-white shadow-3xl flex flex-col justify-between border border-gray-150 h-full rounded-2.5xl sm:rounded-3xl overflow-hidden relative"
+               className="pointer-events-auto w-full max-w-md bg-white dark:bg-slate-900 shadow-3xl flex flex-col justify-between border border-gray-150 dark:border-slate-800 h-full rounded-2.5xl sm:rounded-3xl overflow-hidden relative"
             >
               {checkoutGroup ? (
                 <WhatsAppOrderForm
@@ -527,12 +552,12 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
               ) : (
                 <>
                   {/* Drawer Header */}
-                  <div className="p-5 sm:p-6 border-b border-gray-150 flex items-center justify-between">
+                  <div className="p-5 sm:p-6 border-b border-gray-150 dark:border-slate-800 flex items-center justify-between">
                     <div>
-                      <h3 className="font-bold text-sm sm:text-base text-slate-brand font-display">My Deal Cart Offer Board</h3>
-                      <p className="text-[10px] text-slate-brand/50 font-medium">Grouped by student stalls for easy secure exchange!</p>
+                      <h3 className="font-bold text-sm sm:text-base text-slate-brand dark:text-slate-100 font-display">My Deal Cart Offer Board</h3>
+                      <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 font-medium">Grouped by student stalls for easy secure exchange!</p>
                     </div>
-                    <button onClick={() => setIsCartOpen(false)} className="p-2 text-slate-brand/40 hover:text-red-700 cursor-pointer transition-colors rounded-full hover:bg-slate-50">
+                    <button onClick={() => setIsCartOpen(false)} className="p-2 text-slate-brand/40 dark:text-slate-400 hover:text-red-700 dark:hover:text-red-500 cursor-pointer transition-colors rounded-full hover:bg-slate-50 dark:hover:bg-slate-800">
                       <X className="w-5 h-5" />
                     </button>
                   </div>
@@ -672,15 +697,16 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
       </AnimatePresence>
 
       {/* DISCLAIMER OVERLAY */}
+      {/* Disclaimer Modal relative to user consent */}
       {!hasAcceptedTerms && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-white max-w-lg w-full rounded-2xl shadow-2xl p-8 transform transition-all text-slate-800">
-            <h2 className="text-2xl font-bold font-display text-slate-900 mb-4 border-b border-gray-200 pb-3">Platform Disclaimer</h2>
-            <div className="space-y-4 text-sm text-slate-600 mb-8 leading-relaxed">
+          <div className="bg-white dark:bg-slate-900 max-w-lg w-full rounded-2xl shadow-2xl p-8 transform transition-all text-slate-800 dark:text-slate-100 border dark:border-slate-800/50">
+            <h2 className="text-2xl font-bold font-display text-slate-900 dark:text-white mb-4 border-b border-gray-200 dark:border-slate-800 pb-3">Platform Disclaimer</h2>
+            <div className="space-y-4 text-sm text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
               <p>
-                <strong className="text-slate-900 font-bold">Disclaimer & Responsibility:</strong> This platform is provided strictly as a peer-to-peer connection board. We do not independently verify listings or process payments. All buying and selling must be done securely between students on campus. Please use this platform responsibly and exercise caution when making financial commitments.
+                <strong className="text-slate-900 dark:text-white font-bold">Disclaimer & Responsibility:</strong> This platform is provided strictly as a peer-to-peer connection board. We do not independently verify listings or process payments. All buying and selling must be done securely between students on campus. Please use this platform responsibly and exercise caution when making financial commitments.
               </p>
-              <p className="font-medium text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-100">
+              <p className="font-medium text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/20">
                 By using TU MARKET HUB, you agree to comply with our academic and community guidelines.
               </p>
             </div>

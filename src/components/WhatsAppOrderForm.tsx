@@ -54,32 +54,32 @@ export default function WhatsAppOrderForm({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white p-5 sm:p-6 justify-between">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900 p-5 sm:p-6 justify-between text-slate-brand dark:text-slate-100 transition-colors">
       {/* Header with back button */}
       <div className="space-y-4">
         <button
           onClick={onClose}
-          className="flex items-center space-x-1.5 text-slate-brand/60 hover:text-emerald-brand text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+          className="flex items-center space-x-1.5 text-slate-brand/60 dark:text-slate-300 hover:text-emerald-brand text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Cart</span>
         </button>
 
         <div>
-          <h3 className="font-bold text-sm sm:text-base text-slate-brand font-display">Buyer Delivery Details</h3>
-          <p className="text-[10px] text-slate-brand/50 font-medium">
+          <h3 className="font-bold text-sm sm:text-base text-slate-brand dark:text-white font-display">Buyer Delivery Details</h3>
+          <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 font-medium">
             Fill this in to include details directly in your WhatsApp checkout message to <span className="text-emerald-brand font-bold">{vendorName}</span>!
           </p>
         </div>
 
         {/* Short Order Info Summary */}
-        <div className="bg-slate-50 border border-gray-150 rounded-2xl p-4 flex justify-between items-center text-xs">
+        <div className="bg-slate-50 dark:bg-slate-800/40 border border-gray-150 dark:border-slate-800 rounded-2xl p-4 flex justify-between items-center text-xs">
           <div>
-            <span className="text-slate-brand/50 block text-[10px] uppercase font-bold tracking-wider">Ordering</span>
-            <span className="font-bold text-slate-brand">{itemsCount} item(s)</span>
+            <span className="text-slate-brand/50 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Ordering</span>
+            <span className="font-bold text-slate-brand dark:text-slate-200">{itemsCount} item(s)</span>
           </div>
           <div className="text-right">
-            <span className="text-slate-brand/50 block text-[10px] uppercase font-bold tracking-wider">Est. Price</span>
+            <span className="text-slate-brand/50 dark:text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Est. Price</span>
             <span className="font-bold text-emerald-brand font-mono">&#8358; {totalPrice.toLocaleString()}</span>
           </div>
         </div>
@@ -88,11 +88,11 @@ export default function WhatsAppOrderForm({
         <form onSubmit={handleFormSubmit} className="space-y-4 pt-2 text-left">
           {/* Full Name */}
           <div className="space-y-1.5">
-            <label className="block text-[10.5px] font-bold text-slate-brand/70 uppercase tracking-wider">
+            <label className="block text-[10.5px] font-bold text-slate-brand/70 dark:text-slate-300 uppercase tracking-wider">
               Your Full Name
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-brand/35">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-brand/35 dark:text-slate-500">
                 <User className="w-4 h-4" />
               </span>
               <input
@@ -103,9 +103,9 @@ export default function WhatsAppOrderForm({
                   if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
                 }}
                 placeholder="e.g. Ifeanyi Adeleke"
-                className={`w-full text-xs font-medium pl-10 pr-4 py-3 bg-white border ${
-                  errors.name ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-250 focus:border-emerald-brand focus:ring-emerald-brand/20'
-                } rounded-xl shadow-3xs outline-none focus:ring-2 transition-all text-slate-brand font-sans`}
+                className={`w-full text-xs font-medium pl-10 pr-4 py-3 bg-white dark:bg-slate-950 border ${
+                  errors.name ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-250 dark:border-slate-800 focus:border-emerald-brand focus:ring-emerald-brand/20'
+                } rounded-xl shadow-3xs outline-none focus:ring-2 transition-all text-slate-brand dark:text-slate-100 font-sans`}
               />
             </div>
             {errors.name && <p className="text-[10px] text-red-500 font-bold">{errors.name}</p>}
@@ -113,11 +113,11 @@ export default function WhatsAppOrderForm({
 
           {/* Hostel & Room Location */}
           <div className="space-y-1.5">
-            <label className="block text-[10.5px] font-bold text-slate-brand/70 uppercase tracking-wider">
+            <label className="block text-[10.5px] font-bold text-slate-brand/70 dark:text-slate-300 uppercase tracking-wider">
               Campus Hostel Location
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-brand/35">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-brand/35 dark:text-slate-500">
                 <Home className="w-4 h-4" />
               </span>
               <input
@@ -128,9 +128,9 @@ export default function WhatsAppOrderForm({
                   if (errors.hostel) setErrors((prev) => ({ ...prev, hostel: undefined }));
                 }}
                 placeholder="e.g. Block B, Room 204, Male Hostel"
-                className={`w-full text-xs font-medium pl-10 pr-4 py-3 bg-white border ${
-                  errors.hostel ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-250 focus:border-emerald-brand focus:ring-emerald-brand/20'
-                } rounded-xl shadow-3xs outline-none focus:ring-2 transition-all text-slate-brand font-sans`}
+                className={`w-full text-xs font-medium pl-10 pr-4 py-3 bg-white dark:bg-slate-950 border ${
+                  errors.hostel ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-250 dark:border-slate-800 focus:border-emerald-brand focus:ring-emerald-brand/20'
+                } rounded-xl shadow-3xs outline-none focus:ring-2 transition-all text-slate-brand dark:text-slate-100 font-sans`}
               />
             </div>
             {errors.hostel && <p className="text-[10px] text-red-500 font-bold">{errors.hostel}</p>}
@@ -138,11 +138,11 @@ export default function WhatsAppOrderForm({
 
           {/* Phone / WhatsApp Number */}
           <div className="space-y-1.5">
-            <label className="block text-[10.5px] font-bold text-slate-brand/70 uppercase tracking-wider">
+            <label className="block text-[10.5px] font-bold text-slate-brand/70 dark:text-slate-300 uppercase tracking-wider">
               Your Contact Phone Number
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-brand/35">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-brand/35 dark:text-slate-500">
                 <Phone className="w-4 h-4" />
               </span>
               <input
@@ -153,9 +153,9 @@ export default function WhatsAppOrderForm({
                   if (errors.phone) setErrors((prev) => ({ ...prev, phone: undefined }));
                 }}
                 placeholder="e.g. 08123456789 or +234..."
-                className={`w-full text-xs font-medium pl-10 pr-4 py-3 bg-white border ${
-                  errors.phone ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-250 focus:border-emerald-brand focus:ring-emerald-brand/20'
-                } rounded-xl shadow-3xs outline-none focus:ring-2 transition-all text-slate-brand font-sans`}
+                className={`w-full text-xs font-medium pl-10 pr-4 py-3 bg-white dark:bg-slate-950 border ${
+                  errors.phone ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-250 dark:border-slate-800 focus:border-emerald-brand focus:ring-emerald-brand/20'
+                } rounded-xl shadow-3xs outline-none focus:ring-2 transition-all text-slate-brand dark:text-slate-100 font-sans`}
               />
             </div>
             {errors.phone && <p className="text-[10px] text-red-500 font-bold">{errors.phone}</p>}
@@ -164,7 +164,7 @@ export default function WhatsAppOrderForm({
       </div>
 
       {/* Button to confirm and open WhatsApp */}
-      <div className="pt-6 border-t border-gray-150">
+      <div className="pt-6 border-t border-gray-150 dark:border-slate-800">
         <button
           onClick={handleFormSubmit}
           className="w-full bg-emerald-brand hover:bg-emerald-700 text-white font-bold text-xs py-4 rounded-xl tracking-wider uppercase flex items-center justify-center space-x-2 shadow-sm cursor-pointer transition-colors"
