@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Star, BookOpen, Laptop, Sparkles, ShoppingBag, ArrowUpRight, MessageCircle, RefreshCw, Shirt, Home, Briefcase, Coffee } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Product, Category } from '../types';
 
 interface HomeViewProps {
@@ -174,11 +175,15 @@ export default function HomeView({
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {categories.map((cat) => (
-            <div
+          {categories.map((cat, index) => (
+            <motion.div
               key={cat.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: index * 0.05, ease: 'easeOut' }}
+              whileHover={{ y: -5, scale: 1.025, transition: { duration: 0.15 } }}
               onClick={() => onViewChange('shop')}
-              className="group relative h-40 flex flex-col items-center justify-center cursor-pointer transition-all border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-brand dark:hover:border-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 rounded-2xl"
+              className="group relative h-40 flex flex-col items-center justify-center cursor-pointer border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-brand dark:hover:border-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/10 rounded-2xl transition-colors shadow-3xs"
             >
               <div className="mb-3 text-slate-400 group-hover:text-emerald-brand dark:group-hover:text-emerald-400 transition-colors">
                 {getCategoryIcon(cat.id, "w-10 h-10")}
@@ -191,7 +196,7 @@ export default function HomeView({
                   {cat.productCount} Items
                 </span>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -222,13 +227,17 @@ export default function HomeView({
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {newArrivals.map((product) => {
+            {newArrivals.map((product, index) => {
               const catName = categories.find(c => c.id === product.category)?.name || 'Listing';
               return (
-                <div
+                <motion.div
                   key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.4), ease: 'easeOut' }}
+                  whileHover={{ y: -6, scale: 1.015, transition: { duration: 0.2 } }}
                   onClick={() => onSelectProduct(product.id)}
-                  className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-md transition-all flex flex-col justify-between"
+                  className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-md transition-shadow flex flex-col justify-between"
                 >
                   <div>
                     <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
@@ -278,7 +287,7 @@ export default function HomeView({
                       View Deal
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -358,13 +367,17 @@ export default function HomeView({
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {featuredProducts.map((product) => {
+            {featuredProducts.map((product, index) => {
               const catName = categories.find(c => c.id === product.category)?.name || 'Listing';
               return (
-                <div
+                <motion.div
                   key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.45), ease: 'easeOut' }}
+                  whileHover={{ y: -6, scale: 1.015, transition: { duration: 0.2 } }}
                   onClick={() => onSelectProduct(product.id)}
-                  className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-md transition-all flex flex-col justify-between"
+                  className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-md transition-shadow flex flex-col justify-between"
                 >
                   <div>
                     <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
@@ -404,7 +417,7 @@ export default function HomeView({
                       View Deal
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>

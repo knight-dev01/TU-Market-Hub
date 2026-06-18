@@ -4,7 +4,7 @@ import {
   Settings, LogOut, CheckCircle, Save, X, RefreshCw, MessageSquare, Tag, Repeat, Sparkles, AlertCircle 
 } from 'lucide-react';
 import { User as FirebaseUser } from 'firebase/auth';
-import { addDoc, doc, updateDoc, deleteDoc, collection, serverTimestamp, setDoc, getDoc } from 'firebase/firestore';
+import { addDoc, doc, updateDoc, deleteDoc, collection, serverTimestamp, setDoc, getDoc, writeBatch, query, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Product, Category, StoreSettings } from '../types';
 import { forceResetDatabase } from '../data/seed';
@@ -352,6 +352,31 @@ export default function AdminView({
     }
   };
 
+  const handleLinkAllProductsToWhatsApp = async () => {
+    if (!isAdmin) return;
+    const targetNum = settings?.whatsappNumber || '+234 904 722 6729';
+    if (!window.confirm(`This will link ALL products in the store to the active hotline: ${targetNum}. Continue?`)) return;
+    setActionLoading(true);
+    try {
+      const q = query(collection(db, 'products'));
+      const snap = await getDocs(q);
+      const batch = writeBatch(db);
+      let count = 0;
+      snap.forEach((docSnap) => {
+        batch.update(docSnap.ref, { vendorWhatsApp: targetNum });
+        count++;
+      });
+      await batch.commit();
+      displayNotice(`Successfully linked all ${count} products to ${targetNum}!`);
+      await onRefreshData();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to link products: ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // Save Settings Modification
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -592,6 +617,15 @@ export default function AdminView({
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Force Reset Database Demos</span>
+                </button>
+
+                <button
+                  disabled={actionLoading}
+                  onClick={handleLinkAllProductsToWhatsApp}
+                  className="bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-450 font-bold text-xs py-3 px-6 rounded-xl transition-all tracking-wider uppercase flex items-center space-x-2 border border-sky-500/10 disabled:opacity-50 cursor-pointer"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Link All Listings to Active Hotline</span>
                 </button>
               </div>
             </div>

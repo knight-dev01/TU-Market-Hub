@@ -432,70 +432,92 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
 
       {/* Main Content Area containing state wrappers */}
       <main className="flex-grow">
-        {isInitializing ? (
-          <div className="py-24 text-center space-y-4">
-            <RefreshCw className="w-8 h-8 text-emerald-brand dark:text-emerald-400 animate-spin mx-auto" />
-            <p className="text-xs text-slate-brand/50 font-bold uppercase tracking-widest">Hydrating Campus Marketplace...</p>
-          </div>
-        ) : activeDetailProduct ? (
-          /* Render Product Specification Details screen */
-          <ProductDetailView
-            product={activeDetailProduct}
-            allProducts={displayProducts}
-            categories={displayCategories}
-            onBack={() => setSelectedProductId(null)}
-            onSelectProduct={handleSelectProduct}
-            whatsappNumber={settings?.whatsappNumber || '+234 904 722 6729'}
-            onAddToCart={handleAddToCart}
-          />
-        ) : (
-          /* Render tabbed views */
-          <>
-            {currentView === 'home' && (
-              <HomeView
-                products={displayProducts}
+        <AnimatePresence mode="wait">
+          {isInitializing ? (
+            <motion.div
+              key="loader"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="py-24 text-center space-y-4"
+            >
+              <RefreshCw className="w-8 h-8 text-emerald-brand dark:text-emerald-400 animate-spin mx-auto" />
+              <p className="text-xs text-slate-brand/50 font-bold uppercase tracking-widest">Hydrating Campus Marketplace...</p>
+            </motion.div>
+          ) : activeDetailProduct ? (
+            /* Render Product Specification Details screen */
+            <motion.div
+              key="detail"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <ProductDetailView
+                product={activeDetailProduct}
+                allProducts={displayProducts}
                 categories={displayCategories}
-                onViewChange={handleViewChange}
+                onBack={() => setSelectedProductId(null)}
                 onSelectProduct={handleSelectProduct}
                 whatsappNumber={settings?.whatsappNumber || '+234 904 722 6729'}
+                onAddToCart={handleAddToCart}
               />
-            )}
+            </motion.div>
+          ) : (
+            /* Render tabbed views */
+            <motion.div
+              key={currentView}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {currentView === 'home' && (
+                <HomeView
+                  products={displayProducts}
+                  categories={displayCategories}
+                  onViewChange={handleViewChange}
+                  onSelectProduct={handleSelectProduct}
+                  whatsappNumber={settings?.whatsappNumber || '+234 904 722 6729'}
+                />
+              )}
 
-            {currentView === 'shop' && (
-              <ShopView
-                products={displayProducts}
-                categories={displayCategories}
-                onSelectProduct={handleSelectProduct}
-              />
-            )}
+              {currentView === 'shop' && (
+                <ShopView
+                  products={displayProducts}
+                  categories={displayCategories}
+                  onSelectProduct={handleSelectProduct}
+                />
+              )}
 
-            {currentView === 'about' && <AboutView />}
+              {currentView === 'about' && <AboutView />}
 
-            {currentView === 'contact' && settings && (
-              <ContactView
-                whatsappNumber={settings.whatsappNumber}
-                contactAddress={settings.contactAddress}
-                contactEmail={settings.contactEmail}
-                instagramUrl={settings.instagramUrl}
-                facebookUrl={settings.facebookUrl}
-                businessHours={settings.businessHours}
-              />
-            )}
+              {currentView === 'contact' && settings && (
+                <ContactView
+                  whatsappNumber={settings.whatsappNumber}
+                  contactAddress={settings.contactAddress}
+                  contactEmail={settings.contactEmail}
+                  instagramUrl={settings.instagramUrl}
+                  facebookUrl={settings.facebookUrl}
+                  businessHours={settings.businessHours}
+                />
+              )}
 
-            {currentView === 'admin' && (
-              <AdminView
-                user={user}
-                isAdmin={isAdmin}
-                onLogin={handleGoogleLogin}
-                onLogout={handleLogout}
-                products={displayProducts}
-                categories={displayCategories}
-                settings={settings}
-                onRefreshData={forceRefreshStats}
-              />
-            )}
-          </>
-        )}
+              {currentView === 'admin' && (
+                <AdminView
+                  user={user}
+                  isAdmin={isAdmin}
+                  onLogin={handleGoogleLogin}
+                  onLogout={handleLogout}
+                  products={displayProducts}
+                  categories={displayCategories}
+                  settings={settings}
+                  onRefreshData={forceRefreshStats}
+                />
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* FOOTER BLOCK */}
