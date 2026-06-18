@@ -385,34 +385,34 @@ export default function AdminView({
   if (!user) {
     return (
       <div id="admin-security-gate" className="max-w-md mx-auto my-20 px-4">
-        <div className="bg-white border border-gray-150 rounded-3xl p-8 text-center space-y-6 shadow-md select-none">
-          <div className="w-16 h-16 bg-emerald-brand/10 text-emerald-brand rounded-full flex items-center justify-center mx-auto shadow-sm">
+        <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl p-8 text-center space-y-6 shadow-md select-none">
+          <div className="w-16 h-16 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-sm">
             <Settings className="w-8 h-8" />
           </div>
           
           <div className="space-y-2">
-            <h1 className="text-2xl font-extrabold font-display text-slate-brand">
+            <h1 className="text-2xl font-extrabold font-display text-slate-brand dark:text-slate-100">
               Student Seller Portal
             </h1>
-            <p className="text-xs text-slate-brand/60 font-medium leading-relaxed">
+            <p className="text-xs text-slate-brand/60 dark:text-slate-400 font-medium leading-relaxed">
               Log in to instantly launch your own hostel storefront, list items, configure your WhatsApp number, and receive direct inquiries.
             </p>
           </div>
 
-            <div id="vendor-benefits" className="p-4 bg-emerald-brand/5 border border-emerald-brand/15 rounded-2xl text-left space-y-2 text-xs text-slate-brand font-medium">
-            <p className="font-bold text-emerald-brand uppercase tracking-wider text-[10px]">What you can do:</p>
-            <div className="space-y-1 font-sans text-slate-brand/80">
+            <div id="vendor-benefits" className="p-4 bg-emerald-brand/5 dark:bg-emerald-900/10 border border-emerald-brand/15 dark:border-emerald-900/40 rounded-2xl text-left space-y-2 text-xs text-slate-brand font-medium">
+            <p className="font-bold text-emerald-brand dark:text-emerald-500 uppercase tracking-wider text-[10px]">What you can do:</p>
+            <div className="space-y-1 font-sans text-slate-brand/80 dark:text-slate-300">
               <p>• List gadgets, food items, hosting appliances or electronics</p>
               <p>• Connect directly to your personal WhatsApp line</p>
               <p>• Edit or update your prices and condition status any time</p>
             </div>
           </div>
 
-          <hr className="border-gray-150" />
+          <hr className="border-gray-150 dark:border-slate-800" />
 
           <button
             onClick={onLogin}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs tracking-wider uppercase py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2.5"
+            className="w-full bg-slate-900 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2.5"
           >
             <span>Sign In with student Google Mail</span>
           </button>
@@ -461,8 +461,8 @@ export default function AdminView({
       </div>
 
       {actionSuccess && (
-        <div className="bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 p-4 rounded-r-2xl mb-8 flex items-center space-x-3 text-xs leading-none shadow-sm animate-fade-in">
-          <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-l-4 border-emerald-500 p-4 rounded-r-2xl mb-8 flex items-center space-x-3 text-xs leading-none shadow-sm animate-fade-in">
+          <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span className="font-semibold">{actionSuccess}</span>
         </div>
       )}
@@ -538,7 +538,7 @@ export default function AdminView({
           <div className="bg-white border border-gray-150 p-6 sm:p-8 rounded-3xl space-y-6 shadow-3xs">
             <div>
               <h3 className="font-display font-bold text-lg text-slate-brand flex items-center space-x-2">
-                <MessageSquare className="w-5 h-5 text-emerald-brand" />
+                <MessageSquare className="w-5 h-5 text-emerald-brand dark:text-emerald-400" />
                 <span>My Stall Personal Phone Synchronization</span>
               </h3>
               <p className="text-xs text-slate-brand/60 leading-relaxed font-medium mt-1">
@@ -621,7 +621,7 @@ export default function AdminView({
           {/* Custom products list table or collection */}
           {displayProducts.length === 0 ? (
             <div className="py-20 text-center border-2 border-dashed border-gray-200 rounded-3xl space-y-4">
-              <ShoppingCart className="w-12 h-12 text-slate-brand/35 mx-auto" />
+              <ShoppingCart className="w-12 h-12 text-slate-brand/35 dark:text-slate-500 mx-auto" />
               <p className="text-sm font-semibold text-slate-brand/70">Your Student Stall is active but empty!</p>
               <p className="text-xs text-slate-brand/45 max-w-sm mx-auto leading-relaxed">
                 You haven't listed any student study tools, hostellers mattresses, electronics or clothing items yet. Tap 'List New Item' upper-right to begin!

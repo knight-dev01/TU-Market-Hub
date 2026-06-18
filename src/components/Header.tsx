@@ -108,7 +108,7 @@ export default function Header({
             {user ? (
               <div className="flex items-center space-x-3 bg-emerald-brand/5 dark:bg-emerald-brand/10 px-4 py-2 rounded-xl border border-emerald-brand/15 dark:border-emerald-ground/30">
                 <div className="w-6 h-6 rounded-lg bg-emerald-brand/10 flex items-center justify-center">
-                  {isAdmin ? <ShieldCheck className="w-4 h-4 text-emerald-brand" /> : <User className="w-4 h-4 text-emerald-brand" />}
+                  {isAdmin ? <ShieldCheck className="w-4 h-4 text-emerald-brand dark:text-emerald-400" /> : <User className="w-4 h-4 text-emerald-brand dark:text-emerald-400" />}
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-[10px] font-bold text-slate-brand dark:text-slate-200 leading-none truncate max-w-[90px]">

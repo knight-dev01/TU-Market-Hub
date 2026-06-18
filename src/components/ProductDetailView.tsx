@@ -130,7 +130,7 @@ Is this item still available? I would like to arrange a purchase.`;
             {/* Quick Zoom Trigger */}
             <button
               onClick={() => setIsFullscreen(true)}
-              className="absolute bottom-4 right-4 p-3 rounded-full bg-white/90 shadow-md hover:bg-emerald-brand hover:text-white transition-all text-slate-brand cursor-pointer"
+              className="absolute bottom-4 right-4 p-3 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md hover:bg-emerald-brand hover:text-white transition-all text-slate-brand dark:text-slate-100 cursor-pointer"
               title="Fullscreen Preview"
             >
               <ZoomIn className="w-4 h-4" />
@@ -167,20 +167,20 @@ Is this item still available? I would like to arrange a purchase.`;
         </div>
 
         {/* Right Side: Specifications Details */}
-        <div className="space-y-6 bg-white border border-gray-150 p-6 sm:p-8 rounded-3xl shadow-3xs">
+        <div className="space-y-6 bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 sm:p-8 rounded-3xl shadow-3xs">
           
           {/* Headline Metadata */}
           <div className="space-y-2">
             <span className="text-xs font-mono font-bold text-emerald-brand tracking-[0.2em] block uppercase">
               {categoryObject?.name || 'Academic'} Segment Deal
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold font-display leading-[1.2] tracking-tight text-slate-brand">
+            <h1 className="text-2xl sm:text-3xl font-extrabold font-display leading-[1.2] tracking-tight text-slate-brand dark:text-slate-100">
               {product.name}
             </h1>
             
             {/* Price block */}
             <div className="flex items-center space-x-3.5 pt-1.5">
-              <span className="text-2xl sm:text-3xl font-mono font-black text-slate-brand">
+              <span className="text-2xl sm:text-3xl font-mono font-black text-slate-brand dark:text-slate-100">
                 &#8358; {product.price.toLocaleString()}
               </span>
               <span className="text-[10px] bg-emerald-brand/10 text-emerald-brand font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -189,15 +189,15 @@ Is this item still available? I would like to arrange a purchase.`;
             </div>
           </div>
 
-          <hr className="border-gray-150" />
+          <hr className="border-gray-150 dark:border-slate-800" />
 
           {/* Vendor Identification Card */}
-          <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl space-y-2.5">
-            <h4 className="font-mono text-[10px] font-bold text-emerald-brand uppercase tracking-wider">VERIFIED STUDENT SELLER</h4>
+          <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 p-4 rounded-2xl space-y-2.5">
+            <h4 className="font-mono text-[10px] font-bold text-emerald-brand dark:text-emerald-500 uppercase tracking-wider">VERIFIED STUDENT SELLER</h4>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-brand">{product.vendorName || 'TU MARKET HUB Seller'}</p>
-                <p className="text-xs text-slate-brand/45">Active response: Within 1 hour</p>
+                <p className="text-sm font-semibold text-slate-brand dark:text-slate-200">{product.vendorName || 'TU MARKET HUB Seller'}</p>
+                <p className="text-xs text-slate-brand/45 dark:text-slate-400">Active response: Within 1 hour</p>
               </div>
               <a 
                 href={`https://wa.me/${targetWhatsApp.replace(/\+/g, '')}`}
@@ -213,10 +213,10 @@ Is this item still available? I would like to arrange a purchase.`;
 
           {/* Description Copy */}
           <div className="space-y-2.5">
-            <h4 className="font-semibold text-[11px] sm:text-xs text-slate-brand tracking-widest uppercase font-display border-b border-gray-100 pb-1 w-max">
+            <h4 className="font-semibold text-[11px] sm:text-xs text-slate-brand dark:text-slate-300 tracking-widest uppercase font-display border-b border-gray-100 dark:border-slate-700 pb-1 w-max">
               Listing Description
             </h4>
-            <p className="text-sm text-slate-brand/70 font-sans leading-relaxed">
+            <p className="text-sm text-slate-brand/70 dark:text-slate-400 font-sans leading-relaxed">
               {product.description}
             </p>
           </div>
@@ -225,7 +225,7 @@ Is this item still available? I would like to arrange a purchase.`;
           {isFashion && sizes.length > 0 && (
             <div className="space-y-3 pt-2">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-slate-brand uppercase tracking-wider">Option specification</span>
+                <span className="font-bold text-slate-brand dark:text-slate-300 uppercase tracking-wider">Option specification</span>
                 <span className="text-emerald-brand font-mono font-bold text-[10px] uppercase">Required</span>
               </div>
               <div className="flex flex-wrap gap-2.5">
@@ -236,7 +236,7 @@ Is this item still available? I would like to arrange a purchase.`;
                     className={`min-w-[42px] px-3 h-[42px] border font-semibold text-xs rounded-xl transition-all cursor-pointer ${
                       selectedSize === sz
                         ? 'border-emerald-brand bg-emerald-brand text-white shadow-sm'
-                        : 'border-gray-250 hover:border-emerald-brand text-slate-brand'
+                        : 'border-gray-250 dark:border-slate-700 hover:border-emerald-brand text-slate-brand dark:text-slate-300'
                     }`}
                   >
                     {sz}
@@ -249,8 +249,8 @@ Is this item still available? I would like to arrange a purchase.`;
           {/* Operational ordering buttons */}
           <div className="pt-4 space-y-3">
             {product.stock === 0 ? (
-              <div className="bg-red-50 text-red-700 p-4 rounded-2xl flex items-start space-x-3 text-xs leading-relaxed border border-red-100">
-                <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5 text-red-600" />
+              <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-4 rounded-2xl flex items-start space-x-3 text-xs leading-relaxed border border-red-100 dark:border-red-900/50">
+                <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5 text-red-600 dark:text-red-400" />
                 <div>
                   <p className="font-bold">Deal Completed / Sold</p>
                   <p>This listing has already been claimed or marked as sold. Keep exploring the public catalog for similar deals!</p>
@@ -274,18 +274,18 @@ Is this item still available? I would like to arrange a purchase.`;
                 <div className="flex gap-3.5 w-full sm:w-auto">
                   <button
                     onClick={handleAddToCartClick}
-                    className="flex-1 sm:flex-none bg-transparent border border-gray-300 text-slate-brand font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-colors hover:bg-gray-50 cursor-pointer flex items-center justify-center space-x-2"
+                    className="flex-1 sm:flex-none bg-transparent border border-gray-300 dark:border-slate-600 text-slate-brand dark:text-slate-200 font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-center space-x-2"
                   >
-                    <ShoppingBag className="w-4 h-4 text-slate-brand/80" />
+                    <ShoppingBag className="w-4 h-4 text-slate-brand/80 dark:text-slate-300" />
                     <span>Draft Offer</span>
                   </button>
 
                   <button
                     onClick={handleShare}
-                    className="flex-none bg-transparent border border-gray-300 text-slate-brand font-bold py-4 px-5 rounded-full transition-colors hover:bg-gray-50 cursor-pointer flex items-center justify-center"
+                    className="flex-none bg-transparent border border-gray-300 dark:border-slate-600 text-slate-brand dark:text-slate-200 font-bold py-4 px-5 rounded-full transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-center"
                     title="Share this product"
                   >
-                    <Share2 className="w-4 h-4 text-slate-brand/80" />
+                    <Share2 className="w-4 h-4 text-slate-brand/80 dark:text-slate-300" />
                   </button>
                 </div>
 
@@ -293,8 +293,8 @@ Is this item still available? I would like to arrange a purchase.`;
             )}
 
             {addFeedback && (
-              <div className="bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 p-3.5 rounded-r-xl flex items-center space-x-2.5 text-xs animate-fade-in mt-3">
-                <CheckCircle className="w-4.5 h-4.5 text-emerald-600 shrink-0" />
+              <div className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-l-4 border-emerald-500 p-3.5 rounded-r-xl flex items-center space-x-2.5 text-xs animate-fade-in mt-3">
+                <CheckCircle className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span className="font-semibold">Added to your shopping draft. Click Cart or Basket in header to view.</span>
               </div>
             )}
@@ -333,7 +333,7 @@ Is this item still available? I would like to arrange a purchase.`;
                   setActiveImageIndex(0);
                   setSelectedSize('');
                 }}
-                className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-gray-150/70 p-2 sm:p-3 hover:shadow-lg transition-all"
+                className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-lg transition-all"
               >
                 <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
                   <img

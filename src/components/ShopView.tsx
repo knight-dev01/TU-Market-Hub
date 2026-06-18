@@ -122,7 +122,7 @@ export default function ShopView({
             placeholder="Search study guide name, laptops, hoodies, vendor name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-100 border border-slate-200 hover:border-slate-300 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium transition-all text-slate-brand outline-none"
+            className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 focus:border-emerald-brand dark:focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium transition-all text-slate-brand dark:text-slate-100 outline-none"
           />
         </div>
 
@@ -135,7 +135,7 @@ export default function ShopView({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-slate-100 border border-slate-200 rounded-2xl py-3.5 pl-11 pr-10 text-xs sm:text-sm font-semibold text-slate-brand outline-none focus:border-emerald-brand transition-all cursor-pointer appearance-none w-full"
+              className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl py-3.5 pl-11 pr-10 text-xs sm:text-sm font-semibold text-slate-brand dark:text-slate-100 outline-none focus:border-emerald-brand transition-all cursor-pointer appearance-none w-full"
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -146,7 +146,7 @@ export default function ShopView({
           {/* Toggle Slide Panel on Mobile */}
           <button
             onClick={() => setShowFiltersMobile(!showFiltersMobile)}
-            className="md:hidden bg-slate-100 border border-slate-200 text-slate-brand hover:text-emerald-brand p-3.5 rounded-2xl transition-all cursor-pointer flex items-center justify-center"
+            className="md:hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-brand dark:text-slate-100 hover:text-emerald-brand p-3.5 rounded-2xl transition-all cursor-pointer flex items-center justify-center"
             title="Toggle Filters"
           >
             <SlidersHorizontal className="w-5 h-5" />
@@ -160,13 +160,13 @@ export default function ShopView({
         <aside id="desktop-filters" className="hidden md:block w-64 shrink-0 space-y-7 pr-4">
           
           {/* Headline & Reset */}
-          <div className="flex justify-between items-center border-b border-gray-150 pb-3">
-            <h3 className="font-display font-semibold text-xs tracking-widest uppercase text-slate-brand">
+          <div className="flex justify-between items-center border-b border-gray-150 dark:border-slate-800 pb-3">
+            <h3 className="font-display font-semibold text-xs tracking-widest uppercase text-slate-brand dark:text-slate-100">
               Filter Options
             </h3>
             <button
               onClick={handleResetFilters}
-              className="text-xs text-emerald-brand hover:text-opacity-80 font-bold flex items-center space-x-1 uppercase tracking-wider cursor-pointer"
+              className="text-xs text-emerald-brand dark:text-emerald-400 hover:text-opacity-80 font-bold flex items-center space-x-1 uppercase tracking-wider cursor-pointer"
             >
               <RefreshCw className="w-3 h-3" />
               <span>Reset</span>
@@ -175,7 +175,7 @@ export default function ShopView({
 
           {/* Categories select list */}
           <div className="space-y-2.5">
-            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/50">Category</h4>
+            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/50 dark:text-slate-400">Category</h4>
             <div className="space-y-1.5 flex flex-col">
               <button
                 onClick={() => setSelectedCategory('all')}
@@ -207,13 +207,13 @@ export default function ShopView({
           </div>
 
           {/* Condition filters */}
-          <div className="space-y-2.5 border-t border-gray-150 pt-5">
-            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/50">Item Condition</h4>
+          <div className="space-y-2.5 border-t border-gray-150 dark:border-slate-800 pt-5">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/50 dark:text-slate-400">Item Condition</h4>
             <div className="space-y-1.5 flex flex-col">
               {conditionOptions.map((opt) => (
                 <label
                   key={opt.value}
-                  className="flex items-center space-x-3 text-xs font-medium text-slate-brand/80 hover:text-slate-brand cursor-pointer select-none py-1"
+                  className="flex items-center space-x-3 text-xs font-medium text-slate-brand/80 dark:text-slate-300 hover:text-slate-brand dark:hover:text-white cursor-pointer select-none py-1"
                 >
                   <input
                     type="radio"
@@ -221,7 +221,7 @@ export default function ShopView({
                     value={opt.value}
                     checked={conditionFilter === opt.value}
                     onChange={() => setConditionFilter(opt.value)}
-                    className="w-4 h-4 text-emerald-brand border-gray-300 focus:ring-emerald-brand cursor-pointer"
+                    className="w-4 h-4 text-emerald-brand border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-emerald-brand cursor-pointer"
                   />
                   <span>{opt.label}</span>
                 </label>
@@ -230,13 +230,13 @@ export default function ShopView({
           </div>
 
           {/* Prices filters */}
-          <div className="space-y-2.5 border-t border-gray-150 pt-5">
-            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/50">Price Range</h4>
+          <div className="space-y-2.5 border-t border-gray-150 dark:border-slate-800 pt-5">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/50 dark:text-slate-400">Price Range</h4>
             <div className="space-y-1.5 flex flex-col">
               {priceOptions.map((opt) => (
                 <label
                   key={opt.value}
-                  className="flex items-center space-x-3 text-xs font-medium text-slate-brand/80 hover:text-slate-brand cursor-pointer select-none py-1"
+                  className="flex items-center space-x-3 text-xs font-medium text-slate-brand/80 dark:text-slate-300 hover:text-slate-brand dark:hover:text-white cursor-pointer select-none py-1"
                 >
                   <input
                     type="radio"
@@ -244,7 +244,7 @@ export default function ShopView({
                     value={opt.value}
                     checked={priceRange === opt.value}
                     onChange={() => setPriceRange(opt.value)}
-                    className="w-4 h-4 text-emerald-brand border-gray-300 focus:ring-emerald-brand cursor-pointer"
+                    className="w-4 h-4 text-emerald-brand border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-emerald-brand cursor-pointer"
                   />
                   <span>{opt.label}</span>
                 </label>
@@ -253,8 +253,8 @@ export default function ShopView({
           </div>
 
           {/* Availability filters */}
-          <div className="space-y-2.5 border-t border-gray-150 pt-5">
-            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/50">Availability</h4>
+          <div className="space-y-2.5 border-t border-gray-150 dark:border-slate-800 pt-5">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/50 dark:text-slate-400">Availability</h4>
             <div className="space-y-1.5 flex flex-col">
               {[
                 { label: 'All Items', value: 'all' },
@@ -263,7 +263,7 @@ export default function ShopView({
               ].map((opt) => (
                 <label
                   key={opt.value}
-                  className="flex items-center space-x-3 text-xs font-medium text-slate-brand/80 hover:text-slate-brand cursor-pointer select-none py-1"
+                  className="flex items-center space-x-3 text-xs font-medium text-slate-brand/80 dark:text-slate-300 hover:text-slate-brand dark:hover:text-white cursor-pointer select-none py-1"
                 >
                   <input
                     type="radio"
@@ -271,7 +271,7 @@ export default function ShopView({
                     value={opt.value}
                     checked={stockFilter === opt.value}
                     onChange={() => setStockFilter(opt.value)}
-                    className="w-4 h-4 text-emerald-brand border-gray-300 focus:ring-emerald-brand cursor-pointer"
+                    className="w-4 h-4 text-emerald-brand border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-emerald-brand cursor-pointer"
                   />
                   <span>{opt.label}</span>
                 </label>
@@ -283,22 +283,22 @@ export default function ShopView({
 
         {/* Mobile Filters Drawer Panel */}
         {showFiltersMobile && (
-          <div id="mobile-filters-drawer" className="md:hidden bg-white border border-gray-200 rounded-2xl p-5 mb-4 space-y-5 animate-fade-in">
-            <div className="flex justify-between items-center border-b border-gray-150 pb-3">
-              <span className="font-bold text-sm tracking-widest uppercase text-slate-brand">Filters Drawer</span>
-              <button onClick={handleResetFilters} className="text-xs text-emerald-brand font-bold uppercase tracking-wider">
+          <div id="mobile-filters-drawer" className="md:hidden bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-5 mb-4 space-y-5 animate-fade-in">
+            <div className="flex justify-between items-center border-b border-gray-150 dark:border-slate-800 pb-3">
+              <span className="font-bold text-sm tracking-widest uppercase text-slate-brand dark:text-slate-100">Filters Drawer</span>
+              <button onClick={handleResetFilters} className="text-xs text-emerald-brand dark:text-emerald-400 font-bold uppercase tracking-wider">
                 Reset All
               </button>
             </div>
 
             {/* Mobile category button selectors */}
             <div className="space-y-2">
-              <span className="text-xs font-bold text-slate-brand/60 block uppercase tracking-wide">Category</span>
+              <span className="text-xs font-bold text-slate-brand/60 dark:text-slate-400 block uppercase tracking-wide">Category</span>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setSelectedCategory('all')}
                   className={`text-[10px] font-bold py-2 px-3.5 rounded-full transition-all uppercase tracking-wider ${
-                    selectedCategory === 'all' ? 'bg-emerald-brand text-white' : 'bg-slate-100 text-slate-brand'
+                    selectedCategory === 'all' ? 'bg-emerald-brand text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-brand dark:text-slate-300'
                   }`}
                 >
                   All
@@ -308,7 +308,7 @@ export default function ShopView({
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
                     className={`text-[10px] font-bold py-2 px-3.5 rounded-full transition-all uppercase tracking-wider ${
-                      selectedCategory === cat.id ? 'bg-emerald-brand text-white' : 'bg-slate-100 text-slate-brand'
+                      selectedCategory === cat.id ? 'bg-emerald-brand text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-brand dark:text-slate-300'
                     }`}
                   >
                     {cat.name} ({cat.productCount})
@@ -320,11 +320,11 @@ export default function ShopView({
             {/* Mobile Select Fields */}
             <div className="grid grid-cols-1 gap-3">
               <div className="space-y-2">
-                <span className="text-[10px] font-bold text-slate-brand/65 uppercase tracking-wider">Condition</span>
+                <span className="text-[10px] font-bold text-slate-brand/65 dark:text-slate-400 uppercase tracking-wider">Condition</span>
                 <select
                   value={conditionFilter}
                   onChange={(e) => setConditionFilter(e.target.value)}
-                  className="bg-slate-100 border border-slate-200 rounded-xl py-2.5 px-3 text-xs text-slate-brand outline-none focus:border-emerald-brand w-full"
+                  className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3 text-xs text-slate-brand dark:text-slate-100 outline-none focus:border-emerald-brand w-full"
                 >
                   {conditionOptions.map(o => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -335,11 +335,11 @@ export default function ShopView({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <span className="text-[10px] font-bold text-slate-brand/65 uppercase tracking-wider">Price Limit</span>
+                <span className="text-[10px] font-bold text-slate-brand/65 dark:text-slate-400 uppercase tracking-wider">Price Limit</span>
                 <select
                   value={priceRange}
                   onChange={(e) => setPriceRange(e.target.value)}
-                  className="bg-slate-100 border border-slate-200 rounded-xl py-2.5 px-3 text-xs text-slate-brand outline-none focus:border-emerald-brand w-full"
+                  className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3 text-xs text-slate-brand dark:text-slate-100 outline-none focus:border-emerald-brand w-full"
                 >
                   {priceOptions.map(o => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -348,11 +348,11 @@ export default function ShopView({
               </div>
 
               <div className="space-y-2">
-                <span className="text-[10px] font-bold text-slate-brand/65 uppercase tracking-wider">Availability</span>
+                <span className="text-[10px] font-bold text-slate-brand/65 dark:text-slate-400 uppercase tracking-wider">Availability</span>
                 <select
                   value={stockFilter}
                   onChange={(e) => setStockFilter(e.target.value)}
-                  className="bg-slate-100 border border-slate-200 rounded-xl py-2.5 px-3 text-xs text-slate-brand outline-none focus:border-emerald-brand w-full"
+                  className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3 text-xs text-slate-brand dark:text-slate-100 outline-none focus:border-emerald-brand w-full"
                 >
                   <option value="all">All Items</option>
                   <option value="instock">In Stock</option>
@@ -363,7 +363,7 @@ export default function ShopView({
 
             <button
               onClick={() => setShowFiltersMobile(false)}
-              className="w-full bg-slate-900 border border-slate-900 hover:bg-slate-800 text-white font-bold text-xs tracking-widest uppercase py-3.5 rounded-full cursor-pointer transition-colors"
+              className="w-full bg-slate-900 dark:bg-emerald-brand border border-slate-900 dark:border-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-widest uppercase py-3.5 rounded-full cursor-pointer transition-colors"
             >
               Apply Filter Selections
             </button>
@@ -373,14 +373,14 @@ export default function ShopView({
         {/* Listings Grid Section */}
         <div className="flex-grow">
           {filteredProducts.length === 0 ? (
-            <div className="py-24 text-center border-2 border-dashed border-gray-200 rounded-2xl space-y-4 bg-white shadow-2xs">
-              <p className="text-base font-semibold text-slate-brand/70">No matching campus deals found</p>
-              <p className="text-xs text-slate-brand/40 font-medium max-w-sm mx-auto p-2">
+            <div className="py-24 text-center border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-2xl space-y-4 bg-white dark:bg-slate-900 shadow-2xs">
+              <p className="text-base font-semibold text-slate-brand/70 dark:text-slate-300">No matching campus deals found</p>
+              <p className="text-xs text-slate-brand/40 dark:text-slate-500 font-medium max-w-sm mx-auto p-2">
                 Try loosening your filters, resetting choices, or searching with a broader keyword (e.g., laptop, fan, snack)!
               </p>
               <button
                 onClick={handleResetFilters}
-                className="bg-slate-900 border border-slate-900 text-white font-semibold text-xs py-3 px-6 rounded-full hover:bg-slate-800 transition-colors cursor-pointer uppercase tracking-wider shadow-sm"
+                className="bg-slate-900 border border-slate-900 dark:bg-emerald-brand dark:border-emerald-brand text-white font-semibold text-xs py-3 px-6 rounded-full hover:bg-slate-800 dark:hover:bg-emerald-600 transition-colors cursor-pointer uppercase tracking-wider shadow-sm"
               >
                 Clear Search & Filters
               </button>
@@ -393,7 +393,7 @@ export default function ShopView({
                   <div
                     key={product.id}
                     onClick={() => onSelectProduct(product.id)}
-                    className="group cursor-pointer bg-white rounded-2xl overflow-hidden border border-gray-150/70 p-2 sm:p-3 hover:shadow-lg transition-all flex flex-col justify-between"
+                    className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-lg transition-all flex flex-col justify-between"
                   >
                     <div>
                       <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
@@ -432,23 +432,23 @@ export default function ShopView({
                       </div>
                       
                       <div className="space-y-1 px-1">
-                        <div className="flex justify-between items-center text-[9px] font-bold text-emerald-brand uppercase tracking-wider">
+                        <div className="flex justify-between items-center text-[9px] font-bold text-emerald-brand dark:text-emerald-400 uppercase tracking-wider">
                           <span>{catName}</span>
                         </div>
-                        <h3 className="font-semibold text-xs sm:text-sm text-slate-brand line-clamp-1 group-hover:text-emerald-brand transition-colors leading-snug">
+                        <h3 className="font-semibold text-xs sm:text-sm text-slate-brand dark:text-slate-100 line-clamp-1 group-hover:text-emerald-brand transition-colors leading-snug">
                           {product.name}
                         </h3>
-                        <p className="text-[10px] text-slate-brand/50 line-clamp-1 italic">
+                        <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 line-clamp-1 italic">
                           From: {product.vendorName || 'TU Peer Store'}
                         </p>
                       </div>
                     </div>
                     
-                    <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 mt-3">
-                      <span className="text-xs sm:text-sm font-extrabold text-slate-brand font-mono">
+                    <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 dark:border-slate-700 mt-3">
+                      <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200 font-mono">
                         &#8358; {product.price.toLocaleString()}
                       </span>
-                      <span className="text-[10px] font-bold text-emerald-brand hover:underline uppercase tracking-wide shrink-0">
+                      <span className="text-[10px] font-bold text-emerald-brand dark:text-emerald-400 hover:underline uppercase tracking-wide shrink-0">
                         View details
                       </span>
                     </div>

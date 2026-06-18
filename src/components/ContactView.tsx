@@ -48,7 +48,7 @@ export default function ContactView({
           {/* Blocks */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="bg-slate-50 border border-gray-150 p-6 rounded-2xl space-y-3 shadow-3xs">
-              <div className="w-10 h-10 bg-emerald-brand/10 text-emerald-brand rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center">
                 <MapPin className="w-5 h-5" />
               </div>
               <h3 className="font-semibold text-sm sm:text-base text-slate-brand font-display">
@@ -60,7 +60,7 @@ export default function ContactView({
             </div>
 
             <div className="bg-slate-50 border border-gray-150 p-6 rounded-2xl space-y-3 shadow-3xs">
-              <div className="w-10 h-10 bg-emerald-brand/10 text-emerald-brand rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center">
                 <Mail className="w-5 h-5" />
               </div>
               <h3 className="font-semibold text-sm sm:text-base text-slate-brand font-display">
@@ -72,7 +72,7 @@ export default function ContactView({
             </div>
 
             <div className="bg-slate-50 border border-gray-150 p-6 rounded-2xl space-y-3 shadow-3xs">
-              <div className="w-10 h-10 bg-emerald-brand/10 text-emerald-brand rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center">
                 <Clock className="w-5 h-5" />
               </div>
               <h3 className="font-semibold text-sm sm:text-base text-slate-brand font-display">
@@ -84,7 +84,7 @@ export default function ContactView({
             </div>
 
             <div className="bg-slate-50 border border-gray-150 p-6 rounded-2xl space-y-3 shadow-3xs">
-              <div className="w-10 h-10 bg-emerald-brand/10 text-emerald-brand rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center">
                 <MessageSquare className="w-5 h-5" />
               </div>
               <h3 className="font-semibold text-sm sm:text-base text-slate-brand font-display">

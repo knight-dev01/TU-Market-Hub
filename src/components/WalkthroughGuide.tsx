@@ -300,13 +300,13 @@ export default function WalkthroughGuide() {
   const ActiveIcon = steps[activeStep].icon;
 
   return (
-    <div id="interactive-walkthrough" className="bg-white border border-gray-150 rounded-3xl p-6 sm:p-10 shadow-md space-y-8 max-w-6xl mx-auto">
+    <div id="interactive-walkthrough" className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-md space-y-8 max-w-6xl mx-auto">
       
       {/* Walkthrough Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-6">
         <div className="space-y-1 text-left">
-          <span className="inline-flex items-center space-x-1.5 text-emerald-brand font-mono font-bold text-xs uppercase tracking-widest">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-brand animate-pulse" />
+          <span className="inline-flex items-center space-x-1.5 text-emerald-brand dark:text-emerald-400 font-mono font-bold text-xs uppercase tracking-widest">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 animate-pulse" />
             <span>Interactive Protocol Guide</span>
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-slate-brand">
@@ -318,7 +318,7 @@ export default function WalkthroughGuide() {
         </div>
 
         {/* Progress Tracker Dots */}
-        <div className="flex items-center space-x-1 bg-gray-50 p-2 rounded-full border border-gray-155">
+        <div className="flex items-center space-x-1 bg-gray-50 dark:bg-slate-800 p-2 rounded-full border border-gray-155 dark:border-slate-700">
           {steps.map((_, idx) => (
             <button
               key={idx}
@@ -343,33 +343,33 @@ export default function WalkthroughGuide() {
         <div className="lg:col-span-7 flex flex-col justify-between space-y-6 text-left">
           <div className="space-y-4">
             {/* Step Badge */}
-            <span className="inline-block bg-emerald-brand/15 text-emerald-brand font-mono font-black text-[10px] tracking-widest px-3 py-1 rounded-full uppercase">
+            <span className="inline-block bg-emerald-brand/15 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 font-mono font-black text-[10px] tracking-widest px-3 py-1 rounded-full uppercase">
               {steps[activeStep].badge}
             </span>
             
             {/* Title */}
-            <h3 className="text-xl sm:text-2xl font-bold font-display text-slate-brand flex items-center space-x-2">
-              <div className="p-2 bg-emerald-brand/10 text-emerald-brand rounded-xl shrink-0">
+            <h3 className="text-xl sm:text-2xl font-bold font-display text-slate-brand dark:text-slate-100 flex items-center space-x-2">
+              <div className="p-2 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-xl shrink-0">
                 <ActiveIcon className="w-5 h-5" />
               </div>
               <span>{steps[activeStep].title}</span>
             </h3>
 
             {/* Description */}
-            <p className="text-sm text-slate-brand/85 leading-relaxed font-sans font-medium">
+            <p className="text-sm text-slate-brand/85 dark:text-slate-300 leading-relaxed font-sans font-medium">
               {steps[activeStep].description}
             </p>
 
             {/* Sub-instructions list */}
-            <div className="bg-slate-50 border border-gray-150 rounded-2xl p-5 space-y-3.5">
-              <h4 className="text-[11px] font-bold tracking-widest uppercase text-slate-brand/80 font-mono flex items-center space-x-1.5 mb-1">
-                <CheckSquare className="w-3.5 h-3.5 text-emerald-brand" />
+            <div className="bg-slate-50 dark:bg-slate-800/50 border border-gray-150 dark:border-slate-700/50 rounded-2xl p-5 space-y-3.5">
+              <h4 className="text-[11px] font-bold tracking-widest uppercase text-slate-brand/80 dark:text-slate-300 font-mono flex items-center space-x-1.5 mb-1">
+                <CheckSquare className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400" />
                 <span>Step Actions & Goals</span>
               </h4>
               <ul className="space-y-2.5">
                 {steps[activeStep].instructions.map((ins, i) => (
-                  <li key={i} className="flex items-start space-x-2 text-xs text-slate-brand/70 font-medium">
-                    <span className="w-5 h-5 rounded-full bg-emerald-brand/15 text-emerald-brand font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 text-[9px]">
+                  <li key={i} className="flex items-start space-x-2 text-xs text-slate-brand/70 dark:text-slate-300 font-medium">
+                    <span className="w-5 h-5 rounded-full bg-emerald-brand/15 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 text-[9px]">
                       {i + 1}
                     </span>
                     <span className="leading-relaxed">{ins}</span>
@@ -386,7 +386,7 @@ export default function WalkthroughGuide() {
           </div>
 
           {/* Action buttons footer */}
-          <div className="flex items-center justify-between border-t border-gray-150 pt-6">
+          <div className="flex items-center justify-between border-t border-gray-150 dark:border-slate-800 pt-6">
             <button
               onClick={handleBack}
               disabled={activeStep === 0}
@@ -416,7 +416,7 @@ export default function WalkthroughGuide() {
         </div>
 
         {/* Right Side: Mockup Visual Canvas */}
-        <div className="lg:col-span-5 bg-slate-50 border border-gray-150 rounded-2xl p-4 flex flex-col justify-center min-h-[340px] shadow-inner select-none relative">
+        <div className="lg:col-span-5 bg-slate-50 dark:bg-slate-800/50 border border-gray-150 dark:border-slate-700/50 rounded-2xl p-4 flex flex-col justify-center min-h-[340px] shadow-inner select-none relative">
           <div className="absolute top-2.5 left-2.5 text-[8px] font-mono text-slate-brand/45 tracking-widest font-bold uppercase">
             Interactive Simulator
           </div>

@@ -434,7 +434,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
       <main className="flex-grow">
         {isInitializing ? (
           <div className="py-24 text-center space-y-4">
-            <RefreshCw className="w-8 h-8 text-emerald-brand animate-spin mx-auto" />
+            <RefreshCw className="w-8 h-8 text-emerald-brand dark:text-emerald-400 animate-spin mx-auto" />
             <p className="text-xs text-slate-brand/50 font-bold uppercase tracking-widest">Hydrating Campus Marketplace...</p>
           </div>
         ) : activeDetailProduct ? (
@@ -566,7 +566,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
                     {cartItems.length === 0 ? (
                       <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-12">
-                        <div className="w-16 h-16 bg-slate-50 text-slate-300 border border-gray-200 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800/80 text-slate-300 dark:text-slate-600 border border-gray-200 dark:border-slate-700/50 rounded-full flex items-center justify-center">
                           <ShoppingBag className="w-8 h-8" />
                         </div>
                         <div>
@@ -581,14 +581,14 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                         {Object.keys(vendorGroups).map((vId) => {
                           const group = vendorGroups[vId];
                           return (
-                            <div key={vId} className="border border-emerald-100 bg-emerald-50/20 p-4 rounded-3xl space-y-3.5">
+                            <div key={vId} className="border border-emerald-100 dark:border-emerald-900/50 bg-emerald-50/20 dark:bg-emerald-900/10 p-4 rounded-3xl space-y-3.5">
                               {/* Vendor Group Header */}
-                              <div className="flex items-center justify-between border-b border-gray-150/60 pb-2">
+                              <div className="flex items-center justify-between border-b border-gray-150/60 dark:border-slate-700/60 pb-2">
                                 <div className="flex items-center space-x-1.5 min-w-0">
-                                  <Store className="w-4 h-4 text-emerald-brand shrink-0" />
-                                  <span className="font-bold text-[11px] text-slate font-display truncate">Stall: {group.name}</span>
+                                  <Store className="w-4 h-4 text-emerald-brand dark:text-emerald-400 shrink-0" />
+                                  <span className="font-bold text-[11px] text-slate-800 dark:text-slate-200 font-display truncate">Stall: {group.name}</span>
                                 </div>
-                                <span className="text-[9px] font-mono font-bold bg-white text-emerald-brand px-2 py-0.5 border border-emerald-100 rounded-full shrink-0">
+                                <span className="text-[9px] font-mono font-bold bg-white dark:bg-slate-800 text-emerald-brand dark:text-emerald-400 px-2 py-0.5 border border-emerald-100 dark:border-emerald-900/50 rounded-full shrink-0">
                                   {group.items.length} item(s)
                                 </span>
                               </div>
@@ -599,21 +599,21 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                                   // Find exact global index of this item in state array so we can increment/remove it
                                   const originalIdx = cartItems.findIndex(ci => ci.product.id === item.product.id && ci.size === item.size);
                                   return (
-                                    <div key={`${item.product.id}-${item.size}`} className="flex items-start space-x-3 bg-white p-2.5 rounded-xl border border-gray-150/40 relative">
+                                    <div key={`${item.product.id}-${item.size}`} className="flex items-start space-x-3 bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-gray-150/40 dark:border-slate-700/50 relative">
                                       <img
                                         src={item.product.images[0]}
                                         alt=""
-                                        className="w-10 h-10 object-cover rounded-lg shrink-0 border border-gray-100"
+                                        className="w-10 h-10 object-cover rounded-lg shrink-0 border border-gray-100 dark:border-slate-700"
                                       />
                                       <div className="flex-grow min-w-0 pr-4">
-                                        <h4 className="font-bold text-[11px] text-slate-brand truncate leading-tight">{item.product.name}</h4>
+                                        <h4 className="font-bold text-[11px] text-slate-brand dark:text-slate-200 truncate leading-tight">{item.product.name}</h4>
                                         <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
                                           {item.size && (
-                                            <span className="bg-slate-100 text-slate-600 text-[8px] font-mono font-bold px-1 rounded">
+                                            <span className="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[8px] font-mono font-bold px-1 rounded">
                                               {item.size}
                                             </span>
                                           )}
-                                          <span className="text-[10px] font-mono font-bold text-slate-brand">
+                                          <span className="text-[10px] font-mono font-bold text-slate-brand dark:text-emerald-400">
                                             &#8358;{item.product.price.toLocaleString()}
                                           </span>
                                         </div>
@@ -622,14 +622,14 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                                         <div className="flex items-center space-x-2 pt-1.5">
                                           <button
                                             onClick={() => handleUpdateCartQty(originalIdx, -1)}
-                                            className="w-4.5 h-4.5 rounded bg-slate-50 border border-gray-250 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand"
+                                            className="w-4.5 h-4.5 rounded bg-slate-50 dark:bg-slate-700 border border-gray-250 dark:border-slate-600 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand dark:hover:border-emerald-500"
                                           >
                                             -
                                           </button>
-                                          <span className="font-bold text-xs px-1 text-slate-brand">{item.quantity}</span>
+                                          <span className="font-bold text-xs px-1 text-slate-brand dark:text-slate-200">{item.quantity}</span>
                                           <button
                                             onClick={() => handleUpdateCartQty(originalIdx, 1)}
-                                            className="w-4.5 h-4.5 rounded bg-slate-50 border border-gray-250 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand"
+                                            className="w-4.5 h-4.5 rounded bg-slate-50 dark:bg-slate-700 border border-gray-250 dark:border-slate-600 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand dark:hover:border-emerald-500"
                                           >
                                             +
                                           </button>
@@ -639,7 +639,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                                       {/* Absolute delete button */}
                                       <button
                                         onClick={() => handleRemoveFromCart(originalIdx)}
-                                        className="absolute top-2 right-2 p-1 text-slate-brand/35 hover:text-red-700 cursor-pointer"
+                                        className="absolute top-2 right-2 p-1 text-slate-brand/35 dark:text-slate-500 hover:text-red-700 dark:hover:text-red-400 cursor-pointer"
                                       >
                                         <Trash2 className="w-3.5 h-3.5" />
                                       </button>
@@ -670,15 +670,15 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   </div>
 
                   {/* Drawer Footer summary & Info */}
-                  <div className="p-5 sm:p-6 border-t border-gray-150 bg-slate-50 space-y-4">
+                  <div className="p-5 sm:p-6 border-t border-gray-150 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 space-y-4">
                     
                     {cartItems.length > 0 && (
                       <div className="space-y-1.5 text-xs text-left">
-                        <div className="flex justify-between font-medium text-slate-brand/60">
+                        <div className="flex justify-between font-medium text-slate-brand/60 dark:text-slate-400">
                           <span>Total draft items checklist:</span>
-                          <span className="font-mono">{cartItemTotalCount} units</span>
+                          <span className="font-mono text-slate-brand dark:text-slate-300">{cartItemTotalCount} units</span>
                         </div>
-                        <div className="flex justify-between font-bold text-sm text-slate-brand pt-1 border-t border-gray-200">
+                        <div className="flex justify-between font-bold text-sm text-slate-brand dark:text-slate-200 pt-1 border-t border-gray-200 dark:border-slate-700/60">
                           <span>Consolidated Estimate:</span>
                           <span className="font-mono text-emerald-brand text-base">&#8358; {cartItemsTotalPrice.toLocaleString()}</span>
                         </div>

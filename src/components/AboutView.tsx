@@ -106,14 +106,14 @@ export default function AboutView() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {values.map((v, idx) => (
-            <div key={idx} className="bg-slate-50 border border-gray-150 p-8 rounded-2xl text-center space-y-4 shadow-3xs">
-              <div className="w-12 h-12 bg-emerald-brand/10 text-emerald-brand rounded-full flex items-center justify-center mx-auto">
+            <div key={idx} className="bg-slate-50 dark:bg-slate-800/40 border border-gray-150 dark:border-slate-800 p-8 rounded-2xl text-center space-y-4 shadow-3xs">
+              <div className="w-12 h-12 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto">
                 <v.icon className="w-6 h-6" />
               </div>
-              <h3 className="font-display font-semibold text-base sm:text-lg text-slate-brand">
+              <h3 className="font-display font-semibold text-base sm:text-lg text-slate-brand dark:text-slate-100">
                 {v.title}
               </h3>
-              <p className="text-xs sm:text-sm text-slate-brand/60 leading-relaxed font-sans font-medium">
+              <p className="text-xs sm:text-sm text-slate-brand/60 dark:text-slate-400 leading-relaxed font-sans font-medium">
                 {v.desc}
               </p>
             </div>
