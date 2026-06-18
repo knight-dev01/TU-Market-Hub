@@ -102,7 +102,7 @@ service cloud.firestore {
     
     // Categories Collection
     match /categories/{categoryId} {
-      allow list, get: if true;
+      allow read: if true;
       allow create: if isVerifiedUser() && isAdmin() && isValidId(categoryId) && isValidCategory(incoming()) && incoming().createdAt == request.time;
       allow update: if isVerifiedUser() && isAdmin() && isValidId(categoryId) && isValidCategory(incoming()) && incoming().createdAt == existing().createdAt;
       allow delete: if isVerifiedUser() && isAdmin() && isValidId(categoryId);
@@ -111,7 +111,7 @@ service cloud.firestore {
     // Products Collection
     match /products/{productId} {
       // Allow general list and read, write is protected for admins
-      allow list, get: if true;
+      allow read: if true;
       allow create: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == request.time && incoming().updatedAt == request.time;
       allow update: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == existing().createdAt && incoming().updatedAt == request.time;
       allow delete: if isVerifiedUser() && isAdmin() && isValidId(productId);
@@ -119,7 +119,7 @@ service cloud.firestore {
     
     // Settings Collection
     match /settings/{settingsId} {
-      allow list, get: if true;
+      allow read: if true;
       allow create: if isVerifiedUser() && isAdmin() && isValidId(settingsId) && isValidSettings(incoming());
       allow update: if isVerifiedUser() && isAdmin() && isValidId(settingsId) && isValidSettings(incoming());
       allow delete: if isVerifiedUser() && isAdmin() && isValidId(settingsId);

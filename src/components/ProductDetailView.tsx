@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2 } from 'lucide-react';
 import { Product, Category } from '../types';
 
 interface ProductDetailViewProps {
@@ -72,6 +72,33 @@ Is this item still available? I would like to arrange a purchase.`;
     onAddToCart(product, selectedSize || 'One Size');
     setAddFeedback(true);
     setTimeout(() => setAddFeedback(false), 2500);
+  };
+
+  const handleShare = async () => {
+    // Generate a link that works with the SPA. 
+    // Since we don't have a specific router, we might share the origin. 
+    // If the app has routing, we'd use the current location.
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: product.name,
+      text: `Check out this ${product.name} on TU Market Hub!`,
+      url: shareUrl
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+        alert('Link copied to clipboard!');
+      } catch (error) {
+        console.error('Error copying link:', error);
+      }
+    }
   };
 
   return (
@@ -243,14 +270,24 @@ Is this item still available? I would like to arrange a purchase.`;
                   <span>Trade / WhatsApp Seller</span>
                 </button>
 
-                {/* 2. Add to Order Draft/Cart */}
-                <button
-                  onClick={handleAddToCartClick}
-                  className="bg-transparent border border-gray-300 text-slate-brand font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-colors hover:bg-gray-50 cursor-pointer flex items-center justify-center space-x-2"
-                >
-                  <ShoppingBag className="w-4 h-4 text-slate-brand/80" />
-                  <span>Draft Offer</span>
-                </button>
+                {/* 2. Add to Order Draft/Cart and Share */}
+                <div className="flex gap-3.5 w-full sm:w-auto">
+                  <button
+                    onClick={handleAddToCartClick}
+                    className="flex-1 sm:flex-none bg-transparent border border-gray-300 text-slate-brand font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-colors hover:bg-gray-50 cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    <ShoppingBag className="w-4 h-4 text-slate-brand/80" />
+                    <span>Draft Offer</span>
+                  </button>
+
+                  <button
+                    onClick={handleShare}
+                    className="flex-none bg-transparent border border-gray-300 text-slate-brand font-bold py-4 px-5 rounded-full transition-colors hover:bg-gray-50 cursor-pointer flex items-center justify-center"
+                    title="Share this product"
+                  >
+                    <Share2 className="w-4 h-4 text-slate-brand/80" />
+                  </button>
+                </div>
 
               </div>
             )}
