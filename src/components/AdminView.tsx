@@ -527,9 +527,9 @@ export default function AdminView({
             </div>
 
             <div className="bg-white border border-gray-150 p-6 rounded-2xl space-y-2 shadow-3xs">
-              <span className="text-[10px] font-bold text-red-600/80 uppercase tracking-widest block font-sans">Shortages & sold</span>
-              <p className="text-3xl font-extrabold font-mono text-orange-brand">{outOfStockItems.length + lowStockCount}</p>
-              <p className="text-[10px] text-slate-brand/50 font-medium">Items marked as sold out</p>
+              <span className="text-[10px] font-bold text-red-600/80 dark:text-red-400 mt-1 uppercase tracking-widest block font-sans">Shortages & sold</span>
+              <p className="text-3xl font-extrabold font-mono text-orange-brand dark:text-orange-500">{outOfStockItems.length + lowStockCount}</p>
+              <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 font-medium">Items marked as sold out</p>
             </div>
 
           </div>
@@ -1006,22 +1006,41 @@ export default function AdminView({
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <div className="flex justify-between items-end">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Product Image URL(s) (Comma separated)</label>
-                  <label className="bg-emerald-brand/10 hover:bg-emerald-brand/20 text-emerald-brand border border-emerald-brand/20 text-[10px] uppercase tracking-wider font-bold px-3 py-1.5 rounded-full cursor-pointer flex items-center shadow-sm">
-                    Upload File
-                    <input type="file" multiple accept="image/*" className="hidden" onChange={handleProductImageUpload} disabled={actionLoading} />
-                  </label>
+              <div className="space-y-3 pt-2 pb-2">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans block">Product Media & Images</label>
+                
+                <div className="border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-emerald-brand dark:hover:border-emerald-500 rounded-2xl p-6 transition-colors bg-slate-50/50 dark:bg-slate-800/30 text-center relative group">
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/*" 
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                    onChange={handleProductImageUpload} 
+                    disabled={actionLoading} 
+                  />
+                  <div className="w-10 h-10 bg-white dark:bg-slate-800 shadow-sm border border-gray-150 dark:border-slate-700 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                    <Plus className="w-5 h-5" />
+                  </div>
+                  <p className="text-xs font-semibold text-slate-brand dark:text-slate-200">Click or drag images to upload</p>
+                  <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 mt-1">High-quality JPG, PNG, WEBP (auto-compressed)</p>
                 </div>
-                <input
-                  type="text"
-                  required
-                  value={prodImages}
-                  onChange={(e) => setProdImages(e.target.value)}
-                  className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-medium outline-none transition-all text-slate-brand"
-                />
-                <p className="text-[9px] text-slate-brand/40 italic">Provide high-quality URLs or upload direct images (Auto-compressed).</p>
+
+                <div className="flex items-center space-x-3">
+                  <hr className="flex-1 border-gray-200 dark:border-slate-700" />
+                  <span className="text-[9px] uppercase tracking-widest text-slate-brand/40 dark:text-slate-500 font-bold">OR LINK EXTERNAL URL</span>
+                  <hr className="flex-1 border-gray-200 dark:border-slate-700" />
+                </div>
+
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    required
+                    value={prodImages}
+                    onChange={(e) => setProdImages(e.target.value)}
+                    placeholder="https://example.com/image1.jpg, https://ex..."
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700/60 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-medium outline-none transition-all text-slate-brand dark:text-slate-100 placeholder-slate-brand/30 dark:placeholder-slate-600"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -1106,21 +1125,40 @@ export default function AdminView({
                 />
               </div>
 
-              <div className="space-y-1">
-                <div className="flex justify-between items-end">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Representative Image URL</label>
-                  <label className="bg-emerald-brand/10 hover:bg-emerald-brand/20 text-emerald-brand border border-emerald-brand/20 text-[10px] uppercase tracking-wider font-bold px-3 py-1.5 rounded-full cursor-pointer flex items-center shadow-sm">
-                    Upload File
-                    <input type="file" accept="image/*" className="hidden" onChange={handleCategoryImageUpload} disabled={actionLoading} />
-                  </label>
+              <div className="space-y-3 pt-2 pb-2">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans block">Representative Cover Image</label>
+                
+                <div className="border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-emerald-brand dark:hover:border-emerald-500 rounded-2xl p-6 transition-colors bg-slate-50/50 dark:bg-slate-800/30 text-center relative group">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                    onChange={handleCategoryImageUpload} 
+                    disabled={actionLoading} 
+                  />
+                  <div className="w-10 h-10 bg-white dark:bg-slate-800 shadow-sm border border-gray-150 dark:border-slate-700 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                    <Plus className="w-5 h-5" />
+                  </div>
+                  <p className="text-xs font-semibold text-slate-brand dark:text-slate-200">Click to upload image</p>
+                  <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 mt-1">High resolution cover visual</p>
                 </div>
-                <input
-                  type="text"
-                  required
-                  value={catImage}
-                  onChange={(e) => setCatImage(e.target.value)}
-                  className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-medium outline-none transition-all text-slate-brand"
-                />
+
+                <div className="flex items-center space-x-3">
+                  <hr className="flex-1 border-gray-200 dark:border-slate-700" />
+                  <span className="text-[9px] uppercase tracking-widest text-slate-brand/40 dark:text-slate-500 font-bold">OR LINK EXTERNAL URL</span>
+                  <hr className="flex-1 border-gray-200 dark:border-slate-700" />
+                </div>
+
+                <div className="space-y-1">
+                  <input
+                    type="text"
+                    required
+                    value={catImage}
+                    onChange={(e) => setCatImage(e.target.value)}
+                    placeholder="https://example.com/cover.jpg"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700/60 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-medium outline-none transition-all text-slate-brand dark:text-slate-100 placeholder-slate-brand/30 dark:placeholder-slate-600"
+                  />
+                </div>
               </div>
 
               <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">

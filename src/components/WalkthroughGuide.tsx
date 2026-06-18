@@ -72,7 +72,7 @@ export default function WalkthroughGuide() {
           </div>
 
           <div className="text-[9px] bg-slate-800/40 p-2 rounded border border-slate-700/55 text-slate-300 flex items-center space-x-2">
-            <span className="text-orange-brand font-bold">💡 Pro-Tip:</span>
+            <span className="text-orange-brand dark:text-orange-500 font-bold">💡 Pro-Tip:</span>
             <span>Refine using the condition labels if searching for brand-new items!</span>
           </div>
         </div>
@@ -248,7 +248,7 @@ export default function WalkthroughGuide() {
           <div className="space-y-3">
             <div className="flex justify-between items-center border-b border-gray-800 pb-2">
               <div className="flex items-center space-x-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-orange-brand animate-spin" />
+                <Sparkles className="w-3.5 h-3.5 text-orange-brand dark:text-orange-500 animate-spin" />
                 <span className="text-xs font-bold text-gray-100 uppercase tracking-widest">My Student Stall</span>
               </div>
               <span className="text-[8px] bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20 font-mono">Live Seller Sync</span>
@@ -379,8 +379,8 @@ export default function WalkthroughGuide() {
             </div>
 
             {/* Micro Pro Tip Panel */}
-            <div className="border-l-2 border-orange-brand pl-3 py-1">
-              <p className="text-[10px] font-bold text-orange-brand tracking-widest uppercase mb-0.5">ℹ️ Protocol Tip</p>
+            <div className="border-l-2 border-orange-brand dark:border-orange-500 pl-3 py-1">
+              <p className="text-[10px] font-bold text-orange-brand dark:text-orange-500 tracking-widest uppercase mb-0.5">ℹ️ Protocol Tip</p>
               <p className="text-[11px] text-slate-brand/65 font-medium leading-normal">{steps[activeStep].tips}</p>
             </div>
           </div>

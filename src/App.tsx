@@ -530,7 +530,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                animate={{ x: 0, opacity: 1 }}
                exit={{ x: '110%', opacity: 0.9 }}
                transition={{ type: 'spring', damping: 28, stiffness: 240 }}
-               className="pointer-events-auto w-full max-w-md bg-white dark:bg-slate-900 shadow-3xl flex flex-col justify-between border border-gray-150 dark:border-slate-800 h-full rounded-2.5xl sm:rounded-3xl overflow-hidden relative"
+               className="pointer-events-auto w-[90vw] sm:w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900 shadow-3xl flex flex-col justify-between border border-gray-150 dark:border-slate-800 h-[calc(100vh-2rem)] rounded-3xl overflow-hidden relative ml-auto"
             >
               {checkoutGroup ? (
                 <WhatsAppOrderForm
