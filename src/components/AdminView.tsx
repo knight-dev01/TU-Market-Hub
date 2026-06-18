@@ -508,25 +508,25 @@ export default function AdminView({
           {/* Bento grids display stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             
-            <div className="bg-white border border-gray-150 p-6 rounded-2xl space-y-2 shadow-3xs">
+            <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 rounded-2xl space-y-2 shadow-3xs">
               <span className="text-[10px] font-bold text-slate-brand/40 uppercase tracking-widest block font-sans">My Public Listings</span>
-              <p className="text-3xl font-extrabold font-mono text-slate-brand">{totalProducts}</p>
+              <p className="text-3xl font-extrabold font-mono text-slate-brand dark:text-slate-100">{totalProducts}</p>
               <p className="text-[10px] text-slate-brand/50 font-medium">Currently visible to buyers</p>
             </div>
 
-            <div className="bg-white border border-gray-150 p-6 rounded-2xl space-y-2 shadow-3xs">
+            <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 rounded-2xl space-y-2 shadow-3xs">
               <span className="text-[10px] font-bold text-slate-brand/40 uppercase tracking-widest block font-sans">Global Categories</span>
-              <p className="text-3xl font-extrabold font-mono text-slate-brand">{categories.length}</p>
+              <p className="text-3xl font-extrabold font-mono text-slate-brand dark:text-slate-100">{categories.length}</p>
               <p className="text-[10px] text-slate-brand/50 font-medium">Usable active folders</p>
             </div>
 
-            <div className="bg-white border border-gray-150 p-6 rounded-2xl space-y-2 shadow-3xs">
+            <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 rounded-2xl space-y-2 shadow-3xs">
               <span className="text-[10px] font-bold text-slate-brand/40 uppercase tracking-widest block font-sans">Featured Items</span>
-              <p className="text-3xl font-extrabold font-mono text-emerald-brand">{featuredCount}</p>
+              <p className="text-3xl font-extrabold font-mono text-emerald-brand dark:text-emerald-400">{featuredCount}</p>
               <p className="text-[10px] text-slate-brand/50 font-medium">Highlighted on home carousel</p>
             </div>
 
-            <div className="bg-white border border-gray-150 p-6 rounded-2xl space-y-2 shadow-3xs">
+            <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 rounded-2xl space-y-2 shadow-3xs">
               <span className="text-[10px] font-bold text-red-600/80 dark:text-red-400 mt-1 uppercase tracking-widest block font-sans">Shortages & sold</span>
               <p className="text-3xl font-extrabold font-mono text-orange-brand dark:text-orange-500">{outOfStockItems.length + lowStockCount}</p>
               <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 font-medium">Items marked as sold out</p>
@@ -535,7 +535,7 @@ export default function AdminView({
           </div>
 
           {/* Core Personal Vendor Details block */}
-          <div className="bg-white border border-gray-150 p-6 sm:p-8 rounded-3xl space-y-6 shadow-3xs">
+          <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 sm:p-8 rounded-3xl space-y-6 shadow-3xs">
             <div>
               <h3 className="font-display font-bold text-lg text-slate-brand flex items-center space-x-2">
                 <MessageSquare className="w-5 h-5 text-emerald-brand dark:text-emerald-400" />
@@ -556,7 +556,7 @@ export default function AdminView({
                     placeholder="e.g. 2348123456789"
                     value={vendorWhatsApp}
                     onChange={(e) => setVendorWhatsApp(e.target.value.replace(/\+/g, ''))}
-                    className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-2xl py-3 px-4 text-xs font-mono font-bold tracking-widest outline-none transition-all text-slate-brand"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-2xl py-3 px-4 text-xs font-mono font-bold tracking-widest outline-none transition-all text-slate-brand dark:text-slate-100"
                   />
                 </div>
                 <p className="text-[10px] text-slate-brand/40 italic">Include country code first without standard plus (+) symbols (e.g. 234 for Nigeria).</p>
@@ -577,7 +577,7 @@ export default function AdminView({
           {isAdmin && (
             <div className="bg-slate-50 border border-gray-200 p-8 rounded-3xl space-y-5">
               <div>
-                <h3 className="font-display font-bold text-lg text-slate-brand">
+                <h3 className="font-display font-bold text-lg text-slate-brand dark:text-slate-100">
                   System Admin Seeder Maintenance
                 </h3>
                 <p className="text-xs text-slate-brand/60 font-medium leading-relaxed">
@@ -634,7 +634,7 @@ export default function AdminView({
               </button>
             </div>
           ) : (
-            <div className="bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-3xs overflow-x-auto">
+            <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-2xl overflow-hidden shadow-3xs overflow-x-auto">
               <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                   <tr className="bg-slate-50 border-b border-gray-150 text-slate-brand/60 text-[10px] font-bold tracking-widest uppercase">
@@ -738,7 +738,7 @@ export default function AdminView({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((cat) => (
-              <div key={cat.id} className="bg-white border border-gray-150 rounded-2xl overflow-hidden p-4 flex items-center space-x-4 hover:shadow-md transition-all justify-between">
+              <div key={cat.id} className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-2xl overflow-hidden p-4 flex items-center space-x-4 hover:shadow-md transition-all justify-between">
                 <div className="flex items-center space-x-3 min-w-0">
                   <img src={cat.image} alt={cat.name} className="w-12 h-12 object-cover rounded-xl border border-gray-100 shrink-0" referrerPolicy="no-referrer" />
                   <div className="min-w-0">
@@ -778,13 +778,13 @@ export default function AdminView({
             {products
               .filter(p => p.stock <= 2 || p.status === 'out_of_stock')
               .map((p) => (
-                <div key={p.id} className="bg-white border border-gray-150 rounded-2xl p-4 flex items-center justify-between shadow-3xs hover:border-orange-250">
+                <div key={p.id} className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-3xs hover:border-orange-250 dark:hover:border-orange-500/50">
                   <div className="flex items-center space-x-3.5">
                     <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center shrink-0">
                       <AlertCircle className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-xs text-slate-brand">{p.name}</h4>
+                      <h4 className="font-bold text-xs text-slate-brand dark:text-slate-100">{p.name}</h4>
                       <p className="text-[9.5px] text-slate-brand/45">
                         Seller: <strong className="text-slate-brand font-semibold">{p.vendorName || 'Independent student'}</strong> • Stock remaining: <strong className="text-red-600 font-mono font-bold">{p.stock} units</strong>
                       </p>
@@ -810,74 +810,74 @@ export default function AdminView({
             <p className="text-[10.5px] text-slate-brand/55">Synchronize default platform support emails, office addresses, and primary reserve contact parameters.</p>
           </div>
 
-          <form onSubmit={handleSaveSettings} className="space-y-4 bg-white border border-gray-150 p-6 rounded-2xl shadow-3xs">
+          <form onSubmit={handleSaveSettings} className="space-y-4 bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 rounded-2xl shadow-3xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 block font-sans">Default Admin WhatsApp Hotline</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 block font-sans">Default Admin WhatsApp Hotline</label>
                 <input
                   type="text"
                   required
                   value={settingsForm.whatsappNumber}
                   onChange={(e) => setSettingsForm({ ...settingsForm, whatsappNumber: e.target.value })}
-                  className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold tracking-wider outline-none transition-all text-slate-brand"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold tracking-wider outline-none transition-all text-slate-brand dark:text-slate-100"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 block font-sans">Support Email Address</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 block font-sans">Support Email Address</label>
                 <input
                   type="email"
                   required
                   value={settingsForm.contactEmail}
                   onChange={(e) => setSettingsForm({ ...settingsForm, contactEmail: e.target.value })}
-                  className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs outline-none transition-all text-slate-brand font-mono font-bold"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs outline-none transition-all text-slate-brand dark:text-slate-100 font-mono font-bold"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 block font-sans">Platform Central Address</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 block font-sans">Platform Central Address</label>
               <input
                 type="text"
                 required
                 value={settingsForm.contactAddress}
                 onChange={(e) => setSettingsForm({ ...settingsForm, contactAddress: e.target.value })}
-                className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-bold outline-none transition-all text-slate-brand"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-bold outline-none transition-all text-slate-brand dark:text-slate-100"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 block font-sans">Instagram Platform Handle</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 block font-sans">Instagram Platform Handle</label>
                 <input
                   type="text"
                   required
                   value={settingsForm.instagramUrl}
                   onChange={(e) => setSettingsForm({ ...settingsForm, instagramUrl: e.target.value })}
-                  className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand dark:text-slate-100"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 block font-sans">Facebook Platform Page</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 block font-sans">Facebook Platform Page</label>
                 <input
                   type="text"
                   required
                   value={settingsForm.facebookUrl}
                   onChange={(e) => setSettingsForm({ ...settingsForm, facebookUrl: e.target.value })}
-                  className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand dark:text-slate-100"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 block font-sans">In-App Operations Hours</label>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 block font-sans">In-App Operations Hours</label>
               <input
                 type="text"
                 required
                 value={settingsForm.businessHours}
                 onChange={(e) => setSettingsForm({ ...settingsForm, businessHours: e.target.value })}
-                className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-bold outline-none transition-all text-slate-brand"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-bold outline-none transition-all text-slate-brand dark:text-slate-100"
               />
             </div>
 
@@ -896,7 +896,7 @@ export default function AdminView({
       {/* MAIN POPUP MODAL: ADD / EDIT PRODUCT FORM */}
       {isProductFormOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-          <div className="bg-white border border-gray-150 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl relative text-left">
+          <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-6 shadow-2xl relative text-left">
             
             <button
               onClick={() => setIsProductFormOpen(false)}
@@ -917,23 +917,23 @@ export default function AdminView({
             <form onSubmit={handleProductSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Listing Title / Item name</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Listing Title / Item name</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Study tool, Laptop Stand, etc."
                     value={prodName}
                     onChange={(e) => setProdName(e.target.value)}
-                    className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand dark:text-slate-100"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Select Hub Category</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Select Hub Category</label>
                   <select
                     value={prodCategory}
                     onChange={(e) => setProdCategory(e.target.value)}
-                    className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-bold outline-none transition-all text-slate-brand cursor-pointer appearance-none"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-bold outline-none transition-all text-slate-brand cursor-pointer appearance-none"
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -943,24 +943,24 @@ export default function AdminView({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Item Details / Features Description</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Item Details / Features Description</label>
                 <textarea
                   required
                   rows={3}
                   placeholder="Tell student buyers about the condition, previous semesters, pages, charging port, battery health, or meeting instructions..."
                   value={prodDesc}
                   onChange={(e) => setProdDesc(e.target.value)}
-                  className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-medium outline-none transition-all text-slate-brand leading-relaxed"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-medium outline-none transition-all text-slate-brand leading-relaxed"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Condition Grade</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Condition Grade</label>
                   <select
                     value={prodCondition}
                     onChange={(e) => setProdCondition(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand cursor-pointer"
                   >
                     <option value="new">Brand New (Packed)</option>
                     <option value="like_new">Like New (Gently Used)</option>
@@ -969,39 +969,39 @@ export default function AdminView({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Listing Price (₦)</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Listing Price (₦)</label>
                   <input
                     type="number"
                     required
                     placeholder="8000"
                     value={prodPrice}
                     onChange={(e) => setProdPrice(Number(e.target.value))}
-                    className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold tracking-wider outline-none transition-all text-slate-brand"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold tracking-wider outline-none transition-all text-slate-brand dark:text-slate-100"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1 sm:col-span-2">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Stall Contact WhatsApp Line for this Listing</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Stall Contact WhatsApp Line for this Listing</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. 2348123456789"
                     value={prodWhatsApp}
                     onChange={(e) => setProdWhatsApp(e.target.value.replace(/\+/g, ''))}
-                    className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold tracking-widest outline-none transition-all text-slate-brand"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold tracking-widest outline-none transition-all text-slate-brand dark:text-slate-100"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Available Quantity</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Available Quantity</label>
                   <input
                     type="number"
                     required
                     value={prodStock}
                     onChange={(e) => setProdStock(Number(e.target.value))}
-                    className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold outline-none transition-all text-slate-brand"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold outline-none transition-all text-slate-brand dark:text-slate-100"
                   />
                 </div>
               </div>
@@ -1045,11 +1045,11 @@ export default function AdminView({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">List Visibility Status</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">List Visibility Status</label>
                   <select
                     value={prodStatus}
                     onChange={(e) => setProdStatus(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand cursor-pointer"
                   >
                     <option value="active">Active (Visible public catalog)</option>
                     <option value="draft">Draft (Private Archive)</option>
@@ -1097,7 +1097,7 @@ export default function AdminView({
       {/* RENDER CATEGORY POPUP MODAL (System Admin Only) */}
       {isCategoryFormOpen && isAdmin && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white border border-gray-150 rounded-3xl w-full max-w-md p-6 space-y-6 shadow-2xl relative text-left">
+          <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl w-full max-w-md p-6 space-y-6 shadow-2xl relative text-left">
             <button
               onClick={() => setIsCategoryFormOpen(false)}
               className="absolute top-5 right-5 p-2 rounded-full hover:bg-slate-105 transition-all text-slate-brand/60 hover:text-slate-brand cursor-pointer border border-gray-100"
@@ -1114,14 +1114,14 @@ export default function AdminView({
 
             <form onSubmit={handleCategorySubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 font-sans">Category Title</label>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Category Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Services, Food, Lodging"
                   value={catName}
                   onChange={(e) => setCatName(e.target.value)}
-                  className="w-full bg-slate-50 border border-gray-250 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand dark:text-slate-100"
                 />
               </div>
 
