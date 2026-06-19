@@ -51,9 +51,9 @@ service cloud.firestore {
       return data.keys().hasAll([
                'name', 'description', 'price', 'images', 'category', 'stock', 
                'featured', 'status', 'vendorId', 'vendorName', 'vendorWhatsApp', 
-               'condition', 'dealType', 'createdAt', 'updatedAt'
+               'condition', 'dealType', 'discountPercentage', 'createdAt', 'updatedAt'
              ]) &&
-             data.keys().size() == 15 &&
+             data.keys().size() == 16 &&
              data.name is string && data.name.size() > 0 && data.name.size() <= 150 &&
              data.description is string && data.description.size() <= 2000 &&
              (data.price is int || data.price is float) && data.price >= 0 &&
@@ -68,6 +68,7 @@ service cloud.firestore {
              data.vendorWhatsApp is string && data.vendorWhatsApp.size() <= 40 &&
              data.condition is string && data.condition in ['new', 'used', 'like_new'] &&
              data.dealType is string && data.dealType in ['sell', 'swap', 'both'] &&
+             (data.discountPercentage is int || data.discountPercentage is float) && data.discountPercentage >= 0 && data.discountPercentage <= 100 &&
              data.createdAt is timestamp &&
              data.updatedAt is timestamp;
     }
