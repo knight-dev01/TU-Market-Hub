@@ -18,6 +18,14 @@ import AboutView from './components/AboutView';
 import ContactView from './components/ContactView';
 import ProductDetailView from './components/ProductDetailView';
 import AdminView from './components/AdminView';
+
+export const formatWhatsAppLink = (number: string): string => {
+  let cleaned = number.replace(/\D/g, '');
+  if (cleaned.startsWith('0')) {
+    cleaned = '234' + cleaned.substring(1);
+  }
+  return cleaned;
+};
 import WhatsAppOrderForm from './components/WhatsAppOrderForm';
 
 interface CartItem {
@@ -67,7 +75,7 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [settings, setSettings] = useState<StoreSettings | null>({
-    whatsappNumber: '+234 904 722 6729',
+    whatsappNumber: '09047226729',
     contactAddress: 'Trinity University City Campus, Off Alara Street, (Near Queens College) Yaba, Lagos.',
     contactEmail: 'greatifet12@gmail.com',
     instagramUrl: 'https://instagram.com/tumarkethub',
@@ -213,8 +221,8 @@ export default function App() {
         if (docSnap.exists()) {
           const d = docSnap.data();
           
-          let wNum = d.whatsappNumber || '+234 904 722 6729';
-          if (wNum.includes('8123456789')) wNum = '+234 904 722 6729';
+          let wNum = d.whatsappNumber || '09047226729';
+          if (wNum.includes('8123456789') || wNum.includes('904 722')) wNum = '09047226729';
           
           let eMail = d.contactEmail || 'greatifet12@gmail.com';
           if (eMail.includes('support@tumarket.org')) eMail = 'greatifet12@gmail.com';
@@ -344,7 +352,7 @@ ${orderDetailLines}*Total Listed Value:* ₦${totalVal.toLocaleString()}
 ${buyerSection}Where is your hostel meetup point on campus? Please let me know when you are free!`;
 
     const encoded = encodeURIComponent(bodyText);
-    const whatsappClean = vendorNumber ? vendorNumber.replace(/\+/g, '') : (settings?.whatsappNumber?.replace(/\+/g, '') || '');
+    const whatsappClean = vendorNumber ? formatWhatsAppLink(vendorNumber) : formatWhatsAppLink(settings?.whatsappNumber || '09047226729');
     window.open(`https://wa.me/${whatsappClean}?text=${encoded}`, '_blank');
     
     // Auto remove items belonging to this specific vendor from cart
@@ -407,7 +415,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
     dealType: p.dealType || 'sell',
     vendorId: p.vendorId || 'system-vendor',
     vendorName: p.vendorName || 'TU Official Stall',
-    vendorWhatsApp: p.vendorWhatsApp || settings?.whatsappNumber || '+234 904 722 6729',
+    vendorWhatsApp: p.vendorWhatsApp || settings?.whatsappNumber || '09047226729',
     createdAt: { seconds: Date.now() / 1000 },
     updatedAt: { seconds: Date.now() / 1000 }
   } as unknown as Product));
@@ -487,7 +495,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 categories={displayCategories}
                 onBack={handleBackFromDetail}
                 onSelectProduct={handleSelectProduct}
-                whatsappNumber={settings?.whatsappNumber || '+234 904 722 6729'}
+                whatsappNumber={settings?.whatsappNumber || '09047226729'}
                 onAddToCart={handleAddToCart}
               />
             </motion.div>
@@ -506,7 +514,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   categories={displayCategories}
                   onViewChange={handleViewChange}
                   onSelectProduct={handleSelectProduct}
-                  whatsappNumber={settings?.whatsappNumber || '+234 904 722 6729'}
+                  whatsappNumber={settings?.whatsappNumber || '09047226729'}
                 />
               )}
 

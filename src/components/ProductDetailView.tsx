@@ -26,6 +26,7 @@ export default function ProductDetailView({
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [addFeedback, setAddFeedback] = useState(false);
   const [promoCopied, setPromoCopied] = useState(false);
+  const [redirectingWA, setRedirectingWA] = useState(false);
 
   const isFashion = product.category === 'fashion';
   const sizes = isFashion ? ['XS', 'S', 'M', 'L', 'XL', 'EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'] : [];
@@ -39,6 +40,14 @@ export default function ProductDetailView({
 
   // Determine which WhatsApp number to use
   const targetWhatsApp = product.vendorWhatsApp || whatsappNumber;
+
+  const formatWhatsAppLink = (number: string): string => {
+    let cleaned = number.replace(/\D/g, '');
+    if (cleaned.startsWith('0')) {
+      cleaned = '234' + cleaned.substring(1);
+    }
+    return cleaned;
+  };
 
   const handleWhatsAppOrder = () => {
     if (!product.stock || product.status === 'out_of_stock') return;
@@ -62,7 +71,9 @@ I saw your listing on the TU MARKET HUB:
 Is this item still available? I would like to arrange a purchase.`;
 
     const encodedText = encodeURIComponent(text);
-    window.open(`https://wa.me/${targetWhatsApp.replace(/\+/g, '')}?text=${encodedText}`, '_blank');
+    setRedirectingWA(true);
+    setTimeout(() => setRedirectingWA(false), 3000);
+    window.open(`https://wa.me/${formatWhatsAppLink(targetWhatsApp)}?text=${encodedText}`, '_blank');
   };
 
   const handleAddToCartClick = () => {
@@ -263,10 +274,15 @@ Is this item still available? I would like to arrange a purchase.`;
                 {/* 1. Direct WhatsApp Purchase (Primary CTA) */}
                 <button
                   onClick={handleWhatsAppOrder}
-                  className="flex-1 bg-slate-900 border border-slate-900 text-white font-bold text-xs tracking-widest uppercase py-4.5 px-6 rounded-full transition-colors hover:bg-slate-800 cursor-pointer flex items-center justify-center space-x-2 w-full"
+                  disabled={redirectingWA}
+                  className={`flex-1 text-white font-bold text-xs tracking-widest uppercase py-4.5 px-6 rounded-full transition-colors flex items-center justify-center space-x-2 w-full ${
+                    redirectingWA 
+                      ? 'bg-emerald-600 border border-emerald-600 opacity-90 cursor-default' 
+                      : 'bg-slate-900 border border-slate-900 hover:bg-slate-800 cursor-pointer'
+                  }`}
                 >
-                  <MessageSquare className="w-4 h-4 fill-white stroke-none" />
-                  <span>Trade / WhatsApp Seller</span>
+                  <MessageSquare className={`w-4 h-4 fill-white stroke-none ${redirectingWA ? 'animate-bounce' : ''}`} />
+                  <span>{redirectingWA ? 'Opening WhatsApp...' : 'Trade / WhatsApp Seller'}</span>
                 </button>
 
                 {/* 2. Add to Order Draft/Cart and Share */}

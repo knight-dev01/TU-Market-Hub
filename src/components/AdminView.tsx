@@ -382,7 +382,7 @@ export default function AdminView({
 
   const handleLinkAllProductsToWhatsApp = async () => {
     if (!isAdmin) return;
-    const targetNum = settings?.whatsappNumber || '+234 904 722 6729';
+    const targetNum = settings?.whatsappNumber || '09047226729';
     if (!window.confirm(`This will link ALL products in the store to the active hotline: ${targetNum}. Continue?`)) return;
     setActionLoading(true);
     try {

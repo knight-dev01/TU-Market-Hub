@@ -82,9 +82,17 @@ export default function HomeView({
 
   const isProductsEmpty = products.length === 0;
 
+  const formatWhatsAppLink = (number: string): string => {
+    let cleaned = number.replace(/\D/g, '');
+    if (cleaned.startsWith('0')) {
+      cleaned = '234' + cleaned.substring(1);
+    }
+    return cleaned;
+  };
+
   const handleCTAClick = () => {
     const text = encodeURIComponent("Hello! I am browsing the TU MARKET HUB and would like to ask some questions about ordering or hosting a store!");
-    window.open(`https://wa.me/${whatsappNumber.replace(/\+/g, '')}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${formatWhatsAppLink(whatsappNumber)}?text=${text}`, '_blank');
   };
 
   return (

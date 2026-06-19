@@ -151,7 +151,7 @@ export const defaultProducts: SeedProduct[] = [
 
 export const defaultSettings = {
   id: 'current',
-  whatsappNumber: '+234 904 722 6729',
+  whatsappNumber: '09047226729',
   contactAddress: 'Trinity University City Campus, Off Alara Street, (Near Queens College) Yaba, Lagos.',
   contactEmail: 'greatifet12@gmail.com',
   instagramUrl: 'https://instagram.com/tumarketplace',

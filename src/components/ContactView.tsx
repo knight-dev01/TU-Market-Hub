@@ -18,9 +18,17 @@ export default function ContactView({
   businessHours
 }: ContactViewProps) {
 
+  const formatWhatsAppLink = (number: string): string => {
+    let cleaned = number.replace(/\D/g, '');
+    if (cleaned.startsWith('0')) {
+      cleaned = '234' + cleaned.substring(1);
+    }
+    return cleaned;
+  };
+
   const handleWhatsAppChat = () => {
     const text = encodeURIComponent("Hello TU Market Hub, I have an inquiry or need assistance setting up my campus student stall!");
-    window.open(`https://wa.me/${whatsappNumber.replace(/\+/g, '')}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${formatWhatsAppLink(whatsappNumber)}?text=${text}`, '_blank');
   };
 
   return (

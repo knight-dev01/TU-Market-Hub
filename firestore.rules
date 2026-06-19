@@ -127,7 +127,11 @@ service cloud.firestore {
     
     // Admins Collection
     match /admins/{adminId} {
-      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == adminId);
+      allow read: if isSignedIn() && (
+        request.auth.uid == adminId || 
+        request.auth.token.email == "greatifet12@gmail.com" || 
+        request.auth.token.email == "aroneefashion@gmail.com"
+      );
       allow write: if isVerifiedUser() && isAdmin();
     }
     
