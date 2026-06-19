@@ -112,7 +112,7 @@ export default function App() {
       setUser(currentUser);
       if (currentUser) {
         const userEmail = currentUser.email?.toLowerCase();
-        const hardcodedAdmins = ['greatifet12@gmail.com', 'aroneefashion@gmail.com'];
+        const hardcodedAdmins = ['greatifet12@gmail.com', 'aroneefashion@gmail.com', 'osemenjoy448@gmail.com'];
         const isHardcodedAdmin = userEmail ? hardcodedAdmins.includes(userEmail) : false;
         
         // Secondary Admin DB document verification
