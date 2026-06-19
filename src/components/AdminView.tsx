@@ -76,6 +76,7 @@ export default function AdminView({
   const [prodStatus, setProdStatus] = useState<'active' | 'draft' | 'out_of_stock'>('active');
   const [prodCondition, setProdCondition] = useState<'new' | 'like_new' | 'used'>('like_new');
   const [prodDealType, setProdDealType] = useState<'sell' | 'swap' | 'both'>('sell');
+  const [prodDiscount, setProdDiscount] = useState<number>(0);
   const [prodWhatsApp, setProdWhatsApp] = useState('');
 
   // Category Form Input field binds
@@ -87,6 +88,7 @@ export default function AdminView({
 
   // Feature feedback & confirm dialogs
   const [imageUploadFeedback, setImageUploadFeedback] = useState<string>('');
+  const [imageUploadProgress, setImageUploadProgress] = useState<number>(0);
   const [showPublishConfirm, setShowPublishConfirm] = useState<boolean>(false);
 
   const splitImageUrls = (str: string): string[] => {
@@ -129,6 +131,7 @@ export default function AdminView({
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setActionLoading(true);
+    setImageUploadProgress(0);
     let newImages = splitImageUrls(prodImages);
     let addedCount = 0;
     for (let i = 0; i < files.length; i++) {
@@ -137,9 +140,11 @@ export default function AdminView({
           newImages.push(base64);
           addedCount++;
         }
+        setImageUploadProgress(((i + 1) / files.length) * 100);
     }
     setProdImages(newImages.join(', '));
     setActionLoading(false);
+    setImageUploadProgress(0);
     if (addedCount > 0) {
       setImageUploadFeedback(`Successfully uploaded and compiled ${addedCount} photo(s)!`);
       setTimeout(() => setImageUploadFeedback(''), 4000);
@@ -161,6 +166,20 @@ export default function AdminView({
     const base64 = await compressAndConvertImage(files[0]);
     if (base64) setCatImage(base64);
     setActionLoading(false);
+  };
+
+  const getRelativeTime = (date: Date): string => {
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (seconds < 60) return 'just now';
+    if (minutes < 60) return `${minutes} ${minutes === 1 ? 'min' : 'mins'} ago`;
+    if (hours < 24) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+    if (days < 7) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+    return date.toLocaleDateString();
   };
 
   // Fetch Vendor Profile if user is logged in
@@ -298,6 +317,7 @@ export default function AdminView({
       setProdStatus(prod.status);
       setProdCondition(prod.condition || 'like_new');
       setProdDealType(prod.dealType || 'sell');
+      setProdDiscount(prod.discountPercentage || 0);
       setProdWhatsApp(prod.vendorWhatsApp || vendorWhatsApp || settings?.whatsappNumber || '');
     } else {
       setProductEditing(null);
@@ -311,6 +331,7 @@ export default function AdminView({
       setProdStatus('active');
       setProdCondition('like_new');
       setProdDealType('sell');
+      setProdDiscount(0);
       setProdWhatsApp(vendorWhatsApp || settings?.whatsappNumber || '');
     }
     setShowPublishConfirm(false);
@@ -341,6 +362,7 @@ export default function AdminView({
       status: prodStatus,
       condition: prodCondition,
       dealType: prodDealType,
+      discountPercentage: Number(prodDiscount),
       vendorId: productEditing ? (productEditing.vendorId || user.uid) : user.uid,
       vendorName: productEditing 
         ? (productEditing.vendorName || vendorShopName.trim() || user.displayName || user.email?.split('@')[0] || 'Independent Seller') 
@@ -826,7 +848,7 @@ export default function AdminView({
                           <td className="p-3.5 sm:p-4 font-bold text-slate-brand dark:text-slate-200">
                             {lead.buyerName}
                             <span className="block text-[8.5px] text-slate-brand/40 dark:text-slate-400 font-mono font-normal">
-                              {dt.toLocaleDateString()} {dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              {getRelativeTime(dt)}
                             </span>
                           </td>
                           <td className="p-3.5 sm:p-4 text-slate-brand/80 dark:text-slate-300">
@@ -934,6 +956,7 @@ export default function AdminView({
                     <th className="px-6 py-4 font-mono">Condition</th>
                     <th className="px-6 py-4 font-mono">Price (₦)</th>
                     <th className="px-6 py-4">In Stock</th>
+                    <th className="px-6 py-4">Created At</th>
                     <th className="px-6 py-4 text-center">Status</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
@@ -967,11 +990,14 @@ export default function AdminView({
                             {(p.condition || 'like_new').toUpperCase().replace('_', ' ')}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-mono font-bold text-slate-brand/85">
+                        <td className="px-6 py-4 font-mono font-bold text-slate-950">
                           &#8358; {p.price.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 font-mono">
                           {p.stock} units
+                        </td>
+                        <td className="px-6 py-4 font-mono text-[10px]">
+                          {p.createdAt ? getRelativeTime(p.createdAt.toDate()) : 'N/A'}
                         </td>
                         <td className="px-6 py-4 text-center">
                           <span className={`text-[9.5px] font-extrabold uppercase px-2.5 py-1 rounded-full ${
@@ -1270,6 +1296,17 @@ export default function AdminView({
                     className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold tracking-wider outline-none transition-all text-slate-brand dark:text-slate-100"
                   />
                 </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Discount (%)</label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={prodDiscount}
+                    onChange={(e) => setProdDiscount(Number(e.target.value))}
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold tracking-wider outline-none transition-all text-slate-brand dark:text-slate-100"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1350,11 +1387,19 @@ export default function AdminView({
                     onChange={handleProductImageUpload} 
                     disabled={actionLoading} 
                   />
-                  <div className="w-10 h-10 bg-white dark:bg-slate-800 shadow-sm border border-gray-150 dark:border-slate-700 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                    <Plus className="w-5 h-5" />
-                  </div>
-                  <p className="text-xs font-semibold text-slate-brand dark:text-slate-200">Click or drag images to upload</p>
-                  <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 mt-1">High-quality JPG, PNG, WEBP (auto-compressed)</p>
+                  {actionLoading && imageUploadProgress > 0 ? (
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2.5">
+                      <div className="bg-emerald-600 h-2.5 rounded-full" style={{ width: `${imageUploadProgress}%` }}></div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="w-10 h-10 bg-white dark:bg-slate-800 shadow-sm border border-gray-150 dark:border-slate-700 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                        <Plus className="w-5 h-5" />
+                      </div>
+                      <p className="text-xs font-semibold text-slate-brand dark:text-slate-200">Click or drag images to upload</p>
+                      <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 mt-1">High-quality JPG, PNG, WEBP (auto-compressed)</p>
+                    </>
+                  )}
                 </div>
 
                 <div className="flex items-center space-x-3">

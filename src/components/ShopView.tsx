@@ -7,13 +7,15 @@ interface ShopViewProps {
   categories: Category[];
   onSelectProduct: (productId: string) => void;
   initialCategory?: string;
+  onBack?: () => void;
 }
 
 export default function ShopView({
   products,
   categories,
   onSelectProduct,
-  initialCategory
+  initialCategory,
+  onBack
 }: ShopViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
@@ -112,7 +114,7 @@ export default function ShopView({
       {/* Title Header with back navigation */}
       <div className="mb-8 space-y-4">
         <button
-          onClick={() => window.history.back()}
+          onClick={onBack || (() => window.location.href = '/')}
           className="flex items-center space-x-1.5 text-xs text-slate-brand/60 dark:text-slate-400 font-bold uppercase tracking-wider hover:text-emerald-brand cursor-pointer transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />

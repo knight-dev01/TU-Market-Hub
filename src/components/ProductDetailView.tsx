@@ -331,7 +331,7 @@ Is this item still available? I would like to arrange a purchase.`;
                   className={`flex-1 text-white font-bold text-xs tracking-widest uppercase py-4.5 px-6 rounded-full transition-colors flex items-center justify-center space-x-2 w-full ${
                     redirectingWA 
                       ? 'bg-emerald-600 border border-emerald-600 opacity-90 cursor-default' 
-                      : 'bg-slate-900 border border-slate-900 hover:bg-slate-800 cursor-pointer'
+                      : 'bg-emerald-brand border border-emerald-brand hover:bg-emerald-700 cursor-pointer'
                   }`}
                 >
                   <MessageSquare className={`w-4 h-4 fill-white stroke-none ${redirectingWA ? 'animate-bounce' : ''}`} />
@@ -386,12 +386,12 @@ Is this item still available? I would like to arrange a purchase.`;
                     <input
                       type="text"
                       readOnly
-                      value={`${window.location.origin}?product=${product.id}`}
+                      value={`${window.location.origin}?product=${product.id}&img=${activeImageIndex}`}
                       className="flex-1 bg-white dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700 text-[10px] sm:text-xs font-mono font-medium p-2.5 rounded-xl outline-none select-all truncate text-slate-brand dark:text-slate-200"
                     />
                     <button
                       onClick={async () => {
-                        const shareText = `Check out this ${product.name} on TU Market Hub!\nPrice: ₦${product.price.toLocaleString()}\nLink: ${window.location.origin}?product=${product.id}`;
+                        const shareText = `Check out this ${product.name} on TU Market Hub!\nPrice: ₦${product.price.toLocaleString()}\nLink: ${window.location.origin}?product=${product.id}&img=${activeImageIndex}`;
                         try {
                           await navigator.clipboard.writeText(shareText);
                           setPromoCopied(true);

@@ -17,6 +17,7 @@ import ShopView from './components/ShopView';
 import AboutView from './components/AboutView';
 import ContactView from './components/ContactView';
 import ProductDetailView from './components/ProductDetailView';
+import WalkthroughGuide from './components/WalkthroughGuide';
 import AdminView from './components/AdminView';
 
 export const formatWhatsAppLink = (number: string): string => {
@@ -60,7 +61,7 @@ export default function App() {
   }, [isDarkMode]);
 
   // Views navigation and Selection
-  const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'admin'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding'>('home');
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [shopInitialCategory, setShopInitialCategory] = useState<string>('all');
 
@@ -574,6 +575,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   categories={displayCategories}
                   onSelectProduct={handleSelectProduct}
                   initialCategory={shopInitialCategory}
+                  onBack={() => setCurrentView('home')}
                 />
               )}
 
@@ -589,6 +591,8 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   businessHours={settings.businessHours}
                 />
               )}
+
+              {currentView === 'onboarding' && <WalkthroughGuide />}
 
               {currentView === 'admin' && (
                 <AdminView

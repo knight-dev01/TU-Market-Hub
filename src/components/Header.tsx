@@ -30,6 +30,7 @@ export default function Header({
   const navItems = [
     { label: 'Home', value: 'home' as const },
     { label: 'Browse Shop', value: 'shop' as const },
+    { label: 'How to use', value: 'onboarding' as const },
     { label: 'About Us', value: 'about' as const },
     { label: 'Contact', value: 'contact' as const }
   ];

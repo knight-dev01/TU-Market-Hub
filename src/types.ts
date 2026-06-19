@@ -18,6 +18,7 @@ export interface Product {
   vendorWhatsApp?: string;
   condition?: 'new' | 'used' | 'like_new';
   dealType?: 'sell' | 'swap' | 'both';
+  discountPercentage?: number;
 }
 
 export interface Category {
