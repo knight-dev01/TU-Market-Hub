@@ -9,6 +9,7 @@ interface HomeViewProps {
   onViewChange: (view: 'home' | 'shop' | 'about' | 'contact' | 'admin') => void;
   onSelectProduct: (productId: string) => void;
   whatsappNumber: string;
+  onCategorySelect?: (categoryId: string) => void;
 }
 
 const getCategoryIcon = (id: string, className: string) => {
@@ -28,7 +29,8 @@ export default function HomeView({
   categories,
   onViewChange,
   onSelectProduct,
-  whatsappNumber
+  whatsappNumber,
+  onCategorySelect
 }: HomeViewProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -100,9 +102,9 @@ export default function HomeView({
       
       {/* 1. Hero Banner Carousel / Slider */}
       <section id="hero-slider" className="relative min-h-[420px] sm:min-h-[520px] lg:min-h-[600px] w-full overflow-hidden bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-center">
-        {/* Blurred/Faded Background Preview Image */}
+        {/* Blurred/Faded Background Preview Image - Static Parallax */}
         <div 
-          className="absolute inset-0 bg-cover bg-center pointer-events-none opacity-[0.10] dark:opacity-[0.15] blur-[2px] scale-105" 
+          className="absolute inset-0 bg-fixed bg-cover bg-center pointer-events-none opacity-[0.15] dark:opacity-[0.22] blur-[1px]" 
           style={{ backgroundImage: "url('/og-image.jpeg.20.42.jpeg')" }}
         />
         {heroSlides.map((slide, index) => {
@@ -195,7 +197,7 @@ export default function HomeView({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: index * 0.05, ease: 'easeOut' }}
               whileHover={{ y: -5, scale: 1.025, transition: { duration: 0.15 } }}
-              onClick={() => onViewChange('shop')}
+              onClick={() => onCategorySelect ? onCategorySelect(cat.id) : onViewChange('shop')}
               className="group relative h-40 flex flex-col items-center justify-center cursor-pointer border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-brand dark:hover:border-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/10 rounded-2xl transition-colors shadow-3xs"
             >
               <div className="mb-3 text-slate-400 group-hover:text-emerald-brand dark:group-hover:text-emerald-400 transition-colors">
@@ -308,8 +310,16 @@ export default function HomeView({
       </section>
 
       {/* 4. Why Choose Us / Interactive Process section */}
-      <section id="why-choose-us" className="bg-emerald-brand/5 dark:bg-emerald-900/10 py-16 border-y border-emerald-brand/10 dark:border-emerald-900/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="why-choose-us" className="relative py-16 border-y border-emerald-brand/10 dark:border-emerald-900/20 overflow-hidden">
+        {/* Stationary matching background image */}
+        <div 
+          className="absolute inset-0 bg-fixed bg-cover bg-center pointer-events-none opacity-[0.14] dark:opacity-[0.20] blur-[1px]" 
+          style={{ backgroundImage: "url('/og-image.jpeg.20.42.jpeg')" }}
+        />
+        {/* Soft overlay tint */}
+        <div className="absolute inset-0 bg-emerald-brand/[0.04] dark:bg-slate-950/80 pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <div className="text-center max-w-xl mx-auto mb-12">
             <span className="text-orange-brand dark:text-orange-500 font-mono font-bold text-[10px] tracking-widest uppercase block mb-1">
               THE THREE-PILLAR PROTOCOL
@@ -317,7 +327,7 @@ export default function HomeView({
             <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-slate-brand dark:text-slate-100">
               How TU Market Hub Works
             </h2>
-            <p className="text-xs sm:text-sm text-slate-brand/60 dark:text-slate-400 font-medium">
+            <p className="text-xs sm:text-sm text-slate-brand/60 dark:text-slate-400 font-semibold">
               We make peer transactions secure, straightforward, and zero-commission.
             </p>
           </div>

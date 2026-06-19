@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { 
-  collection, query, doc, getDoc, onSnapshot, orderBy, where 
+  collection, query, doc, getDoc, onSnapshot, orderBy, where, addDoc, serverTimestamp
 } from 'firebase/firestore';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store } from 'lucide-react';
@@ -62,6 +62,7 @@ export default function App() {
   // Views navigation and Selection
   const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'admin'>('home');
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [shopInitialCategory, setShopInitialCategory] = useState<string>('all');
 
   // Disclaimer State
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(() => localStorage.getItem('tuMarketTermsAccepted') === 'true');
@@ -317,6 +318,23 @@ export default function App() {
     });
   };
 
+  // Helper function to record a click/pick analytic in Firestore
+  const logDirectWhatsAppClick = async (product: Product, quantity = 1, buyerName = 'Anonymous Buyer') => {
+    try {
+      await addDoc(collection(db, 'clicks'), {
+        vendorId: product.vendorId || 'admin',
+        productId: product.id || 'system',
+        productName: product.name,
+        buyerName,
+        price: Number(product.price || 0),
+        quantity: Number(quantity),
+        createdAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.warn('Logging analytics click error:', err);
+    }
+  };
+
   // Compile and Dispatch consolidated chat message FOR A SPECIFIC VENDOR
   const handleLaunchWhatsAppForVendor = (
     vendorId: string, 
@@ -330,6 +348,23 @@ export default function App() {
     let totalVal = 0;
     let orderDetailLines = '';
     
+    // Log each ordered item in Firestore for tracking
+    items.forEach(async (item) => {
+      try {
+        await addDoc(collection(db, 'clicks'), {
+          vendorId: item.product.vendorId || 'admin',
+          productId: item.product.id || 'system',
+          productName: item.product.name,
+          buyerName: buyerInfo?.name || 'Anonymous Peer',
+          price: Number(item.product.price || 0),
+          quantity: Number(item.quantity || 1),
+          createdAt: serverTimestamp()
+        });
+      } catch (clickErr) {
+        console.warn('Logging analytics click error:', clickErr);
+      }
+    });
+
     items.forEach((item) => {
       const rowSum = item.product.price * item.quantity;
       totalVal += rowSum;
@@ -376,7 +411,21 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
   }, [products]);
 
   const handleViewChange = (view: 'home' | 'shop' | 'about' | 'contact' | 'admin') => {
+    if (view === 'shop') {
+      setShopInitialCategory('all');
+    }
     setCurrentView(view);
+    setSelectedProductId(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('product');
+    url.searchParams.delete('productId');
+    window.history.pushState({}, '', url.toString());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleViewCategoryFromHome = (categoryId: string) => {
+    setShopInitialCategory(categoryId);
+    setCurrentView('shop');
     setSelectedProductId(null);
     const url = new URL(window.location.href);
     url.searchParams.delete('product');
@@ -497,6 +546,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 onSelectProduct={handleSelectProduct}
                 whatsappNumber={settings?.whatsappNumber || '09047226729'}
                 onAddToCart={handleAddToCart}
+                onLogClick={logDirectWhatsAppClick}
               />
             </motion.div>
           ) : (
@@ -515,6 +565,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   onViewChange={handleViewChange}
                   onSelectProduct={handleSelectProduct}
                   whatsappNumber={settings?.whatsappNumber || '09047226729'}
+                  onCategorySelect={handleViewCategoryFromHome}
                 />
               )}
 
@@ -523,6 +574,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   products={displayProducts}
                   categories={displayCategories}
                   onSelectProduct={handleSelectProduct}
+                  initialCategory={shopInitialCategory}
                 />
               )}
 

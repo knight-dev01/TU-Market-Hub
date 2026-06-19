@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product, Category } from '../types';
 
 interface ProductDetailViewProps {
@@ -10,6 +10,7 @@ interface ProductDetailViewProps {
   onSelectProduct: (productId: string) => void;
   whatsappNumber: string;
   onAddToCart: (product: Product, size: string) => void;
+  onLogClick?: (product: Product, quantity: number, buyerInfo?: { name: string }) => void;
 }
 
 export default function ProductDetailView({
@@ -19,7 +20,8 @@ export default function ProductDetailView({
   onBack,
   onSelectProduct,
   whatsappNumber,
-  onAddToCart
+  onAddToCart,
+  onLogClick
 }: ProductDetailViewProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -41,6 +43,24 @@ export default function ProductDetailView({
   // Determine which WhatsApp number to use
   const targetWhatsApp = product.vendorWhatsApp || whatsappNumber;
 
+  // Hydrate image parameter index from load URL query parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const imgParam = urlParams.get('img');
+    if (imgParam) {
+      const idx = parseInt(imgParam, 10);
+      if (!isNaN(idx) && idx >= 0 && idx < product.images.length) {
+        setActiveImageIndex(idx);
+      }
+    }
+  }, [product]);
+
+  // Synchronize browser history query param dynamically on image slide change
+  useEffect(() => {
+    const cleanUrl = `${window.location.origin}${window.location.pathname}?product=${product.id}&img=${activeImageIndex}`;
+    window.history.replaceState({}, '', cleanUrl);
+  }, [activeImageIndex, product]);
+
   const formatWhatsAppLink = (number: string): string => {
     let cleaned = number.replace(/\D/g, '');
     if (cleaned.startsWith('0')) {
@@ -57,6 +77,9 @@ export default function ProductDetailView({
       return;
     }
 
+    // Call dynamic analytics click logger if provided
+    onLogClick?.(product, 1);
+
     const formattingPrice = product.price.toLocaleString();
     const sizeLine = isFashion && selectedSize ? `\nSize Preference: ${selectedSize}` : '';
 
@@ -67,6 +90,7 @@ I saw your listing on the TU MARKET HUB:
 *Item:* ${product.name}
 *Condition:* ${product.condition?.toUpperCase().replace('_', ' ') || 'Good'}
 *Price:* ₦${formattingPrice}${sizeLine}
+*Image Link:* ${window.location.origin}?product=${product.id}&img=${activeImageIndex}
 
 Is this item still available? I would like to arrange a purchase.`;
 
@@ -87,11 +111,11 @@ Is this item still available? I would like to arrange a purchase.`;
   };
 
   const handleShare = async () => {
-    // Generate a link that works with the SPA query parser.
-    const shareUrl = `${window.location.origin}?product=${product.id}`;
+    // Generate a link representing the specific image slide
+    const shareUrl = `${window.location.origin}?product=${product.id}&img=${activeImageIndex}`;
     const shareData = {
       title: product.name,
-      text: `Check out this ${product.name} on TU Market Hub!`,
+      text: `Check out image #${activeImageIndex + 1} of ${product.name} on TU Market Hub!`,
       url: shareUrl
     };
 
@@ -104,7 +128,7 @@ Is this item still available? I would like to arrange a purchase.`;
     } else {
       try {
         await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
-        alert('Promo text & product link copied to clipboard!');
+        alert('Product specific image slide preview link copied smoothly!');
       } catch (error) {
         console.error('Error copying link:', error);
       }
@@ -137,10 +161,39 @@ Is this item still available? I would like to arrange a purchase.`;
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
             />
+            
+            {/* Image Slider Navigation Controls */}
+            {product.images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+                  }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-brand text-slate-brand dark:text-slate-100 transition-all cursor-pointer z-20"
+                  aria-label="Previous Image"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-brand text-slate-brand dark:text-slate-100 transition-all cursor-pointer z-20"
+                  aria-label="Next Image"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </>
+            )}
+
             {/* Quick Zoom Trigger */}
             <button
               onClick={() => setIsFullscreen(true)}
-              className="absolute bottom-4 right-4 p-3 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md hover:bg-emerald-brand hover:text-white transition-all text-slate-brand dark:text-slate-100 cursor-pointer"
+              className="absolute bottom-4 right-4 p-3 rounded-full bg-white/90 dark:bg-slate-900/90 shadow-md hover:bg-emerald-brand hover:text-white transition-all text-slate-brand dark:text-slate-100 cursor-pointer z-10"
               title="Fullscreen Preview"
             >
               <ZoomIn className="w-4 h-4" />
@@ -365,18 +418,18 @@ Is this item still available? I would like to arrange a purchase.`;
                   <div className="w-full max-w-[2700px]">
                     <span className="text-[8.5px] uppercase tracking-widest text-[#00a884] dark:text-[#53bdeb] font-extrabold block mb-1.5 text-center">WhatsApp Chat Share Mockup</span>
                     <div className="bg-white dark:bg-[#1f2c34] rounded-2xl overflow-hidden shadow-md border border-gray-150 dark:border-slate-700/30 text-left">
-                      {product.images?.[0] && (
+                      {product.images?.[activeImageIndex] && (
                         <img 
-                          src={product.images[0]} 
+                          src={product.images[activeImageIndex]} 
                           alt="Social Card Banner" 
                           referrerPolicy="no-referrer"
-                          className="w-full h-32 object-cover" 
+                          className="w-full h-32 object-cover animate-fade-in" 
                         />
                       )}
                       <div className="p-3 space-y-0.5">
                         <span className="text-[8px] text-[#00a884] dark:text-[#53bdeb] font-bold flex items-center space-x-0.5">
                           <span>🌍</span>
-                          <span>tu-market-hub.vercel.app/?product={product.id}</span>
+                          <span>tu-market-hub.vercel.app/?product={product.id}&img={activeImageIndex}</span>
                         </span>
                         <h4 className="font-extrabold text-[11.5px] leading-tight text-slate-brand dark:text-slate-100 truncate">
                           {product.name} | TU Market Hub

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit, Trash2, LayoutDashboard, ShoppingCart, FolderTree, AlertTriangle, 
-  Settings, LogOut, CheckCircle, Save, X, RefreshCw, MessageSquare, Tag, Repeat, Sparkles, AlertCircle 
+  Settings, LogOut, CheckCircle, Save, X, RefreshCw, MessageSquare, Tag, Repeat, Sparkles, AlertCircle,
+  Store, ShoppingBag, PlusCircle, Link, Copy, Eye
 } from 'lucide-react';
 import { User as FirebaseUser } from 'firebase/auth';
-import { addDoc, doc, updateDoc, deleteDoc, collection, serverTimestamp, setDoc, getDoc, writeBatch, query, getDocs } from 'firebase/firestore';
+import { addDoc, doc, updateDoc, deleteDoc, collection, serverTimestamp, setDoc, getDoc, writeBatch, query, getDocs, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Product, Category, StoreSettings } from '../types';
 import { forceResetDatabase } from '../data/seed';
@@ -46,9 +47,23 @@ export default function AdminView({
   const [categoryEditing, setCategoryEditing] = useState<Category | null>(null);
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
 
-  // Personal Vendor profile state (For Student Vendors who want to persistent-save their custom Whatsapp number)
+  // Personal Vendor profile state (For Student Vendors who want to persistent-save their custom Whatsapp number and Stall Shop Name)
   const [vendorWhatsApp, setVendorWhatsApp] = useState<string>('');
+  const [vendorShopName, setVendorShopName] = useState<string>('');
   const [vendorWhatsAppLoading, setVendorWhatsAppLoading] = useState<boolean>(true);
+
+  // Real-time sales estimate tracking & clicks analytics
+  interface SaleClick {
+    id: string;
+    productId: string;
+    productName: string;
+    price: number;
+    quantity: number;
+    buyerName: string;
+    createdAt: any;
+  }
+  const [clicksTracker, setClicksTracker] = useState<SaleClick[]>([]);
+  const [clicksLoading, setClicksLoading] = useState<boolean>(true);
 
   // Product Form Input field binds
   const [prodName, setProdName] = useState('');
@@ -148,28 +163,79 @@ export default function AdminView({
     setActionLoading(false);
   };
 
-  // Fetch Vendor WhatsApp number if user is logged in
+  // Fetch Vendor Profile if user is logged in
   useEffect(() => {
-    async function fetchVendorWhatsApp() {
+    async function fetchVendorProfile() {
       if (!user) return;
       setVendorWhatsAppLoading(true);
       try {
         const vRef = doc(db, 'vendors', user.uid);
         const vSnap = await getDoc(vRef);
-        if (vSnap.exists() && vSnap.data().whatsapp) {
-          setVendorWhatsApp(vSnap.data().whatsapp);
+        if (vSnap.exists()) {
+          const dat = vSnap.data();
+          if (dat.whatsapp) {
+            setVendorWhatsApp(dat.whatsapp);
+          } else {
+            setVendorWhatsApp(settings?.whatsappNumber || '2348000000000');
+          }
+          if (dat.shopName) {
+            setVendorShopName(dat.shopName);
+          } else {
+            setVendorShopName(user.displayName || user.email?.split('@')[0] || 'Independent Seller');
+          }
         } else {
-          // Default to settings number if not set yet
           setVendorWhatsApp(settings?.whatsappNumber || '2348000000000');
+          setVendorShopName(user.displayName || user.email?.split('@')[0] || 'Independent Seller');
         }
       } catch (err) {
-        console.error('Error fetching vendor whatsapp:', err);
+        console.error('Error fetching vendor profile:', err);
       } finally {
         setVendorWhatsAppLoading(false);
       }
     }
-    fetchVendorWhatsApp();
+    fetchVendorProfile();
   }, [user, settings]);
+
+  // Real-time listener for customer transaction clicks/leads
+  useEffect(() => {
+    if (!user) return;
+    setClicksLoading(true);
+    
+    // Admins see all logs, Vendors only see theirs
+    const clicksRef = collection(db, 'clicks');
+    const clicksQuery = isAdmin 
+      ? query(clicksRef)
+      : query(clicksRef, where('vendorId', '==', user.uid));
+
+    const unsubscribeClicks = onSnapshot(clicksQuery, (snap) => {
+      const trackerData: SaleClick[] = [];
+      snap.forEach((docSnap) => {
+        const dat = docSnap.data();
+        trackerData.push({
+          id: docSnap.id,
+          productId: dat.productId || '',
+          productName: dat.productName || 'Classroom tool/Item',
+          price: Number(dat.price || 0),
+          quantity: Number(dat.quantity || 1),
+          buyerName: dat.buyerName || 'Anonymous Campus Buyer',
+          createdAt: dat.createdAt
+        });
+      });
+      // Sort trackerData by timestamp descending
+      trackerData.sort((a, b) => {
+        const timeA = a.createdAt?.seconds || 0;
+        const timeB = b.createdAt?.seconds || 0;
+        return timeB - timeA;
+      });
+      setClicksTracker(trackerData);
+      setClicksLoading(false);
+    }, (err) => {
+      console.error('Error fetching real-time clicks:', err);
+      setClicksLoading(false);
+    });
+
+    return () => unsubscribeClicks();
+  }, [user, isAdmin]);
 
   const displayNotice = (message: string) => {
     setActionSuccess(message);
@@ -182,8 +248,34 @@ export default function AdminView({
     setActionLoading(true);
     try {
       const vRef = doc(db, 'vendors', user.uid);
-      await setDoc(vRef, { whatsapp: vendorWhatsApp.trim() }, { merge: true });
-      displayNotice('Your Vendor WhatsApp number has been successfully synchronized!');
+      const cleanShopName = vendorShopName.trim() || user.displayName || user.email?.split('@')[0] || 'Independent Seller';
+      const cleanWhatsApp = vendorWhatsApp.trim();
+      
+      await setDoc(vRef, { 
+        whatsapp: cleanWhatsApp,
+        shopName: cleanShopName
+      }, { merge: true });
+
+      // Synchronize all existing active/draft products belonging to this vendor
+      try {
+        const q = query(collection(db, 'products'), where('vendorId', '==', user.uid));
+        const qSnap = await getDocs(q);
+        if (!qSnap.empty) {
+          const batch = writeBatch(db);
+          qSnap.forEach((docSnap) => {
+            batch.update(docSnap.ref, {
+              vendorName: cleanShopName,
+              vendorWhatsApp: cleanWhatsApp
+            });
+          });
+          await batch.commit();
+        }
+      } catch (syncErr) {
+        console.warn('Stall products matching look-ahead skipped:', syncErr);
+      }
+
+      displayNotice('Your Vendor Stall profile and listed items have been successfully updated!');
+      await onRefreshData();
     } catch (err) {
       console.error(err);
       alert('Error updating Stall Profile.');
@@ -250,7 +342,9 @@ export default function AdminView({
       condition: prodCondition,
       dealType: prodDealType,
       vendorId: productEditing ? (productEditing.vendorId || user.uid) : user.uid,
-      vendorName: productEditing ? (productEditing.vendorName || user.displayName || user.email?.split('@')[0]) : (user.displayName || user.email?.split('@')[0]),
+      vendorName: productEditing 
+        ? (productEditing.vendorName || vendorShopName.trim() || user.displayName || user.email?.split('@')[0] || 'Independent Seller') 
+        : (vendorShopName.trim() || user.displayName || user.email?.split('@')[0] || 'Independent Seller'),
       vendorWhatsApp: prodWhatsApp ? prodWhatsApp.trim() : (vendorWhatsApp || settings?.whatsappNumber || ''),
       updatedAt: serverTimestamp()
     };
@@ -607,18 +701,33 @@ export default function AdminView({
           {/* Core Personal Vendor Details block */}
           <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 sm:p-8 rounded-3xl space-y-6 shadow-3xs">
             <div>
-              <h3 className="font-display font-bold text-lg text-slate-brand flex items-center space-x-2">
-                <MessageSquare className="w-5 h-5 text-emerald-brand dark:text-emerald-400" />
-                <span>My Stall Personal Phone Synchronization</span>
+              <h3 className="font-display font-bold text-lg text-slate-brand dark:text-slate-100 flex items-center space-x-2">
+                <Store className="w-5 h-5 text-emerald-brand dark:text-emerald-400" />
+                <span>My Student Stall Profile settings</span>
               </h3>
-              <p className="text-xs text-slate-brand/60 leading-relaxed font-medium mt-1">
-                Configure your active campus WhatsApp line. Buyers on the platform will correspond directly with this specific phone number when querying your mattress, laptop, study tools or other student goods!
+              <p className="text-xs text-slate-brand/60 dark:text-slate-400 leading-relaxed font-medium mt-1">
+                Configure your active campus store identity and WhatsApp contact line. Buyers on the platform will correspond directly with your customized shop name and phone number when purchase requests are dispatched!
               </p>
             </div>
 
-            <form onSubmit={handleSaveVendorWhatsApp} className="max-w-md space-y-4">
+            <form onSubmit={handleSaveVendorWhatsApp} className="max-w-md space-y-5">
               <div className="space-y-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-brand/75 block">WhatsApp Number (With Country Code)</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-brand/75 dark:text-slate-300 block">Student Shop / Stall Name</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Ayo Gadgets, Janet wears"
+                    value={vendorShopName}
+                    onChange={(e) => setVendorShopName(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-2xl py-3 px-4 text-xs font-bold outline-none transition-all text-slate-brand dark:text-slate-100"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-brand/40 dark:text-slate-500 italic">This is the default name displayed as the seller on all your listed products.</p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-brand/75 dark:text-slate-300 block">WhatsApp Number (With Country Code)</label>
                 <div className="relative">
                   <input
                     type="text"
@@ -629,18 +738,121 @@ export default function AdminView({
                     className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-2xl py-3 px-4 text-xs font-mono font-bold tracking-widest outline-none transition-all text-slate-brand dark:text-slate-100"
                   />
                 </div>
-                <p className="text-[10px] text-slate-brand/40 italic">Include country code first without standard plus (+) symbols (e.g. 234 for Nigeria).</p>
+                <p className="text-[10px] text-slate-brand/40 dark:text-slate-500 italic">Include country code first without standard plus (+) symbols (e.g. 234 for Nigeria).</p>
               </div>
 
               <button
                 type="submit"
                 disabled={actionLoading}
-                className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs tracking-wider uppercase px-6 py-3.5 rounded-xl transition-all cursor-pointer flex items-center space-x-2"
+                className="bg-slate-900 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-semibold text-xs tracking-wider uppercase px-6 py-3.5 rounded-xl transition-all cursor-pointer flex items-center space-x-2 shadow-xs"
               >
                 <Save className="w-4 h-4" />
-                <span>Synchronize Stall Info</span>
+                <span>Synchronize Stall Profile</span>
               </button>
             </form>
+          </div>
+
+          {/* Core Personal Vendor Sales and Pick-ups Analytics Block */}
+          <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 p-6 sm:p-8 rounded-3xl space-y-6 shadow-3xs">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 font-sans">
+              <div>
+                <h3 className="font-display font-bold text-lg text-slate-brand dark:text-slate-100 flex items-center space-x-2">
+                  <ShoppingBag className="w-5 h-5 text-emerald-brand dark:text-emerald-400" />
+                  <span>My Sales Revenue & Customer Pick-ups Tracker</span>
+                </h3>
+                <p className="text-xs text-slate-brand/60 dark:text-slate-400 leading-relaxed font-semibold mt-1">
+                  Track dynamic interest logs, estimated sales generated through WhatsApp checkout prompts, and campus delivery workflow estimates.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onRefreshData()}
+                className="self-start sm:self-auto text-xs font-bold text-emerald-brand bg-emerald-brand/10 px-3.5 py-2 rounded-xl flex items-center space-x-1.5 hover:bg-emerald-brand/20 transition-all cursor-pointer"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Refresh Live Tracker</span>
+              </button>
+            </div>
+
+            {/* Micro Dashboard metric cards for Clicks/Picks */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-sans">
+              <div className="bg-slate-50 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-100 dark:border-slate-700/30 space-y-1">
+                <span className="text-[10px] font-bold text-slate-brand/45 dark:text-slate-400 uppercase tracking-widest font-sans">Total WhatsApp Checkout Leads</span>
+                <p className="text-2xl font-black font-mono text-slate-brand dark:text-slate-100">
+                  {clicksTracker.reduce((acc, curr) => acc + curr.quantity, 0)} Items Selected
+                </p>
+                <p className="text-[10.5px] text-slate-brand/40 dark:text-slate-500">Student buyer interest signals logged in real-time</p>
+              </div>
+
+              <div className="bg-emerald-brand/[0.03] dark:bg-emerald-900/10 p-5 rounded-2xl border border-emerald-brand/10 space-y-1">
+                <span className="text-[10px] font-bold text-emerald-brand/70 uppercase tracking-widest font-sans">Estimated Generated Value</span>
+                <p className="text-2xl font-black font-mono text-emerald-brand dark:text-emerald-400">
+                  &#8358; {clicksTracker.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0).toLocaleString()}
+                </p>
+                <p className="text-[10.5px] text-emerald-brand/60 dark:text-emerald-500/80">Value of items buyer has initialized to pick up</p>
+              </div>
+            </div>
+
+            {/* Click Transaction Logs Table */}
+            <div className="overflow-x-auto rounded-2xl border border-gray-150 dark:border-slate-800 font-sans">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-gray-150 dark:border-slate-800 text-slate-brand/60 dark:text-slate-400 font-bold uppercase tracking-wider">
+                    <th className="p-3.5 sm:p-4">Customer Name</th>
+                    <th className="p-3.5 sm:p-4">Listed Item</th>
+                    <th className="p-3.5 sm:p-4">Order Value</th>
+                    <th className="p-3.5 sm:p-4">Pickup / Status Estimate</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-150 dark:divide-slate-800 font-medium">
+                  {clicksLoading ? (
+                    <tr>
+                      <td colSpan={4} className="p-8 text-center text-slate-brand/40 dark:text-slate-500 italic">
+                        <RefreshCw className="w-4 h-4 animate-spin inline-block mr-2" />
+                        Fetching latest orders/purchases...
+                      </td>
+                    </tr>
+                  ) : clicksTracker.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="p-8 text-center text-slate-brand/40 dark:text-slate-500 italic">
+                        No transactions or checkout requests recorded yet. Buyer clicks will log here with estimates!
+                      </td>
+                    </tr>
+                  ) : (
+                    clicksTracker.map((lead) => {
+                      const dt = lead.createdAt?.toDate ? lead.createdAt.toDate() : new Date();
+                      return (
+                        <tr key={lead.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10 transition-all">
+                          <td className="p-3.5 sm:p-4 font-bold text-slate-brand dark:text-slate-200">
+                            {lead.buyerName}
+                            <span className="block text-[8.5px] text-slate-brand/40 dark:text-slate-400 font-mono font-normal">
+                              {dt.toLocaleDateString()} {dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </td>
+                          <td className="p-3.5 sm:p-4 text-slate-brand/80 dark:text-slate-300">
+                            {lead.productName}
+                            <span className="block text-[8.5px] text-slate-brand/40 dark:text-slate-400 font-normal">
+                              Qty: {lead.quantity}
+                            </span>
+                          </td>
+                          <td className="p-3.5 sm:p-4 font-mono font-bold text-slate-brand dark:text-slate-100">
+                            &#8358; {(lead.price * lead.quantity).toLocaleString()}
+                          </td>
+                          <td className="p-3.5 sm:p-4 space-y-1">
+                            <span className="inline-block bg-orange-brand/10 text-orange-brand dark:text-orange-400 font-extrabold text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                              In transit / Pending chat
+                            </span>
+                            <span className="block text-[9px] text-slate-brand/50 dark:text-slate-400 font-normal leading-tight">
+                              Estimated Delivery: Within 12-24 Hrs <br /> (Meetup configured on peer WhatsApp chat)
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Database maintenance settings card (Only visible to verified Administrators) */}

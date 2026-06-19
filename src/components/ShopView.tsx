@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon } from 'lucide-react';
 import { Product, Category } from '../types';
 
@@ -6,20 +6,29 @@ interface ShopViewProps {
   products: Product[];
   categories: Category[];
   onSelectProduct: (productId: string) => void;
+  initialCategory?: string;
 }
 
 export default function ShopView({
   products,
   categories,
-  onSelectProduct
+  onSelectProduct,
+  initialCategory
 }: ShopViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
   const [priceRange, setPriceRange] = useState<string>('all');
   const [stockFilter, setStockFilter] = useState<string>('all'); // 'all', 'instock', 'outofstock'
   const [conditionFilter, setConditionFilter] = useState<string>('all'); // 'all', 'new', 'like_new', 'used'
   const [sortBy, setSortBy] = useState<string>('newest'); // 'newest', 'price-asc', 'price-desc', 'popular'
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
+
+  // Synchronize state when home page category selector triggers a navigation search
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
 
   // Constants
   const priceOptions = [
