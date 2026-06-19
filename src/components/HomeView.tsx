@@ -100,6 +100,11 @@ export default function HomeView({
       
       {/* 1. Hero Banner Carousel / Slider */}
       <section id="hero-slider" className="relative min-h-[420px] sm:min-h-[520px] lg:min-h-[600px] w-full overflow-hidden bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-center">
+        {/* Blurred/Faded Background Preview Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center pointer-events-none opacity-[0.10] dark:opacity-[0.15] blur-[2px] scale-105" 
+          style={{ backgroundImage: "url('/og-image.jpeg.20.42.jpeg')" }}
+        />
         {heroSlides.map((slide, index) => {
           const Icon = slide.icon;
           return (
