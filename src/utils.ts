@@ -28,3 +28,26 @@ export const getRelativeTime = (timestamp: any): string => {
   if (days < 7) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
   return date.toLocaleDateString();
 };
+
+export const calculateDiscount = (price: number, discountPercentage?: number | null) => {
+  if (!discountPercentage || discountPercentage <= 0) {
+    return {
+      hasDiscount: false,
+      originalPrice: price,
+      discountedPrice: price,
+      discountPercentage: 0
+    };
+  }
+
+  // Ensure discount isn't > 100% or < 0%
+  const validDiscount = Math.max(0, Math.min(100, discountPercentage));
+  
+  const discounted = Math.round(price - (price * validDiscount / 100));
+  
+  return {
+    hasDiscount: validDiscount > 0,
+    originalPrice: price,
+    discountedPrice: Math.min(price, Math.max(0, discounted)),
+    discountPercentage: validDiscount
+  };
+};

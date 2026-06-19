@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Star, BookOpen, Laptop, Sparkles, ShoppingBag, ArrowUpRight, MessageCircle, RefreshCw, Shirt, Home, Briefcase, Coffee } from 'lucide-react';
 import { motion } from 'motion/react';
-import { getRelativeTime } from '../utils';
+import { getRelativeTime, calculateDiscount } from '../utils';
 import { Product, Category } from '../types';
 
 interface HomeViewProps {
@@ -298,10 +298,31 @@ export default function HomeView({
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 dark:border-slate-700 mt-3">
-                    <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200 font-mono">
-                      &#8358; {product.price.toLocaleString()}
-                    </span>
+                  <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 dark:border-slate-700 mt-3 gap-y-1">
+                    <div className="flex flex-col font-mono font-bold">
+                      {(() => {
+                        const { hasDiscount, originalPrice, discountedPrice, discountPercentage } = calculateDiscount(product.price, product.discountPercentage);
+                        return hasDiscount ? (
+                          <>
+                            <span className="text-slate-500 line-through text-[9px]">
+                              &#8358; {originalPrice.toLocaleString()}
+                            </span>
+                            <div className="flex items-center space-x-1">
+                              <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200">
+                                &#8358; {discountedPrice.toLocaleString()}
+                              </span>
+                              <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[9px] px-1 py-0.5 rounded ml-1 whitespace-nowrap">
+                                -{discountPercentage}%
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200">
+                            &#8358; {originalPrice.toLocaleString()}
+                          </span>
+                        );
+                      })()}
+                    </div>
                     <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 dark:hover:bg-slate-700 hover:text-white dark:hover:border-slate-700 transition-colors cursor-pointer">
                       View Deal
                     </button>
@@ -436,10 +457,31 @@ export default function HomeView({
                       </p>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 dark:border-slate-700 mt-3">
-                    <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200 font-mono">
-                      &#8358; {product.price.toLocaleString()}
-                    </span>
+                  <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 dark:border-slate-700 mt-3 gap-y-1">
+                    <div className="flex flex-col font-mono font-bold">
+                      {(() => {
+                        const { hasDiscount, originalPrice, discountedPrice, discountPercentage } = calculateDiscount(product.price, product.discountPercentage);
+                        return hasDiscount ? (
+                          <>
+                            <span className="text-slate-500 line-through text-[9px]">
+                              &#8358; {originalPrice.toLocaleString()}
+                            </span>
+                            <div className="flex items-center space-x-1">
+                              <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200">
+                                &#8358; {discountedPrice.toLocaleString()}
+                              </span>
+                              <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[9px] px-1 py-0.5 rounded ml-1 whitespace-nowrap">
+                                -{discountPercentage}%
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200">
+                            &#8358; {originalPrice.toLocaleString()}
+                          </span>
+                        );
+                      })()}
+                    </div>
                     <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer">
                       View Deal
                     </button>

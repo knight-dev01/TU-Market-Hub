@@ -942,6 +942,7 @@ export default function AdminView({
                     <th className="px-6 py-4">Category / Mode</th>
                     <th className="px-6 py-4 font-mono">Condition</th>
                     <th className="px-6 py-4 font-mono">Price (₦)</th>
+                    <th className="px-6 py-4">Discount</th>
                     <th className="px-6 py-4">In Stock</th>
                     <th className="px-6 py-4">Created At</th>
                     <th className="px-6 py-4 text-center">Status</th>
@@ -977,8 +978,30 @@ export default function AdminView({
                             {(p.condition || 'like_new').toUpperCase().replace('_', ' ')}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-mono font-bold text-slate-950 dark:text-slate-100">
-                          &#8358; {p.price.toLocaleString()}
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col font-mono font-bold">
+                            {p.discountPercentage && p.discountPercentage > 0 ? (
+                                <>
+                                  <span className="text-slate-500 line-through text-[9px]">
+                                    &#8358; {p.price.toLocaleString()}
+                                  </span>
+                                  <span className="text-slate-950 dark:text-slate-100">
+                                    &#8358; {Math.round(p.price - (p.price * p.discountPercentage / 100)).toLocaleString()}
+                                  </span>
+                                </>
+                            ) : (
+                                <span className="text-slate-950 dark:text-slate-100">
+                                    &#8358; {p.price.toLocaleString()}
+                                </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 font-mono font-bold text-xs">
+                          {p.discountPercentage && p.discountPercentage > 0 ? (
+                            <span className="text-red-600 dark:text-red-400">-{p.discountPercentage}%</span>
+                          ) : (
+                            <span className="text-slate-400">None</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 font-mono">
                           {p.stock} units

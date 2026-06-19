@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product, Category } from '../types';
+import { calculateDiscount } from '../utils';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -42,6 +43,7 @@ export default function ProductDetailView({
 
   // Determine which WhatsApp number to use
   const targetWhatsApp = product.vendorWhatsApp || whatsappNumber;
+  const { hasDiscount, originalPrice, discountedPrice, discountPercentage } = calculateDiscount(product.price, product.discountPercentage);
 
   // Hydrate image parameter index from load URL query parameters
   useEffect(() => {
@@ -80,7 +82,7 @@ export default function ProductDetailView({
     // Call dynamic analytics click logger if provided
     onLogClick?.(product, 1);
 
-    const formattingPrice = product.price.toLocaleString();
+    const formattingPrice = discountedPrice.toLocaleString();
     const sizeLine = isFashion && selectedSize ? `\nSize Preference: ${selectedSize}` : '';
 
     const text = `Hello ${product.vendorName || 'TU MARKET HUB Seller'},
@@ -154,13 +156,64 @@ Is this item still available? I would like to arrange a purchase.`;
         <div className="space-y-4">
           
           {/* Main Visual Window with zoom */}
-          <div className="relative aspect-square w-full rounded-3xl bg-gray-brand overflow-hidden border border-gray-150 group select-none shadow-xs">
-            <img
-              src={product.images[activeImageIndex]}
-              alt={product.name}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
-            />
+          <div 
+            className="relative aspect-square w-full rounded-3xl bg-gray-brand overflow-hidden border border-gray-150 group select-none shadow-xs"
+            onTouchStart={(e) => {
+              const touchDown = e.touches[0].clientX;
+              e.currentTarget.dataset.touchDown = touchDown.toString();
+            }}
+            onTouchMove={(e) => {
+              const touchDownStr = e.currentTarget.dataset.touchDown;
+              if (!touchDownStr) return;
+              
+              const touchDown = parseFloat(touchDownStr);
+              const touchMove = e.touches[0].clientX;
+              const diff = touchDown - touchMove;
+              
+              if (Math.abs(diff) > 5) {
+                e.currentTarget.dataset.swiping = 'true';
+              }
+            }}
+            onTouchEnd={(e) => {
+              const touchDownStr = e.currentTarget.dataset.touchDown;
+              const swiping = e.currentTarget.dataset.swiping;
+              
+              e.currentTarget.dataset.touchDown = '';
+              e.currentTarget.dataset.swiping = 'false';
+              
+              if (!touchDownStr || !swiping) return;
+
+              const touchDown = parseFloat(touchDownStr);
+              const touchUp = e.changedTouches[0].clientX;
+              const diff = touchDown - touchUp;
+
+              if (Math.abs(diff) > 50 && product.images.length > 1) {
+                if (diff > 0) {
+                  // Swipe left (next)
+                  setActiveImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+                } else {
+                  // Swipe right (prev)
+                  setActiveImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+                }
+              }
+            }}
+          >
+            <div className="w-full h-full relative" style={{ overflow: 'hidden' }}>
+              <div 
+                className="w-full h-full flex transition-transform duration-300 ease-in-out" 
+                style={{ transform: `translateX(-${activeImageIndex * 100}%)` }}
+              >
+                {product.images.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`${product.name} - Image ${idx + 1}`}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-center shrink-0"
+                  />
+                ))}
+              </div>
+            </div>
             
             {/* Image Slider Navigation Controls */}
             {product.images.length > 1 && (
@@ -242,10 +295,28 @@ Is this item still available? I would like to arrange a purchase.`;
             </h1>
             
             {/* Price block */}
-            <div className="flex items-center space-x-3.5 pt-1.5">
-              <span className="text-2xl sm:text-3xl font-mono font-black text-slate-brand dark:text-slate-100">
-                &#8358; {product.price.toLocaleString()}
-              </span>
+            <div className="flex items-center space-x-3.5 pt-1.5 flex-wrap gap-y-2">
+              <div className="flex flex-col font-mono">
+                {hasDiscount ? (
+                  <>
+                    <span className="text-slate-500 line-through text-sm">
+                      &#8358; {originalPrice.toLocaleString()}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl sm:text-3xl font-extrabold text-slate-brand dark:text-slate-100">
+                        &#8358; {discountedPrice.toLocaleString()}
+                      </span>
+                      <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs font-bold px-2 py-0.5 rounded">
+                        -{discountPercentage}% Off
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-2xl sm:text-3xl font-extrabold text-slate-brand dark:text-slate-100">
+                    &#8358; {originalPrice.toLocaleString()}
+                  </span>
+                )}
+              </div>
               <span className="text-[10px] bg-emerald-brand/10 text-emerald-brand font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
                 COMMISSION-FREE
               </span>
@@ -391,7 +462,7 @@ Is this item still available? I would like to arrange a purchase.`;
                     />
                     <button
                       onClick={async () => {
-                        const shareText = `Check out this ${product.name} on TU Market Hub!\nPrice: ₦${product.price.toLocaleString()}\nLink: ${window.location.origin}?product=${product.id}&img=${activeImageIndex}`;
+                        const shareText = `Check out this ${product.name} on TU Market Hub!\nPrice: ₦${discountedPrice.toLocaleString()}\nLink: ${window.location.origin}?product=${product.id}&img=${activeImageIndex}`;
                         try {
                           await navigator.clipboard.writeText(shareText);
                           setPromoCopied(true);
@@ -509,21 +580,85 @@ Is this item still available? I would like to arrange a purchase.`;
       {/* Image Fullscreen Modal View zoom */}
       {isFullscreen && (
         <div
-          onClick={() => setIsFullscreen(false)}
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 cursor-zoom-out animate-fade-in"
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 animate-fade-in"
+          onTouchStart={(e) => {
+            const touchDown = e.touches[0].clientX;
+            e.currentTarget.dataset.touchDown = touchDown.toString();
+          }}
+          onTouchEnd={(e) => {
+            const touchDownStr = e.currentTarget.dataset.touchDown;
+            e.currentTarget.dataset.touchDown = '';
+            
+            if (!touchDownStr) return;
+
+            const touchDown = parseFloat(touchDownStr);
+            const touchUp = e.changedTouches[0].clientX;
+            const diff = touchDown - touchUp;
+
+            if (Math.abs(diff) > 50 && product.images.length > 1) {
+              if (diff > 0) {
+                // Swipe left (next)
+                setActiveImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+              } else {
+                // Swipe right (prev)
+                setActiveImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+              }
+            }
+          }}
         >
+          <div className="absolute inset-0 cursor-zoom-out" onClick={() => setIsFullscreen(false)} />
           <button
             onClick={() => setIsFullscreen(false)}
-            className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10 cursor-pointer"
+            className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10 cursor-pointer z-10"
           >
             <X className="w-5 h-5" />
           </button>
-          <img
-            src={product.images[activeImageIndex]}
-            alt={product.name}
-            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-            referrerPolicy="no-referrer"
-          />
+          
+          <div className="relative w-full max-w-4xl h-full flex items-center justify-center pointer-events-none">
+            <div className="w-full h-[90vh] relative pointer-events-auto overflow-hidden">
+              <div 
+                className="w-full h-full flex transition-transform duration-300 ease-in-out" 
+                style={{ transform: `translateX(-${activeImageIndex * 100}%)` }}
+              >
+                {product.images.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img}
+                    alt={`${product.name} - Image ${idx + 1}`}
+                    className="w-full h-full object-contain shrink-0"
+                    referrerPolicy="no-referrer"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {product.images.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+                }}
+                className="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10 cursor-pointer z-10"
+                aria-label="Previous Image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+                }}
+                className="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10 cursor-pointer z-10"
+                aria-label="Next Image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
         </div>
       )}
 

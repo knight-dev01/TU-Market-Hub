@@ -176,6 +176,7 @@ export default function App() {
             vendorId: d.vendorId || 'admin',
             vendorName: d.vendorName || 'Independence Stall',
             vendorWhatsApp: d.vendorWhatsApp || '',
+            discountPercentage: typeof d.discountPercentage === 'number' ? d.discountPercentage : 0,
             createdAt: d.createdAt,
             updatedAt: d.updatedAt
           });
