@@ -110,11 +110,16 @@ service cloud.firestore {
     
     // Products Collection
     match /products/{productId} {
-      // Allow general list and read, write is protected for admins
+      // Allow general list and read, write is protected for admins and verified product owners (vendors)
       allow read: if true;
-      allow create: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == request.time && incoming().updatedAt == request.time;
-      allow update: if isVerifiedUser() && isAdmin() && isValidId(productId) && isValidProduct(incoming()) && incoming().createdAt == existing().createdAt && incoming().updatedAt == request.time;
-      allow delete: if isVerifiedUser() && isAdmin() && isValidId(productId);
+      allow create: if isVerifiedUser() && isValidId(productId) && isValidProduct(incoming()) && 
+                    incoming().createdAt == request.time && incoming().updatedAt == request.time &&
+                    (isAdmin() || (incoming().vendorId == request.auth.uid && incoming().featured == false));
+      allow update: if isVerifiedUser() && isValidId(productId) && isValidProduct(incoming()) && 
+                    incoming().createdAt == existing().createdAt && incoming().updatedAt == request.time &&
+                    (isAdmin() || (existing().vendorId == request.auth.uid && incoming().vendorId == request.auth.uid && incoming().featured == existing().featured));
+      allow delete: if isVerifiedUser() && isValidId(productId) && 
+                    (isAdmin() || existing().vendorId == request.auth.uid);
     }
     
     // Settings Collection
