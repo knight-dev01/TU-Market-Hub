@@ -977,7 +977,7 @@ export default function AdminView({
                             {(p.condition || 'like_new').toUpperCase().replace('_', ' ')}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-mono font-bold text-slate-950">
+                        <td className="px-6 py-4 font-mono font-bold text-slate-950 dark:text-slate-100">
                           &#8358; {p.price.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 font-mono">
