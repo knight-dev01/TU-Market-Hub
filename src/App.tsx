@@ -6,7 +6,7 @@ import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-import { db, auth, loginWithGoogle, logoutUser, handleFirestoreError, OperationType } from './firebase';
+import { db, auth, loginWithGoogle, logoutUser, handleFirestoreError, OperationType, handleRedirectResult } from './firebase';
 import { Product, Category, StoreSettings } from './types';
 import { checkAndSeedDatabase, defaultCategories, defaultProducts } from './data/seed';
 
@@ -107,6 +107,8 @@ export default function App() {
 
   // 1. Listen for auth changes
   useEffect(() => {
+    handleRedirectResult().catch(console.error);
+
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
