@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
@@ -69,23 +69,13 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   throw new Error(JSON.stringify(errInfo));
 }
 
-// Function to log in using Google Redirect
+// Function to log in using Google Popup
 export async function loginWithGoogle() {
   try {
-    await signInWithRedirect(auth, googleProvider);
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
   } catch (error) {
     console.error('Auth Sign-In Error:', error);
-    throw error;
-  }
-}
-
-// Function to handle the redirect result
-export async function handleRedirectResult() {
-  try {
-    const result = await getRedirectResult(auth);
-    return result ? result.user : null;
-  } catch (error) {
-    console.error('Auth Redirect Result Error:', error);
     throw error;
   }
 }
