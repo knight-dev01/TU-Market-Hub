@@ -1364,41 +1364,51 @@ export default function AdminView({
                     </div>
                   );
                 })()}
+                </div>
 
                 <div className="space-y-4">
                   <div className="flex gap-2">
                     <input 
                       type="text"
+                      id="url-input"
                       placeholder="Paste image URL here"
                       className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs outline-none focus:border-emerald-brand"
-                      onKeyDown={(e) => {
+                      onKeyDown={async (e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
-                          const url = (e.target as HTMLInputElement).value;
+                          const url = (e.currentTarget as HTMLInputElement).value;
                           if (url) {
+                            setActionLoading(true);
+                            await new Promise(resolve => setTimeout(resolve, 600));
                             setProdImages((prev) => prev ? `${prev}, ${url}` : url);
-                            (e.target as HTMLInputElement).value = '';
+                            (e.currentTarget as HTMLInputElement).value = '';
+                            setActionLoading(false);
                             setImageUploadFeedback('Image URL added!');
                             setTimeout(() => setImageUploadFeedback(''), 3000);
                           }
                         }
                       }}
+                      disabled={actionLoading}
                     />
                     <button
                       type="button"
-                      onClick={(e) => {
+                      disabled={actionLoading}
+                      onClick={async (e) => {
                         const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
                           const url = input.value;
                           if (url) {
+                            setActionLoading(true);
+                            await new Promise(resolve => setTimeout(resolve, 600));
                             setProdImages((prev) => prev ? `${prev}, ${url}` : url);
                             input.value = '';
+                            setActionLoading(false);
                             setImageUploadFeedback('Image URL added!');
                             setTimeout(() => setImageUploadFeedback(''), 3000);
                           }
                       }}
-                      className="bg-emerald-brand text-white px-4 py-2 rounded-xl text-xs font-bold"
+                      className="bg-emerald-brand text-white px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-50"
                     >
-                      Add Link
+                      {actionLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Add Link'}
                     </button>
                   </div>
                   <div className="border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-emerald-brand dark:hover:border-emerald-500 rounded-2xl p-6 transition-colors bg-slate-50/50 dark:bg-slate-800/30 text-center relative group">
@@ -1410,9 +1420,18 @@ export default function AdminView({
                       onChange={handleProductImageUpload} 
                       disabled={actionLoading} 
                     />
-                    {actionLoading && imageUploadProgress > 0 ? (
-                      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2.5">
-                        <div className="bg-emerald-600 h-2.5 rounded-full" style={{ width: `${imageUploadProgress}%` }}></div>
+                    {actionLoading ? (
+                      <div className="flex flex-col items-center justify-center p-4">
+                        {imageUploadProgress > 0 ? (
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2.5">
+                            <div className="bg-emerald-600 h-2.5 rounded-full" style={{ width: `${imageUploadProgress}%` }}></div>
+                          </div>
+                        ) : (
+                          <RefreshCw className="w-8 h-8 text-emerald-brand animate-spin" />
+                        )}
+                        <p className="text-xs font-semibold text-slate-brand dark:text-slate-200 mt-2">
+                          {imageUploadProgress > 0 ? `Uploading... ${imageUploadProgress}%` : 'Processing...'}
+                        </p>
                       </div>
                     ) : (
                       <>
@@ -1423,7 +1442,6 @@ export default function AdminView({
                         <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 mt-1">High-quality JPG, PNG, WEBP (auto-compressed)</p>
                       </>
                     )}
-                  </div>
                 </div>
 
                 <div className="flex items-center space-x-3">

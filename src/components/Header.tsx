@@ -4,7 +4,7 @@ import { User as FirebaseUser } from 'firebase/auth';
 
 interface HeaderProps {
   currentView: string;
-  onViewChange: (view: 'home' | 'shop' | 'about' | 'contact' | 'admin') => void;
+  onViewChange: (view: 'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding') => void;
   isAdmin: boolean;
   user: FirebaseUser | null;
   onLoginClick: () => void;
@@ -35,7 +35,7 @@ export default function Header({
     { label: 'Contact', value: 'contact' as const }
   ];
 
-  const handleNavClick = (view: 'home' | 'shop' | 'about' | 'contact' | 'admin') => {
+  const handleNavClick = (view: 'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding') => {
     onViewChange(view);
     setMobileMenuOpen(false);
   };
