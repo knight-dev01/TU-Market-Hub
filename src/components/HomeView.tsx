@@ -91,7 +91,7 @@ export default function HomeView({
     <div id="home-view" className="space-y-16">
       
       {/* 1. Hero Banner Carousel / Slider */}
-      <section id="hero-slider" className="relative min-h-[500px] sm:min-h-[550px] lg:min-h-[600px] w-full overflow-hidden bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-center">
+      <section id="hero-slider" className="relative min-h-[420px] sm:min-h-[520px] lg:min-h-[600px] w-full overflow-hidden bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-center">
         {heroSlides.map((slide, index) => {
           const Icon = slide.icon;
           return (
@@ -101,30 +101,30 @@ export default function HomeView({
               index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
             }`}
           >
-            <div className="max-w-3xl mx-auto flex flex-col items-center text-center space-y-4 sm:space-y-6">
+            <div className="max-w-3xl mx-auto flex flex-col items-center text-center space-y-4 sm:space-y-6 px-2 sm:px-4">
                 <div className="opacity-80 text-emerald-brand dark:text-emerald-400">
-                  <Icon className="w-12 h-12 sm:w-16 sm:h-16 stroke-1 mx-auto" />
+                  <Icon className="w-10 h-10 sm:w-16 sm:h-16 stroke-1 mx-auto" />
                 </div>
-                <span className="inline-block bg-white dark:bg-slate-800 shadow-xs text-slate-800 dark:text-slate-200 font-mono font-bold text-[10px] sm:text-xs tracking-widest px-4 py-1.5 uppercase rounded-full border border-gray-100 dark:border-slate-700">
+                <span className="inline-block bg-white dark:bg-slate-800 shadow-xs text-slate-800 dark:text-slate-200 font-mono font-bold text-[9px] sm:text-xs tracking-widest px-3 sm:px-4 py-1 sm:py-1.5 uppercase rounded-full border border-gray-150 dark:border-slate-700">
                   {slide.badge}
                 </span>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-display leading-tight tracking-tight text-slate-900 dark:text-white">
+                <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-display leading-tight tracking-tight text-slate-900 dark:text-white">
                   {slide.title}
                 </h1>
                 <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 font-light leading-relaxed max-w-xl">
                   {slide.subtitle}
                 </p>
-                <div className="pt-2 sm:pt-4 flex flex-wrap justify-center gap-3 sm:gap-4">
+                <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row justify-center gap-2.5 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
                   <button
                     onClick={() => onViewChange('shop')}
-                    className="bg-slate-900 dark:bg-emerald-brand text-white hover:bg-slate-800 dark:hover:bg-emerald-600 font-bold text-xs sm:text-sm tracking-widest uppercase py-3 sm:py-3.5 px-6 sm:px-8 transition-colors cursor-pointer flex items-center space-x-2 rounded-full shadow-md"
+                    className="bg-slate-900 dark:bg-emerald-brand text-white hover:bg-slate-800 dark:hover:bg-emerald-600 font-bold text-xs tracking-widest uppercase py-3 sm:py-3.5 px-6 sm:px-8 transition-colors cursor-pointer flex items-center justify-center space-x-2 rounded-full shadow-md w-full sm:w-auto"
                   >
                     <span>Explore Catalog</span>
                     <ArrowUpRight className="w-4 h-4 ml-1" />
                   </button>
                   <button
                     onClick={() => onViewChange('admin')}
-                    className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-bold text-xs sm:text-sm tracking-widest uppercase py-3 sm:py-3.5 px-6 sm:px-8 transition-colors cursor-pointer flex items-center space-x-2 rounded-full border border-gray-100 dark:border-slate-700"
+                    className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white shadow-xs font-bold text-xs tracking-widest uppercase py-3 sm:py-3.5 px-6 sm:px-8 transition-colors cursor-pointer flex items-center justify-center space-x-2 rounded-full border border-gray-150 dark:border-slate-700 w-full sm:w-auto"
                   >
                     <span>Sell / Register Shop</span>
                     <Sparkles className="w-4 h-4 ml-1" />
