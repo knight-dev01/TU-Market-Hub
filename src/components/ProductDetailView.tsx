@@ -376,7 +376,7 @@ Is this item still available? I would like to arrange a purchase.`;
                       <div className="p-3 space-y-0.5">
                         <span className="text-[8px] text-[#00a884] dark:text-[#53bdeb] font-bold flex items-center space-x-0.5">
                           <span>🌍</span>
-                          <span>tu-market-hub.firebaseapp.com/?product={product.id}</span>
+                          <span>tu-market-hub.vercel.app/?product={product.id}</span>
                         </span>
                         <h4 className="font-extrabold text-[11.5px] leading-tight text-slate-brand dark:text-slate-100 truncate">
                           {product.name} | TU Market Hub

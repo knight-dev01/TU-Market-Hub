@@ -74,6 +74,23 @@ export default function AdminView({
   const [imageUploadFeedback, setImageUploadFeedback] = useState<string>('');
   const [showPublishConfirm, setShowPublishConfirm] = useState<boolean>(false);
 
+  const splitImageUrls = (str: string): string[] => {
+    if (!str) return [];
+    const rawParts = str.split(',');
+    const result: string[] = [];
+    for (let i = 0; i < rawParts.length; i++) {
+      const part = rawParts[i];
+      if (part.trim().startsWith('data:image/') && part.includes('base64') && i + 1 < rawParts.length) {
+        const merged = part + ',' + rawParts[i + 1];
+        result.push(merged);
+        i++;
+      } else {
+        result.push(part);
+      }
+    }
+    return result.map(s => s.trim()).filter(Boolean);
+  };
+
   const compressAndConvertImage = async (file: File) => {
     try {
       const options = {
@@ -97,7 +114,7 @@ export default function AdminView({
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setActionLoading(true);
-    let newImages = prodImages ? prodImages.split(',').map(s=>s.trim()).filter(Boolean) : [];
+    let newImages = splitImageUrls(prodImages);
     let addedCount = 0;
     for (let i = 0; i < files.length; i++) {
         const base64 = await compressAndConvertImage(files[i]);
@@ -115,7 +132,7 @@ export default function AdminView({
   };
 
   const handleRemoveImageAtIndex = (index: number) => {
-    const list = prodImages.split(',').map(s=>s.trim()).filter(Boolean);
+    const list = splitImageUrls(prodImages);
     list.splice(index, 1);
     setProdImages(list.join(', '));
     setImageUploadFeedback('Image removed successfully.');
@@ -220,7 +237,7 @@ export default function AdminView({
     if (!user) return;
     setActionLoading(true);
     
-    const preparedImages = prodImages.split(',').map(img => img.trim()).filter(img => img.length > 0);
+    const preparedImages = splitImageUrls(prodImages);
     const productPayload = {
       name: prodName,
       description: prodDesc,
@@ -1080,7 +1097,7 @@ export default function AdminView({
 
                 {/* VISUAL IMAGE THUMBNAIL PREVIEW GRID */}
                 {(() => {
-                  const currentImagesArr = prodImages.split(',').map(s => s.trim()).filter(Boolean);
+                  const currentImagesArr = splitImageUrls(prodImages);
                   if (currentImagesArr.length === 0) return null;
                   return (
                     <div className="space-y-2 bg-slate-50/50 dark:bg-slate-800/20 p-3 rounded-2xl border border-gray-150/40 dark:border-slate-800">
@@ -1147,7 +1164,7 @@ export default function AdminView({
 
                 {/* LINK LIVE OG SHARE CARD WATERMARK */}
                 {(() => {
-                  const currentImagesArr = prodImages.split(',').map(s => s.trim()).filter(Boolean);
+                  const currentImagesArr = splitImageUrls(prodImages);
                   if (currentImagesArr.length === 0) return null;
                   return (
                     <div className="bg-slate-50 dark:bg-slate-800/20 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 space-y-2 mt-4 text-left">
@@ -1168,7 +1185,7 @@ export default function AdminView({
                             <div className="p-2.5 space-y-0.5">
                               <span className="text-[9px] text-[#00a884] dark:text-[#53bdeb] font-bold flex items-center space-x-0.5">
                                 <span>🌍</span>
-                                <span>tu-market-hub.firebaseapp.com/?product=id</span>
+                                <span>tu-market-hub.vercel.app/?product=id</span>
                               </span>
                               <h4 className="font-bold text-[11px] leading-tight text-slate-brand dark:text-slate-100 truncate">
                                 {prodName || 'Item Title Placeholder'} | TU Student Hub
