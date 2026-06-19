@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon, ArrowLeft } from 'lucide-react';
+import { getRelativeTime } from '../utils';
 import { Product, Category } from '../types';
 
 interface ShopViewProps {
@@ -460,6 +461,9 @@ export default function ShopView({
                         </h3>
                         <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 line-clamp-1 italic">
                           From: {product.vendorName || 'TU Peer Store'}
+                        </p>
+                        <p className="text-[9px] font-mono text-emerald-brand/80">
+                          {getRelativeTime(product.createdAt)}
                         </p>
                       </div>
                     </div>

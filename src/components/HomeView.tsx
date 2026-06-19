@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Star, BookOpen, Laptop, Sparkles, ShoppingBag, ArrowUpRight, MessageCircle, RefreshCw, Shirt, Home, Briefcase, Coffee } from 'lucide-react';
 import { motion } from 'motion/react';
+import { getRelativeTime } from '../utils';
 import { Product, Category } from '../types';
 
 interface HomeViewProps {
@@ -290,6 +291,9 @@ export default function HomeView({
                       
                       <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 line-clamp-1 italic">
                         Sold by: {product.vendorName || 'TU Peer Seller'}
+                      </p>
+                      <p className="text-[9px] font-mono text-emerald-brand/80">
+                        {getRelativeTime(product.createdAt)}
                       </p>
                     </div>
                   </div>

@@ -7,6 +7,7 @@ import {
 import { User as FirebaseUser } from 'firebase/auth';
 import { addDoc, doc, updateDoc, deleteDoc, collection, serverTimestamp, setDoc, getDoc, writeBatch, query, getDocs, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { getRelativeTime } from '../utils';
 import { Product, Category, StoreSettings } from '../types';
 import { forceResetDatabase } from '../data/seed';
 import imageCompression from 'browser-image-compression';
@@ -166,20 +167,6 @@ export default function AdminView({
     const base64 = await compressAndConvertImage(files[0]);
     if (base64) setCatImage(base64);
     setActionLoading(false);
-  };
-
-  const getRelativeTime = (date: Date): string => {
-    const now = new Date();
-    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (seconds < 60) return 'just now';
-    if (minutes < 60) return `${minutes} ${minutes === 1 ? 'min' : 'mins'} ago`;
-    if (hours < 24) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-    if (days < 7) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-    return date.toLocaleDateString();
   };
 
   // Fetch Vendor Profile if user is logged in
@@ -1378,28 +1365,65 @@ export default function AdminView({
                   );
                 })()}
 
-                <div className="border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-emerald-brand dark:hover:border-emerald-500 rounded-2xl p-6 transition-colors bg-slate-50/50 dark:bg-slate-800/30 text-center relative group">
-                  <input 
-                    type="file" 
-                    multiple 
-                    accept="image/*" 
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-                    onChange={handleProductImageUpload} 
-                    disabled={actionLoading} 
-                  />
-                  {actionLoading && imageUploadProgress > 0 ? (
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2.5">
-                      <div className="bg-emerald-600 h-2.5 rounded-full" style={{ width: `${imageUploadProgress}%` }}></div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="w-10 h-10 bg-white dark:bg-slate-800 shadow-sm border border-gray-150 dark:border-slate-700 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                        <Plus className="w-5 h-5" />
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <input 
+                      type="text"
+                      placeholder="Paste image URL here"
+                      className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs outline-none focus:border-emerald-brand"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const url = (e.target as HTMLInputElement).value;
+                          if (url) {
+                            setProdImages((prev) => prev ? `${prev}, ${url}` : url);
+                            (e.target as HTMLInputElement).value = '';
+                            setImageUploadFeedback('Image URL added!');
+                            setTimeout(() => setImageUploadFeedback(''), 3000);
+                          }
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
+                          const url = input.value;
+                          if (url) {
+                            setProdImages((prev) => prev ? `${prev}, ${url}` : url);
+                            input.value = '';
+                            setImageUploadFeedback('Image URL added!');
+                            setTimeout(() => setImageUploadFeedback(''), 3000);
+                          }
+                      }}
+                      className="bg-emerald-brand text-white px-4 py-2 rounded-xl text-xs font-bold"
+                    >
+                      Add Link
+                    </button>
+                  </div>
+                  <div className="border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-emerald-brand dark:hover:border-emerald-500 rounded-2xl p-6 transition-colors bg-slate-50/50 dark:bg-slate-800/30 text-center relative group">
+                    <input 
+                      type="file" 
+                      multiple 
+                      accept="image/*" 
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                      onChange={handleProductImageUpload} 
+                      disabled={actionLoading} 
+                    />
+                    {actionLoading && imageUploadProgress > 0 ? (
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2.5">
+                        <div className="bg-emerald-600 h-2.5 rounded-full" style={{ width: `${imageUploadProgress}%` }}></div>
                       </div>
-                      <p className="text-xs font-semibold text-slate-brand dark:text-slate-200">Click or drag images to upload</p>
-                      <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 mt-1">High-quality JPG, PNG, WEBP (auto-compressed)</p>
-                    </>
-                  )}
+                    ) : (
+                      <>
+                        <div className="w-10 h-10 bg-white dark:bg-slate-800 shadow-sm border border-gray-150 dark:border-slate-700 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                          <Plus className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-semibold text-slate-brand dark:text-slate-200">Click or drag images to upload</p>
+                        <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 mt-1">High-quality JPG, PNG, WEBP (auto-compressed)</p>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
