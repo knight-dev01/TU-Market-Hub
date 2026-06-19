@@ -265,10 +265,20 @@ export default function App() {
       await loginWithGoogle();
     } catch (err: any) {
       console.error('Login error:', err);
+      const isIframe = window.self !== window.top;
+      
       if (err?.code === 'auth/network-request-failed' || String(err).includes('network-request-failed')) {
-        alert("Firebase Auth network error. Note: Because this preview applet is run inside an iframe, browser privacy settings or third-party cookie restrictions may block authentication. Please click the 'Open in New Tab' button in the top-right of the screen and log in there!");
+        if (isIframe) {
+          alert("Firebase Auth network error. Because this applet is run inside an iframe, browser privacy settings may block authentication. Please click the 'Open in New Tab' button in the top-right of the screen and log in there!");
+        } else {
+          alert("Firebase Auth network error. Please check your internet connection and try again.");
+        }
       } else {
-        alert('Login failed. Please assure popups are enabled, or click the top-right button to run the application in a New Tab.');
+        if (isIframe) {
+          alert("Login failed. Please assure popups are enabled, or click the top-right button to run the application in a New Tab.");
+        } else {
+          alert("Login failed. Please assure popups are enabled, and try again.");
+        }
       }
     }
   };
