@@ -70,6 +70,10 @@ export default function AdminView({
   // Settings editable forms
   const [settingsForm, setSettingsForm] = useState<StoreSettings | null>(null);
 
+  // Feature feedback & confirm dialogs
+  const [imageUploadFeedback, setImageUploadFeedback] = useState<string>('');
+  const [showPublishConfirm, setShowPublishConfirm] = useState<boolean>(false);
+
   const compressAndConvertImage = async (file: File) => {
     try {
       const options = {
@@ -91,15 +95,31 @@ export default function AdminView({
 
   const handleProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
     setActionLoading(true);
     let newImages = prodImages ? prodImages.split(',').map(s=>s.trim()).filter(Boolean) : [];
+    let addedCount = 0;
     for (let i = 0; i < files.length; i++) {
         const base64 = await compressAndConvertImage(files[i]);
-        if (base64) newImages.push(base64);
+        if (base64) {
+          newImages.push(base64);
+          addedCount++;
+        }
     }
     setProdImages(newImages.join(', '));
     setActionLoading(false);
+    if (addedCount > 0) {
+      setImageUploadFeedback(`Successfully uploaded and compiled ${addedCount} photo(s)!`);
+      setTimeout(() => setImageUploadFeedback(''), 4000);
+    }
+  };
+
+  const handleRemoveImageAtIndex = (index: number) => {
+    const list = prodImages.split(',').map(s=>s.trim()).filter(Boolean);
+    list.splice(index, 1);
+    setProdImages(list.join(', '));
+    setImageUploadFeedback('Image removed successfully.');
+    setTimeout(() => setImageUploadFeedback(''), 3000);
   };
 
   const handleCategoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,12 +204,19 @@ export default function AdminView({
       setProdDealType('sell');
       setProdWhatsApp(vendorWhatsApp || settings?.whatsappNumber || '');
     }
+    setShowPublishConfirm(false);
+    setImageUploadFeedback('');
     setIsProductFormOpen(true);
   };
 
-  // Submit Product Form Changes
-  const handleProductSubmit = async (e: React.FormEvent) => {
+  // Pre-validate and show confirmation panel
+  const handleProductPreSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowPublishConfirm(true);
+  };
+
+  // Submit Product Form Changes
+  const executeActualProductSubmit = async () => {
     if (!user) return;
     setActionLoading(true);
     
@@ -238,6 +265,7 @@ export default function AdminView({
       alert('Error saving product in database. Please review parameters.');
     } finally {
       setActionLoading(false);
+      setShowPublishConfirm(false);
     }
   };
 
@@ -948,7 +976,7 @@ export default function AdminView({
               <p className="text-[11px] text-slate-brand/50 font-medium">Synchronize study tools, electronics, utensils, apparel, and specify your trade preferences.</p>
             </div>
 
-            <form onSubmit={handleProductSubmit} className="space-y-4">
+            <form onSubmit={handleProductPreSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Listing Title / Item name</label>
@@ -1043,6 +1071,47 @@ export default function AdminView({
               <div className="space-y-3 pt-2 pb-2">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans block">Product Media & Images</label>
                 
+                {imageUploadFeedback && (
+                  <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/50 p-2.5 rounded-xl flex items-center space-x-2 text-[11px] text-emerald-800 dark:text-emerald-400 font-semibold animate-fade-in">
+                    <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{imageUploadFeedback}</span>
+                  </div>
+                )}
+
+                {/* VISUAL IMAGE THUMBNAIL PREVIEW GRID */}
+                {(() => {
+                  const currentImagesArr = prodImages.split(',').map(s => s.trim()).filter(Boolean);
+                  if (currentImagesArr.length === 0) return null;
+                  return (
+                    <div className="space-y-2 bg-slate-50/50 dark:bg-slate-800/20 p-3 rounded-2xl border border-gray-150/40 dark:border-slate-800">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-slate-brand/50 dark:text-slate-500 block">Uploaded Listing Catalog Media ({currentImagesArr.length})</span>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {currentImagesArr.map((imageUrl, idx) => (
+                          <div key={idx} className="relative group border border-gray-150 dark:border-slate-800 rounded-2xl overflow-hidden aspect-square shadow-2xs">
+                            <img 
+                              src={imageUrl} 
+                              alt={`Preview ${idx + 1}`} 
+                              referrerPolicy="no-referrer"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                            />
+                            {idx === 0 && (
+                              <span className="absolute bottom-1.5 left-1.5 bg-emerald-500 text-[8px] font-extrabold text-white px-2 py-0.5 rounded-md uppercase tracking-wider shadow">Cover</span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImageAtIndex(idx)}
+                              className="absolute top-1.5 right-1.5 p-1 bg-red-600/95 hover:bg-red-750 text-white rounded-full transition-transform cursor-pointer shadow border border-red-500"
+                              title="Delete this image"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div className="border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-emerald-brand dark:hover:border-emerald-500 rounded-2xl p-6 transition-colors bg-slate-50/50 dark:bg-slate-800/30 text-center relative group">
                   <input 
                     type="file" 
@@ -1075,6 +1144,45 @@ export default function AdminView({
                     className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700/60 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-medium outline-none transition-all text-slate-brand dark:text-slate-100 placeholder-slate-brand/30 dark:placeholder-slate-600"
                   />
                 </div>
+
+                {/* LINK LIVE OG SHARE CARD WATERMARK */}
+                {(() => {
+                  const currentImagesArr = prodImages.split(',').map(s => s.trim()).filter(Boolean);
+                  if (currentImagesArr.length === 0) return null;
+                  return (
+                    <div className="bg-slate-50 dark:bg-slate-800/20 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 space-y-2 mt-4 text-left">
+                      <div className="flex items-center space-x-2 border-b border-gray-150/50 dark:border-slate-700/50 pb-2 mb-2">
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-brand dark:text-slate-300">Open Graph Social Share Preview</span>
+                      </div>
+                      <div className="bg-[#e5ddd5]/30 dark:bg-[#0b141a]/60 p-3 flex justify-center rounded-xl border border-gray-150/40 dark:border-slate-800">
+                        <div className="w-full max-w-[300px]">
+                          <span className="text-[8px] uppercase tracking-widest text-slate-brand/40 dark:text-slate-500 font-bold block mb-1">WhatsApp Chat Bubble Link Card</span>
+                          <div className="bg-white dark:bg-[#1f2c34] rounded-xl overflow-hidden shadow-xs border border-gray-150 dark:border-slate-700/30 text-left">
+                            <img 
+                              src={currentImagesArr[0]} 
+                              alt="Social Cover" 
+                              referrerPolicy="no-referrer"
+                              className="w-full h-28 sm:h-32 object-cover" 
+                            />
+                            <div className="p-2.5 space-y-0.5">
+                              <span className="text-[9px] text-[#00a884] dark:text-[#53bdeb] font-bold flex items-center space-x-0.5">
+                                <span>🌍</span>
+                                <span>tu-market-hub.firebaseapp.com/?product=id</span>
+                              </span>
+                              <h4 className="font-bold text-[11px] leading-tight text-slate-brand dark:text-slate-100 truncate">
+                                {prodName || 'Item Title Placeholder'} | TU Student Hub
+                              </h4>
+                              <p className="text-[9.5px] leading-relaxed text-slate-brand/50 dark:text-slate-400 line-clamp-2 select-none">
+                                {prodDesc || 'Discover price, condition grade, swap values, and chat with student seller instantly on Trinity University marketplace.'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -1107,22 +1215,55 @@ export default function AdminView({
                 )}
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => setIsProductFormOpen(false)}
-                  className="px-5 py-3 rounded-xl border border-gray-300 hover:bg-slate-50 text-slate-brand text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs tracking-wider uppercase px-6 py-3.5 rounded-full cursor-pointer flex items-center space-x-2"
-                >
-                  <span>{productEditing ? 'Save Changes' : 'Publish Listing'}</span>
-                </button>
-              </div>
+              {showPublishConfirm ? (
+                <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 p-4 rounded-2xl space-y-3 mt-4 animate-fade-in text-left">
+                  <div className="flex items-start space-x-2.5">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-bold text-xs text-amber-800 dark:text-amber-300">Confirm Listing Publication</h4>
+                      <p className="text-[10.5px] text-amber-700/90 dark:text-amber-400 leading-relaxed font-semibold mt-0.5">
+                        Are you sure you want to {productEditing ? 'save changes to' : 'publish'} "{prodName || 'this item'}"?
+                        It will immediately sync changes live on Trinity University's seeker grid!
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end space-x-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowPublishConfirm(false)}
+                      className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-gray-300 hover:bg-slate-50 text-slate-brand cursor-pointer"
+                    >
+                      Go Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={executeActualProductSubmit}
+                      disabled={actionLoading}
+                      className="px-4 py-2 text-[10px] font-extrabold uppercase tracking-wider rounded-lg bg-emerald-brand hover:bg-emerald-700 text-white shadow-3xs cursor-pointer flex items-center space-x-1"
+                    >
+                      {actionLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                      <span>Publish Listing Live</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => setIsProductFormOpen(false)}
+                    className="px-5 py-3 rounded-xl border border-gray-300 hover:bg-slate-50 text-slate-brand text-xs font-bold uppercase tracking-wider cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={actionLoading}
+                    className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs tracking-wider uppercase px-6 py-3.5 rounded-full cursor-pointer flex items-center space-x-2"
+                  >
+                    <span>{productEditing ? 'Save Changes' : 'Publish Listing'}</span>
+                  </button>
+                </div>
+              )}
             </form>
           </div>
         </div>

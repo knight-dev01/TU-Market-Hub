@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2 } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles } from 'lucide-react';
 import { Product, Category } from '../types';
 
 interface ProductDetailViewProps {
@@ -25,6 +25,7 @@ export default function ProductDetailView({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [addFeedback, setAddFeedback] = useState(false);
+  const [promoCopied, setPromoCopied] = useState(false);
 
   const isFashion = product.category === 'fashion';
   const sizes = isFashion ? ['XS', 'S', 'M', 'L', 'XL', 'EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'] : [];
@@ -75,10 +76,8 @@ Is this item still available? I would like to arrange a purchase.`;
   };
 
   const handleShare = async () => {
-    // Generate a link that works with the SPA. 
-    // Since we don't have a specific router, we might share the origin. 
-    // If the app has routing, we'd use the current location.
-    const shareUrl = window.location.href;
+    // Generate a link that works with the SPA query parser.
+    const shareUrl = `${window.location.origin}?product=${product.id}`;
     const shareData = {
       title: product.name,
       text: `Check out this ${product.name} on TU Market Hub!`,
@@ -94,7 +93,7 @@ Is this item still available? I would like to arrange a purchase.`;
     } else {
       try {
         await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
-        alert('Link copied to clipboard!');
+        alert('Promo text & product link copied to clipboard!');
       } catch (error) {
         console.error('Error copying link:', error);
       }
@@ -298,6 +297,83 @@ Is this item still available? I would like to arrange a purchase.`;
                 <span className="font-semibold">Added to your shopping draft. Click Cart or Basket in header to view.</span>
               </div>
             )}
+
+            {/* Social Share Link Card / Open Graph Preview Card Mockup */}
+            <div className="bg-slate-50 dark:bg-slate-800/20 border border-gray-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 text-left mt-6">
+              <div className="flex items-center space-x-2 border-b border-gray-150/50 dark:border-slate-700/50 pb-2.5">
+                <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 animate-pulse" />
+                <div className="text-left">
+                  <h4 className="text-xs font-bold text-slate-brand dark:text-slate-100 uppercase tracking-widest">Advertise This Listing</h4>
+                  <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 font-medium font-sans">Promote this hostel item with dynamic social Open Graph previews!</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                <div className="space-y-2.5">
+                  <p className="text-[11px] leading-relaxed font-semibold text-slate-brand/70 dark:text-slate-300">
+                    Copy and blast this smart link onto WhatsApp class groups, hostel networks, or status updates. When clicked, it opens this exact product item!
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={`${window.location.origin}?product=${product.id}`}
+                      className="flex-1 bg-white dark:bg-slate-800/80 border border-gray-200 dark:border-slate-700 text-[10px] sm:text-xs font-mono font-medium p-2.5 rounded-xl outline-none select-all truncate text-slate-brand dark:text-slate-200"
+                    />
+                    <button
+                      onClick={async () => {
+                        const shareText = `Check out this ${product.name} on TU Market Hub!\nPrice: ₦${product.price.toLocaleString()}\nLink: ${window.location.origin}?product=${product.id}`;
+                        try {
+                          await navigator.clipboard.writeText(shareText);
+                          setPromoCopied(true);
+                          setTimeout(() => setPromoCopied(false), 2500);
+                        } catch (err) {
+                          console.error('Error copying link:', err);
+                        }
+                      }}
+                      className="bg-slate-900 dark:bg-slate-800 hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-brand text-white border dark:border-slate-750 font-bold text-[10px] tracking-wider uppercase px-4 py-2.5 rounded-xl transition-all cursor-pointer shrink-0"
+                    >
+                      {promoCopied ? 'Copied!' : 'Copy Link'}
+                    </button>
+                  </div>
+                  {promoCopied && (
+                    <p className="text-[10.5px] font-bold text-emerald-600 dark:text-emerald-450 flex items-center space-x-1 animate-fade-in">
+                      <CheckCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span>Promo link & text copied cleanly! Ready to blast on campus!</span>
+                    </p>
+                  )}
+                </div>
+
+                {/* WHATSAPP CARD CHAT PREVIEW MOCKUP */}
+                <div className="bg-[#e5ddd5]/30 dark:bg-[#0b141a]/60 p-4 rounded-2xl border border-gray-150/40 dark:border-slate-800 flex justify-center">
+                  <div className="w-full max-w-[2700px]">
+                    <span className="text-[8.5px] uppercase tracking-widest text-[#00a884] dark:text-[#53bdeb] font-extrabold block mb-1.5 text-center">WhatsApp Chat Share Mockup</span>
+                    <div className="bg-white dark:bg-[#1f2c34] rounded-2xl overflow-hidden shadow-md border border-gray-150 dark:border-slate-700/30 text-left">
+                      {product.images?.[0] && (
+                        <img 
+                          src={product.images[0]} 
+                          alt="Social Card Banner" 
+                          referrerPolicy="no-referrer"
+                          className="w-full h-32 object-cover" 
+                        />
+                      )}
+                      <div className="p-3 space-y-0.5">
+                        <span className="text-[8px] text-[#00a884] dark:text-[#53bdeb] font-bold flex items-center space-x-0.5">
+                          <span>🌍</span>
+                          <span>tu-market-hub.firebaseapp.com/?product={product.id}</span>
+                        </span>
+                        <h4 className="font-extrabold text-[11.5px] leading-tight text-slate-brand dark:text-slate-100 truncate">
+                          {product.name} | TU Market Hub
+                        </h4>
+                        <p className="text-[9.5px] leading-relaxed text-[#54656f] dark:text-slate-400 line-clamp-2 select-none">
+                          Check out this {product.condition ? product.condition.toUpperCase().replace('_', ' ') : 'like new'} product listed on Trinity University campus peer-to-peer catalog!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>

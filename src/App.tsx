@@ -354,15 +354,43 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
   const cartItemTotalCount = cartItems.reduce((acc, curr) => acc + curr.quantity, 0);
   const cartItemsTotalPrice = cartItems.reduce((acc, curr) => acc + (curr.product.price * curr.quantity), 0);
 
+  // Synchronize deep link for shared products (e.g., ?product=id) on load or products hydration
+  useEffect(() => {
+    if (products.length === 0) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const productIdParam = urlParams.get('product') || urlParams.get('productId');
+    if (productIdParam) {
+      const match = products.find(p => p.id === productIdParam);
+      if (match) {
+        setSelectedProductId(productIdParam);
+      }
+    }
+  }, [products]);
+
   const handleViewChange = (view: 'home' | 'shop' | 'about' | 'contact' | 'admin') => {
     setCurrentView(view);
     setSelectedProductId(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('product');
+    url.searchParams.delete('productId');
+    window.history.pushState({}, '', url.toString());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSelectProduct = (productId: string) => {
     setSelectedProductId(productId);
+    const url = new URL(window.location.href);
+    url.searchParams.set('product', productId);
+    window.history.pushState({}, '', url.toString());
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBackFromDetail = () => {
+    setSelectedProductId(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('product');
+    url.searchParams.delete('productId');
+    window.history.pushState({}, '', url.toString());
   };
 
   const fallbackProducts: Product[] = defaultProducts.map((p, idx) => ({
@@ -457,7 +485,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 product={activeDetailProduct}
                 allProducts={displayProducts}
                 categories={displayCategories}
-                onBack={() => setSelectedProductId(null)}
+                onBack={handleBackFromDetail}
                 onSelectProduct={handleSelectProduct}
                 whatsappNumber={settings?.whatsappNumber || '+234 904 722 6729'}
                 onAddToCart={handleAddToCart}
