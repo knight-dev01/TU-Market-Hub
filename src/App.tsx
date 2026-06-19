@@ -319,20 +319,18 @@ export default function App() {
   };
 
   // Helper function to record a click/pick analytic in Firestore
-  const logDirectWhatsAppClick = async (product: Product, quantity = 1, buyerName = 'Anonymous Buyer') => {
-    try {
-      await addDoc(collection(db, 'clicks'), {
-        vendorId: product.vendorId || 'admin',
-        productId: product.id || 'system',
-        productName: product.name,
-        buyerName,
-        price: Number(product.price || 0),
-        quantity: Number(quantity),
-        createdAt: serverTimestamp()
-      });
-    } catch (err) {
+  const logDirectWhatsAppClick = (product: Product, quantity: number, buyerInfo?: { name: string }) => {
+    addDoc(collection(db, 'clicks'), {
+      vendorId: product.vendorId || 'admin',
+      productId: product.id || 'system',
+      productName: product.name,
+      buyerName: buyerInfo?.name || 'Anonymous Campus Buyer',
+      price: Number(product.price || 0),
+      quantity: Number(quantity),
+      createdAt: serverTimestamp()
+    }).catch((err) => {
       console.warn('Logging analytics click error:', err);
-    }
+    });
   };
 
   // Compile and Dispatch consolidated chat message FOR A SPECIFIC VENDOR
