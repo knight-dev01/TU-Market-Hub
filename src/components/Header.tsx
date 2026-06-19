@@ -40,14 +40,14 @@ export default function Header({
   };
 
   return (
-    <header id="app-header" className="sticky top-0 z-40 bg-white dark:bg-slate-900/95 border-b border-gray-150 dark:border-slate-800 shadow-xs backdrop-blur-md bg-opacity-95 dark:bg-opacity-95 text-slate-brand dark:text-slate-100 transition-colors duration-200">
+    <header id="app-header" className="sticky top-0 z-40 bg-white dark:bg-slate-900/95 shadow-xs backdrop-blur-md bg-opacity-95 dark:bg-opacity-95 text-slate-brand dark:text-slate-100 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           
           {/* Brand Logo & Name */}
           <div className="flex-shrink-0 cursor-pointer flex items-center space-x-2.5" onClick={() => handleNavClick('home')}>
-            <div className="w-10 h-10 rounded-xl bg-emerald-brand flex items-center justify-center">
-              <ShoppingBag className="text-white w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-brand flex items-center justify-center overflow-hidden">
+              <img src="/og-image.jpeg.20.42.jpeg" alt="TU Market Hub Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
               <span className="font-display font-black text-lg sm:text-xl tracking-wider text-slate-brand dark:text-white leading-none">

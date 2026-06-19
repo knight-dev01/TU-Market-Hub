@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon, ArrowLeft } from 'lucide-react';
 import { Product, Category } from '../types';
 
 interface ShopViewProps {
@@ -109,14 +109,23 @@ export default function ShopView({
   return (
     <div id="shop-view" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
-      {/* Title Header */}
-      <div className="mb-8 space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-slate-brand">
-          Campus Storefront
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-brand/60 font-medium">
-          Showing <span className="text-emerald-brand font-bold">{filteredProducts.length}</span> verified student listings available. Buy or bargain instantly!
-        </p>
+      {/* Title Header with back navigation */}
+      <div className="mb-8 space-y-4">
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center space-x-1.5 text-xs text-slate-brand/60 dark:text-slate-400 font-bold uppercase tracking-wider hover:text-emerald-brand cursor-pointer transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+        <div className="space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-slate-brand">
+            Campus Storefront
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-brand/60 font-medium">
+            Showing <span className="text-emerald-brand font-bold">{filteredProducts.length}</span> verified student listings available. Buy or bargain instantly!
+          </p>
+        </div>
       </div>
 
       {/* Controls: Search and Mobile Filter Buttons */}

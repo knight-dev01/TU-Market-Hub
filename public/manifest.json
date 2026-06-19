@@ -1,0 +1,17 @@
+{
+  "name": "TU Market Hub",
+  "short_name": "TU Market",
+  "description": "Nigeria's premier decentralized student marketplace.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00a86b",
+  "icons": [
+    {
+      "src": "/og-image.jpeg.20.42.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ]
+}
