@@ -114,5 +114,32 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2) !important;
 }
 
+@keyframes livePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes liveBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.alive-pulse {
+  animation: livePulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.alive-blink {
+  animation: liveBlink 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+
 
 

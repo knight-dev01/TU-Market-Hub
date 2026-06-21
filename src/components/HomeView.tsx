@@ -208,7 +208,8 @@ export default function HomeView({
                 <h3 className="text-slate-900 dark:text-slate-100 font-bold text-xs sm:text-sm tracking-wide uppercase leading-tight line-clamp-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
                   {cat.name}
                 </h3>
-                <span className="block text-slate-500 text-[9px] font-mono font-bold">
+                <span className="block text-slate-500 text-[9px] font-mono font-bold flex items-center justify-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 alive-blink inline-block" />
                   {cat.productCount} Items
                 </span>
               </div>
@@ -266,7 +267,7 @@ export default function HomeView({
                       />
                       {/* Condition Badge */}
                       {product.condition && (
-                        <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white ${
+                        <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
                           product.condition === 'new' ? 'bg-green-600' :
                           product.condition === 'like_new' ? 'bg-emerald-500' : 'bg-orange-500'
                         }`}>
@@ -277,7 +278,8 @@ export default function HomeView({
 
                     <div className="space-y-1 px-1">
                       <div className="flex items-center justify-between">
-                        <p className="text-[9px] font-bold text-emerald-brand uppercase tracking-wider">
+                        <p className="text-[9px] font-bold text-emerald-brand uppercase tracking-wider flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-emerald-brand alive-blink" />
                           {catName}
                         </p>
                         <span className="text-[9px] font-medium text-slate-brand/40">
@@ -311,7 +313,7 @@ export default function HomeView({
                               <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200">
                                 &#8358; {discountedPrice.toLocaleString()}
                               </span>
-                              <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[9px] px-1 py-0.5 rounded ml-1 whitespace-nowrap">
+                              <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[9px] px-1 py-0.5 rounded ml-1 whitespace-nowrap alive-blink font-extrabold">
                                 -{discountPercentage}%
                               </span>
                             </div>
@@ -323,8 +325,9 @@ export default function HomeView({
                         );
                       })()}
                     </div>
-                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 dark:hover:bg-slate-700 hover:text-white dark:hover:border-slate-700 transition-colors cursor-pointer">
-                      View Deal
+                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 dark:hover:bg-slate-700 hover:text-white dark:hover:border-slate-700 transition-colors cursor-pointer flex items-center gap-1">
+                      <span>View Deal</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 alive-blink" />
                     </button>
                   </div>
                 </motion.div>
@@ -440,13 +443,14 @@ export default function HomeView({
                         <Star className="w-3.5 h-3.5 fill-white stroke-none" />
                       </span>
                       {product.condition && (
-                        <span className="absolute top-2 left-2 bg-slate-900/80 text-white text-[8px] font-bold font-mono py-0.5 px-2 rounded-sm">
+                        <span className="absolute top-2 left-2 bg-slate-900/80 text-white text-[8px] font-bold font-mono py-0.5 px-2 rounded-sm alive-blink">
                           {product.condition.toUpperCase()}
                         </span>
                       )}
                     </div>
                     <div className="space-y-1 px-1">
-                      <p className="text-[9px] tracking-widest text-emerald-brand uppercase">
+                      <p className="text-[9px] tracking-widest text-emerald-brand uppercase flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-emerald-brand alive-blink" />
                         {catName}
                       </p>
                       <h3 className="font-semibold text-xs sm:text-sm text-slate-brand dark:text-slate-100 line-clamp-1 group-hover:text-emerald-brand transition-colors">
@@ -470,7 +474,7 @@ export default function HomeView({
                               <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200">
                                 &#8358; {discountedPrice.toLocaleString()}
                               </span>
-                              <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[9px] px-1 py-0.5 rounded ml-1 whitespace-nowrap">
+                              <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[9px] px-1 py-0.5 rounded ml-1 whitespace-nowrap alive-blink font-extrabold">
                                 -{discountPercentage}%
                               </span>
                             </div>
@@ -482,8 +486,9 @@ export default function HomeView({
                         );
                       })()}
                     </div>
-                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer">
-                      View Deal
+                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer flex items-center gap-1">
+                      <span>View Deal</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-450 alive-blink" />
                     </button>
                   </div>
                 </motion.div>

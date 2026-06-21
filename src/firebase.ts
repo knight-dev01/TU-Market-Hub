@@ -4,7 +4,6 @@ import { getFirestore } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
 const metaEnv = (import.meta as any).env || {};
-const isCustom = !!metaEnv.VITE_FIREBASE_PROJECT_ID;
 const activeConfig = {
   apiKey: metaEnv.VITE_FIREBASE_API_KEY || firebaseConfig.apiKey,
   authDomain: metaEnv.VITE_FIREBASE_AUTH_DOMAIN || firebaseConfig.authDomain,
@@ -12,7 +11,7 @@ const activeConfig = {
   storageBucket: metaEnv.VITE_FIREBASE_STORAGE_BUCKET || firebaseConfig.storageBucket,
   messagingSenderId: metaEnv.VITE_FIREBASE_MESSAGING_SENDER_ID || firebaseConfig.messagingSenderId,
   appId: metaEnv.VITE_FIREBASE_APP_ID || firebaseConfig.appId,
-  firestoreDatabaseId: metaEnv.VITE_FIREBASE_FIRESTORE_DATABASE_ID || (isCustom ? '(default)' : firebaseConfig.firestoreDatabaseId || '(default)')
+  firestoreDatabaseId: metaEnv.VITE_FIREBASE_FIRESTORE_DATABASE_ID || firebaseConfig.firestoreDatabaseId || '(default)'
 };
 
 const app = initializeApp(activeConfig);

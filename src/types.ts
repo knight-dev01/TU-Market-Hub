@@ -53,3 +53,30 @@ export interface Admin {
   addedAt: Timestamp;
 }
 
+export interface ChatThread {
+  id: string;
+  productId: string;
+  productName: string;
+  productImage: string;
+  shopperId: string;
+  shopperName: string;
+  shopperEmail: string;
+  vendorId: string;
+  vendorName: string;
+  lastMessage: string;
+  lastMessageAt: any; // Timestamp or serverTimestamp
+  unreadByVendor: boolean;
+  unreadByShopper: boolean;
+  createdAt: any;
+}
+
+export interface ChatMessage {
+  id: string;
+  chatId: string;
+  senderId: string;
+  senderName: string;
+  text: string;
+  createdAt: any;
+}
+
+

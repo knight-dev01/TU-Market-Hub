@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight, MessageSquareCode } from 'lucide-react';
+import { User as FirebaseUser } from 'firebase/auth';
 import { Product, Category } from '../types';
 import { calculateDiscount } from '../utils';
+import MarketplaceChat from './MarketplaceChat';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -12,6 +14,8 @@ interface ProductDetailViewProps {
   whatsappNumber: string;
   onAddToCart: (product: Product, size: string) => void;
   onLogClick?: (product: Product, quantity: number, buyerInfo?: { name: string }) => void;
+  currentUser: FirebaseUser | null;
+  onLoginClick: () => void;
 }
 
 export default function ProductDetailView({
@@ -22,7 +26,9 @@ export default function ProductDetailView({
   onSelectProduct,
   whatsappNumber,
   onAddToCart,
-  onLogClick
+  onLogClick,
+  currentUser,
+  onLoginClick
 }: ProductDetailViewProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -30,6 +36,7 @@ export default function ProductDetailView({
   const [addFeedback, setAddFeedback] = useState(false);
   const [promoCopied, setPromoCopied] = useState(false);
   const [redirectingWA, setRedirectingWA] = useState(false);
+  const [showLiveChat, setShowLiveChat] = useState(false);
 
   const isFashion = product.category === 'fashion';
   const sizes = isFashion ? ['XS', 'S', 'M', 'L', 'XL', 'EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'] : [];
@@ -254,7 +261,7 @@ Is this item still available? I would like to arrange a purchase.`;
             
             {/* Condition overlay labels */}
             {product.condition && (
-              <span className={`absolute top-4 left-4 text-xs font-mono font-bold py-1.5 px-3.5 rounded-full shadow-md text-white ${
+              <span className={`absolute top-4 left-4 text-xs font-mono font-bold py-1.5 px-3.5 rounded-full shadow-md text-white alive-blink ${
                 product.condition === 'new' ? 'bg-green-600' :
                 product.condition === 'like_new' ? 'bg-emerald-500' : 'bg-orange-500'
               }`}>
@@ -306,7 +313,7 @@ Is this item still available? I would like to arrange a purchase.`;
                       <span className="text-2xl sm:text-3xl font-extrabold text-slate-brand dark:text-slate-100">
                         &#8358; {discountedPrice.toLocaleString()}
                       </span>
-                      <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs font-bold px-2 py-0.5 rounded">
+                      <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs font-bold px-2 py-0.5 rounded alive-blink">
                         -{discountPercentage}% Off
                       </span>
                     </div>
@@ -317,7 +324,7 @@ Is this item still available? I would like to arrange a purchase.`;
                   </span>
                 )}
               </div>
-              <span className="text-[10px] bg-emerald-brand/10 text-emerald-brand font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+              <span className="text-[10px] bg-emerald-brand/10 text-emerald-brand font-bold px-2.5 py-1 rounded-full uppercase tracking-wider alive-blink">
                 COMMISSION-FREE
               </span>
             </div>
@@ -405,7 +412,7 @@ Is this item still available? I would like to arrange a purchase.`;
                       : 'bg-emerald-brand border border-emerald-brand hover:bg-emerald-700 cursor-pointer'
                   }`}
                 >
-                  <MessageSquare className={`w-4 h-4 fill-white stroke-none ${redirectingWA ? 'animate-bounce' : ''}`} />
+                  <MessageSquare className={`w-4 h-4 fill-white stroke-none alive-blink ${redirectingWA ? 'animate-bounce' : ''}`} />
                   <span>{redirectingWA ? 'Opening WhatsApp...' : 'Trade / WhatsApp Seller'}</span>
                 </button>
 
@@ -415,7 +422,7 @@ Is this item still available? I would like to arrange a purchase.`;
                     onClick={handleAddToCartClick}
                     className="flex-1 sm:flex-none bg-transparent border border-gray-300 dark:border-slate-600 text-slate-brand dark:text-slate-200 font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-center space-x-2"
                   >
-                    <ShoppingBag className="w-4 h-4 text-slate-brand/80 dark:text-slate-300" />
+                    <ShoppingBag className="w-4 h-4 text-slate-brand/80 dark:text-slate-300 alive-blink" />
                     <span>Draft Offer</span>
                   </button>
 
@@ -424,10 +431,50 @@ Is this item still available? I would like to arrange a purchase.`;
                     className="flex-none bg-transparent border border-gray-300 dark:border-slate-600 text-slate-brand dark:text-slate-200 font-bold py-4 px-5 rounded-full transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-center"
                     title="Share this product"
                   >
-                    <Share2 className="w-4 h-4 text-slate-brand/80 dark:text-slate-300" />
+                    <Share2 className="w-4 h-4 text-slate-brand/80 dark:text-slate-300 alive-blink" />
                   </button>
                 </div>
 
+              </div>
+            )}
+
+            {/* Live Web Chat Toggle Button */}
+            <button
+              onClick={() => setShowLiveChat(true)}
+              className="w-full font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-all flex items-center justify-center space-x-2 border cursor-pointer bg-emerald-brand/10 border-transparent hover:bg-emerald-brand/20 text-emerald-brand"
+            >
+              <MessageSquareCode className="w-4 h-4 text-emerald-brand animate-pulse" />
+              <span>Chat Live Inside Marketplace</span>
+            </button>
+
+            {showLiveChat && (
+              <div 
+                className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fade-in text-left"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) {
+                    setShowLiveChat(false);
+                  }
+                }}
+              >
+                <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl relative shadow-2xl overflow-hidden border border-gray-150 dark:border-slate-800">
+                  <div className="absolute right-4 top-4.5 z-10 flex items-center space-x-2">
+                    <button
+                      onClick={() => setShowLiveChat(false)}
+                      className="bg-slate-900/10 hover:bg-slate-900/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded-full cursor-pointer transition-all"
+                      title="Close Chat"
+                    >
+                      <X className="w-4.5 h-4.5" />
+                    </button>
+                  </div>
+                  
+                  <div className="p-1">
+                    <MarketplaceChat 
+                      currentUser={currentUser}
+                      onLoginClick={onLoginClick}
+                      activeProduct={product}
+                    />
+                  </div>
+                </div>
               </div>
             )}
 

@@ -1,8 +1,14 @@
 {
-  "firestore": {
-    "database": "remixed-firestore-database-id",
-    "rules": "firestore.rules"
-  },
+  "firestore": [
+    {
+      "database": "remixed-firestore-database-id",
+      "rules": "firestore.rules"
+    },
+    {
+      "database": "(default)",
+      "rules": "firestore.rules"
+    }
+  ],
   "hosting": {
     "public": "dist",
     "ignore": [

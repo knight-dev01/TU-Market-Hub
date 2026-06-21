@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit, Trash2, LayoutDashboard, ShoppingCart, FolderTree, AlertTriangle, 
   Settings, LogOut, CheckCircle, Save, X, RefreshCw, MessageSquare, Tag, Repeat, Sparkles, AlertCircle,
-  Store, ShoppingBag, PlusCircle, Link, Copy, Eye
+  Store, ShoppingBag, PlusCircle, Link, Copy, Eye, Users
 } from 'lucide-react';
 import { User as FirebaseUser } from 'firebase/auth';
 import { addDoc, doc, updateDoc, deleteDoc, collection, serverTimestamp, setDoc, getDoc, writeBatch, query, getDocs, onSnapshot, where } from 'firebase/firestore';
@@ -11,6 +11,7 @@ import { getRelativeTime } from '../utils';
 import { Product, Category, StoreSettings } from '../types';
 import { forceResetDatabase } from '../data/seed';
 import imageCompression from 'browser-image-compression';
+import MarketplaceChat from './MarketplaceChat';
 
 interface AdminViewProps {
   user: FirebaseUser | null;
@@ -35,7 +36,79 @@ export default function AdminView({
 }: AdminViewProps) {
   
   // Dashboard navigation sub-state
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'categories' | 'inventory' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'categories' | 'inventory' | 'settings' | 'admins' | 'chats'>('overview');
+
+  // Admin access list state handlers
+  const [adminsList, setAdminsList] = useState<any[]>([]);
+  const [newAdminEmail, setNewAdminEmail] = useState('');
+  const [adminActionLoading, setAdminActionLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user || !isAdmin) return;
+    const unsubscribe = onSnapshot(collection(db, 'admins'), (snap) => {
+      const list: any[] = [];
+      snap.forEach((docSnap) => {
+        list.push({
+          id: docSnap.id,
+          ...docSnap.data()
+        });
+      });
+      setAdminsList(list);
+    }, (err) => {
+      console.error('Error listening to admins:', err);
+    });
+    return () => unsubscribe();
+  }, [user, isAdmin]);
+
+  const handleAddAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !newAdminEmail.trim() || !isAdmin) return;
+    setAdminActionLoading(true);
+    try {
+      const emailLower = newAdminEmail.trim().toLowerCase();
+      await setDoc(doc(db, 'admins', emailLower), {
+        email: emailLower,
+        addedAt: serverTimestamp()
+      });
+      setNewAdminEmail('');
+      displayNotice(`Admin permissions granted for "${emailLower}"!`);
+    } catch (err: any) {
+      console.error('Failed to add admin:', err);
+      alert('Failed to add admin: ' + err.message);
+    } finally {
+      setAdminActionLoading(false);
+    }
+  };
+
+  const handleDeleteAdmin = async (adminId: string) => {
+    if (!user || !isAdmin) return;
+    const adminEmail = adminId.toLowerCase();
+    
+    if (adminEmail === user.email?.toLowerCase()) {
+      alert("You cannot revoke your own admin account settings.");
+      return;
+    }
+    const hardcoded = ['greatifet12@gmail.com', 'aroneefashion@gmail.com', 'osemenjoy448@gmail.com'];
+    if (hardcoded.includes(adminEmail)) {
+      alert("Hardcoded principal system admins cannot be revoked.");
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to revoke admin permissions for "${adminId}"?`)) {
+      return;
+    }
+    
+    setAdminActionLoading(true);
+    try {
+      await deleteDoc(doc(db, 'admins', adminId));
+      displayNotice(`Revoked admin permissions for "${adminId}" successfully.`);
+    } catch (err: any) {
+      console.error('Failed to revoke admin:', err);
+      alert('Failed to delete admin: ' + err.message);
+    } finally {
+      setAdminActionLoading(false);
+    }
+  };
 
   // Load Status feedback
   const [actionSuccess, setActionSuccess] = useState<string>('');
@@ -645,10 +718,12 @@ export default function AdminView({
         {[
           { label: 'My Hub Overview', value: 'overview' as const, icon: LayoutDashboard },
           { label: 'My Listed Products', value: 'products' as const, icon: ShoppingCart },
+          { label: 'Chats & Inquiries', value: 'chats' as const, icon: MessageSquare },
           ...(isAdmin ? [
             { label: 'Platform Categories', value: 'categories' as const, icon: FolderTree },
             { label: 'Platform Warnings', value: 'inventory' as const, icon: AlertTriangle },
-            { label: 'Global Platform Config', value: 'settings' as const, icon: Settings }
+            { label: 'Global Platform Config', value: 'settings' as const, icon: Settings },
+            { label: 'Permissions / Admins', value: 'admins' as const, icon: Users }
           ] : [])
         ].map((t) => {
           const isSelected = activeTab === t.value;
@@ -1217,6 +1292,110 @@ export default function AdminView({
               <span>Lock Configuration</span>
             </button>
           </form>
+        </div>
+      )}
+
+      {/* TAB 6: ADMIN PERMISSIONS PROFILE (System Admin Only) */}
+      {isAdmin && activeTab === 'admins' && (
+        <div className="space-y-6 animate-fade-in text-left max-w-2xl">
+          <div className="border-b border-gray-150 pb-4">
+            <h3 className="font-bold text-sm sm:text-base text-slate-brand dark:text-slate-100 font-display">Manage Platform Administrators</h3>
+            <p className="text-[10.5px] text-slate-brand/55 dark:text-slate-400">Add secure administrative access for other core members. Designated emails are vetted during Google authentication.</p>
+          </div>
+
+          <form onSubmit={handleAddAdmin} className="space-y-4 bg-white dark:bg-slate-950 border border-gray-150 dark:border-slate-800 p-6 rounded-2xl shadow-3xs">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 block font-sans">New Admin Account Email Address</label>
+              <div className="flex gap-3">
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. peer.coordinator@gmail.com"
+                  value={newAdminEmail}
+                  onChange={(e) => setNewAdminEmail(e.target.value)}
+                  className="flex-1 bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700/60 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs outline-none transition-all text-slate-brand dark:text-slate-100 font-mono font-bold"
+                />
+                <button
+                  type="submit"
+                  disabled={adminActionLoading}
+                  className="bg-emerald-brand hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1 uppercase"
+                >
+                  <Plus className="w-4 h-4 alive-blink animate-pulse" />
+                  <span>Grant Access</span>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div className="bg-white dark:bg-slate-950 border border-gray-150 dark:border-slate-800 p-6 rounded-2xl shadow-3xs space-y-4">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-slate-brand/65 dark:text-slate-400 font-sans">Active Platform Administrators</h4>
+            
+            <div className="divide-y divide-gray-150 dark:divide-slate-800 max-h-[300px] overflow-y-auto pr-1">
+              {adminsList.length === 0 ? (
+                <p className="text-[11px] text-slate-brand/40 py-4 italic text-center">No secondary administrative emails found in database...</p>
+              ) : (
+                adminsList.map((adm) => {
+                  const isSelf = adm.email?.toLowerCase() === user?.email?.toLowerCase();
+                  const hardcoded = ['greatifet12@gmail.com', 'aroneefashion@gmail.com', 'osemenjoy448@gmail.com'];
+                  const isStaticMaster = hardcoded.includes(adm.email?.toLowerCase());
+
+                  return (
+                    <div key={adm.id} className="flex justify-between items-center py-3">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-mono font-bold text-slate-brand dark:text-slate-200">
+                          {adm.email}
+                        </span>
+                        <div className="flex items-center space-x-1.5 mt-0.5">
+                          {isStaticMaster && (
+                            <span className="text-[8px] font-bold text-orange-brand bg-orange-500/10 px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
+                              Platform Master
+                            </span>
+                          )}
+                          {isSelf && (
+                            <span className="text-[8px] font-bold text-emerald-brand bg-emerald-500/10 px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
+                              Current User
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {!(isStaticMaster || isSelf) && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteAdmin(adm.id)}
+                          disabled={adminActionLoading}
+                          className="p-2 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/20 dark:hover:bg-red-950/40 rounded-lg hover:text-red-700 cursor-pointer transition-colors"
+                          title="Revoke Admin Permission"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 7: CHATS & INQUIRIES */}
+      {activeTab === 'chats' && (
+        <div className="space-y-6 animate-fade-in text-left">
+          <div className="border-b border-gray-150 pb-4">
+            <h3 className="font-bold text-sm sm:text-base text-slate-brand dark:text-slate-100 font-display">Student Enquiries & Direct Chats</h3>
+            <p className="text-[10.5px] text-slate-brand/55 dark:text-slate-400">
+              Respond directly to Trinity University shoppers in real-time. Unread updates display dynamic badges. Negotiate hostel meetup locations and coordinate trading dates.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <MarketplaceChat 
+              currentUser={user}
+              onLoginClick={onLogin}
+              isVendorDashboard={true}
+            />
+          </div>
         </div>
       )}
 

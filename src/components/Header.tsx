@@ -99,7 +99,7 @@ export default function Header({
             >
               <ShoppingBag className="w-5 h-5 text-slate-brand/70 dark:text-slate-300" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-full flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-full flex items-center justify-center shadow-xs alive-blink">
                   {cartCount}
                 </span>
               )}
@@ -123,7 +123,7 @@ export default function Header({
                   onClick={() => handleNavClick('admin')}
                   className="text-[10px] bg-emerald-brand hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg cursor-pointer leading-none uppercase tracking-wider flex items-center gap-1"
                 >
-                  <Sparkles className="w-3 h-3" />
+                  <Sparkles className="w-3 h-3 alive-blink text-amber-300" />
                   <span>Stall</span>
                 </button>
               </div>
@@ -156,7 +156,7 @@ export default function Header({
             >
               <ShoppingBag className="w-5 h-5 text-slate-brand/70 dark:text-slate-300" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-full flex items-center justify-center alive-blink">
                   {cartCount}
                 </span>
               )}

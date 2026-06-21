@@ -21,6 +21,7 @@ export interface SeedProduct {
   vendorWhatsApp?: string;
   condition?: 'new' | 'used' | 'like_new';
   dealType?: 'sell' | 'swap' | 'both';
+  discountPercentage?: number;
 }
 
 export const defaultCategories: SeedCategory[] = [
@@ -211,6 +212,7 @@ export async function checkAndSeedDatabase() {
         vendorWhatsApp: defaultSettings.whatsappNumber,
         condition: prod.condition || 'new',
         dealType: prod.dealType || 'sell',
+        discountPercentage: prod.discountPercentage || 0,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -289,6 +291,7 @@ export async function forceResetDatabase() {
         vendorWhatsApp: defaultSettings.whatsappNumber,
         condition: prod.condition || 'new',
         dealType: prod.dealType || 'sell',
+        discountPercentage: prod.discountPercentage || 0,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });

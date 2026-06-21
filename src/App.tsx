@@ -61,7 +61,12 @@ export default function App() {
   }, [isDarkMode]);
 
   // Views navigation and Selection
-  const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding'>(() => {
+    const saved = localStorage.getItem('tu_session_view');
+    return (saved && ['home', 'shop', 'about', 'contact', 'admin', 'onboarding'].includes(saved))
+      ? (saved as any)
+      : 'home';
+  });
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [shopInitialCategory, setShopInitialCategory] = useState<string>('all');
 
@@ -90,6 +95,53 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
 
+  // PWA offline installation promotion state handlers
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState<boolean>(false);
+
+  useEffect(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         (window.navigator as any).standalone;
+    
+    if (isStandalone) {
+      console.log('Hub loaded in standalone app shell environment');
+      return;
+    }
+
+    const handleBeforeInstall = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBanner(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+
+    // Warm encourage prompt launcher 5 seconds after launch to guarantee visibility
+    const delayTimer = setTimeout(() => {
+      if (!isStandalone) {
+        setShowInstallBanner(true);
+      }
+    }, 5000);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      clearTimeout(delayTimer);
+    };
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const userChoice = await deferredPrompt.userChoice;
+      if (userChoice.outcome === 'accepted') {
+        setShowInstallBanner(false);
+      }
+      setDeferredPrompt(null);
+    } else {
+      alert("Enforced PWA Installation Guide:\nTo access offline catalogs directly on iOS Safari: Tap the Share icon along the bottom tray of your screen, scroll down, and select 'Add to Home Screen'!");
+    }
+  };
+
   // Shopper's Order Draft (Cart Drawer) States
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
@@ -99,6 +151,44 @@ export default function App() {
     vendorNumber: string;
     items: CartItem[];
   } | null>(null);
+
+  // 30-minutes Inactivity Auto-Logout listener (Safeguard user stalls)
+  useEffect(() => {
+    if (!user) return;
+
+    // Set initial timestamp
+    const STORAGE_KEY = `tu_last_activity_${user.uid}`;
+    localStorage.setItem(STORAGE_KEY, Date.now().toString());
+
+    const updateActivity = () => {
+      localStorage.setItem(STORAGE_KEY, Date.now().toString());
+    };
+
+    // User interaction gestures
+    const gestures = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    gestures.forEach(g => window.addEventListener(g, updateActivity));
+
+    const checkInactivityInterval = setInterval(async () => {
+      const lastActive = Number(localStorage.getItem(STORAGE_KEY) || Date.now());
+      const maxInactivityMs = 30 * 60 * 1000; // 30 minutes of inactivity
+      
+      if (Date.now() - lastActive >= maxInactivityMs) {
+        clearInterval(checkInactivityInterval);
+        console.warn('Logging out seller due to 30 mins platform inactivity');
+        try {
+          await logoutUser();
+          alert('You have been logged out automatically due to 30 minutes of inactivity to safeguard your platform credentials.');
+        } catch (err) {
+          console.error('Session auto-logout warning:', err);
+        }
+      }
+    }, 10000); // Audit every 10 seconds
+
+    return () => {
+      gestures.forEach(g => window.removeEventListener(g, updateActivity));
+      clearInterval(checkInactivityInterval);
+    };
+  }, [user]);
 
   useEffect(() => {
     if (!isCartOpen) {
@@ -118,8 +208,14 @@ export default function App() {
         
         // Secondary Admin DB document verification
         try {
-          const adminDoc = await getDoc(doc(db, 'admins', currentUser.uid));
-          const isDocAdmin = adminDoc.exists();
+          let isDocAdmin = false;
+          const adminDocUid = await getDoc(doc(db, 'admins', currentUser.uid));
+          if (adminDocUid.exists()) {
+            isDocAdmin = true;
+          } else if (userEmail) {
+            const adminDocEmail = await getDoc(doc(db, 'admins', userEmail));
+            isDocAdmin = adminDocEmail.exists();
+          }
           setIsAdmin(isHardcodedAdmin || isDocAdmin);
         } catch (err) {
           // Fallback to email match if blocked by firestore read
@@ -421,11 +517,12 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
     }
   }, [products]);
 
-  const handleViewChange = (view: 'home' | 'shop' | 'about' | 'contact' | 'admin') => {
+  const handleViewChange = (view: 'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding') => {
     if (view === 'shop') {
       setShopInitialCategory('all');
     }
     setCurrentView(view);
+    localStorage.setItem('tu_session_view', view);
     setSelectedProductId(null);
     const url = new URL(window.location.href);
     url.searchParams.delete('product');
@@ -437,6 +534,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
   const handleViewCategoryFromHome = (categoryId: string) => {
     setShopInitialCategory(categoryId);
     setCurrentView('shop');
+    localStorage.setItem('tu_session_view', 'shop');
     setSelectedProductId(null);
     const url = new URL(window.location.href);
     url.searchParams.delete('product');
@@ -488,7 +586,14 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
   } as Category));
 
   const displayProducts = products.length > 0 ? products : fallbackProducts;
-  const displayCategories = categories.length > 0 ? categories : fallbackCategories;
+  const baseCategories = categories.length > 0 ? categories : fallbackCategories;
+  const displayCategories: Category[] = baseCategories.map(cat => {
+    const actCount = displayProducts.filter(p => p.category === cat.id && p.status === 'active').length;
+    return {
+      ...cat,
+      productCount: actCount
+    };
+  });
 
   const activeDetailProduct = selectedProductId 
     ? displayProducts.find((p) => p.id === selectedProductId) 
@@ -558,6 +663,8 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 whatsappNumber={settings?.whatsappNumber || '09047226729'}
                 onAddToCart={handleAddToCart}
                 onLogClick={logDirectWhatsAppClick}
+                currentUser={user}
+                onLoginClick={handleGoogleLogin}
               />
             </motion.div>
           ) : (
@@ -839,6 +946,46 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
               className="w-full bg-emerald-brand hover:bg-emerald-700 text-white font-bold tracking-wider uppercase py-4 rounded-full shadow-md transition-colors cursor-pointer"
             >
               I Agree & Understand
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* PWA PERSISTENT INSTALL ENFORCEMENT BANNER */}
+      {showInstallBanner && (
+        <div className="fixed bottom-6 left-6 right-6 sm:left-auto sm:right-6 sm:max-w-md z-50 bg-slate-900 text-slate-100 border border-slate-800 p-5 rounded-2xl shadow-2xl animate-fade-in flex flex-col space-y-3">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center space-x-2.5">
+              <span className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <span className="alive-blink animate-pulse">🚀</span>
+              </span>
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-white leading-none">Install TU Market Hub</h4>
+                <p className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-wider mt-0.5 animate-pulse">Enforced Platform Application</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowInstallBanner(false)} 
+              className="text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-[11px] text-slate-300 leading-relaxed text-left">
+            For secure offline access on campus, faster loading, and resilient session saving, enforce the proper installed version of this student marketplace stall!
+          </p>
+          <div className="flex items-center space-x-2 pt-1">
+            <button
+              onClick={handleInstallApp}
+              className="flex-1 bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-[10px] tracking-wider uppercase py-2.5 rounded-xl transition-all cursor-pointer alive-blink flex items-center justify-center space-x-1"
+            >
+              <span>Install App Instantly</span>
+            </button>
+            <button
+              onClick={() => setShowInstallBanner(false)}
+              className="px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] tracking-wider uppercase py-2.5 rounded-xl transition-all cursor-pointer"
+            >
+              Later
             </button>
           </div>
         </div>

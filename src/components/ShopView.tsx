@@ -219,7 +219,8 @@ export default function ShopView({
                   }`}
                 >
                   <span className="truncate max-w-[130px]">{cat.name}</span>
-                  <span className={`text-[9px] font-mono font-bold px-1.5 rounded-full ${selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-slate-brand/5 text-slate-brand/40'}`}>
+                  <span className={`text-[9px] font-mono font-bold px-1.5 rounded-full flex items-center gap-1 ${selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-slate-brand/5 text-slate-brand/40'}`}>
+                    <span className={`w-1 h-1 rounded-full alive-blink ${selectedCategory === cat.id ? 'bg-white' : 'bg-emerald-500'}`} />
                     {cat.productCount}
                   </span>
                 </button>
@@ -328,11 +329,13 @@ export default function ShopView({
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`text-[10px] font-bold py-2 px-3.5 rounded-full transition-all uppercase tracking-wider ${
+                    className={`text-[10px] font-bold py-2 px-3.5 rounded-full transition-all uppercase tracking-wider flex items-center gap-1.5 ${
                       selectedCategory === cat.id ? 'bg-emerald-brand text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-brand dark:text-slate-300'
                     }`}
                   >
-                    {cat.name} ({cat.productCount})
+                    <span>{cat.name}</span>
+                    <span className="opacity-75 font-bold">({cat.productCount})</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 alive-blink shrink-0" />
                   </button>
                 ))}
               </div>
@@ -443,7 +446,7 @@ export default function ShopView({
 
                         {/* Condition Badge */}
                         {product.condition && product.stock > 0 && (
-                          <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white ${
+                          <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
                             product.condition === 'new' ? 'bg-green-600' :
                             product.condition === 'like_new' ? 'bg-emerald-500' : 'bg-orange-500'
                           }`}>
@@ -453,7 +456,8 @@ export default function ShopView({
                       </div>
                       
                       <div className="space-y-1 px-1">
-                        <div className="flex justify-between items-center text-[9px] font-bold text-emerald-brand dark:text-emerald-400 uppercase tracking-wider">
+                        <div className="flex justify-between items-center text-[9px] font-bold text-emerald-brand dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-emerald-brand alive-blink" />
                           <span>{catName}</span>
                         </div>
                         <h3 className="font-semibold text-xs sm:text-sm text-slate-brand dark:text-slate-100 line-clamp-1 group-hover:text-emerald-brand transition-colors leading-snug">
@@ -493,8 +497,9 @@ export default function ShopView({
                           );
                         })()}
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-brand dark:text-emerald-400 hover:underline uppercase tracking-wide shrink-0">
-                        View details
+                      <span className="text-[10px] font-bold text-emerald-brand dark:text-emerald-400 hover:underline uppercase tracking-wide shrink-0 flex items-center gap-1.5">
+                        <span>View details</span>
+                        <ArrowLeft className="w-3.5 h-3.5 rotate-180 text-emerald-brand dark:text-emerald-400 alive-blink shrink-0" />
                       </span>
                     </div>
                   </div>
