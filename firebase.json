@@ -1,6 +1,6 @@
 {
   "firestore": {
-    "database": "remixed-firestore-database-id",
+    "database": "(default)",
     "rules": "firestore.rules"
   },
   "hosting": {
