@@ -112,6 +112,7 @@ export default function AdminView({
 
   // Load Status feedback
   const [actionSuccess, setActionSuccess] = useState<string>('');
+  const [actionError, setActionError] = useState<string>('');
   const [actionLoading, setActionLoading] = useState<boolean>(false);
 
   // Forms / Modal state
@@ -321,6 +322,11 @@ export default function AdminView({
     setTimeout(() => setActionSuccess(''), 4500);
   };
 
+  const displayError = (message: string) => {
+    setActionError(message);
+    setTimeout(() => setActionError(''), 6000);
+  };
+
   const handleSaveVendorWhatsApp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -408,6 +414,7 @@ export default function AdminView({
   // Submit Product Form Changes
   const executeActualProductSubmit = async () => {
     if (!user) return;
+    if (actionLoading) return; // Prevent double submission
     setActionLoading(true);
     
     const preparedImages = splitImageUrls(prodImages);
@@ -436,14 +443,15 @@ export default function AdminView({
       if (productEditing) {
         // Safe Check: Non-admins can only edit their OWN products!
         if (!isAdmin && productEditing.vendorId !== user.uid) {
-          alert('Security Access Denied: You cannot modify products uploaded by another student seller!');
+          displayError('Security Access Denied: You cannot modify products uploaded by another student seller!');
           setActionLoading(false);
+          setShowPublishConfirm(false);
           return;
         }
         const pRef = doc(db, 'products', productEditing.id);
         await updateDoc(pRef, productPayload);
         console.log('Product updated successfully.');
-        displayNotice('Successfully updated listed product!');
+        displayNotice(`Successfully saved changes for "${prodName}"!`);
       } else {
         // Create Mode
         const productsColRef = collection(db, 'products');
@@ -452,9 +460,13 @@ export default function AdminView({
           createdAt: serverTimestamp()
         });
         console.log('Product added successfully.');
-        displayNotice('Your hostel product has been successfully listed on the public grid!');
+        displayNotice(`"${prodName}" has been successfully listed live on Trinity University's seeker grid!`);
       }
+      
+      // CLOSE ALL modal views and overlays cleanly!
       setIsProductFormOpen(false);
+      setShowPublishConfirm(false);
+      
       console.log('Refreshing data...');
       try {
         await onRefreshData();
@@ -462,13 +474,15 @@ export default function AdminView({
         console.error('Refresh data error (non-fatal):', err);
       }
       console.log('Data refreshed (or attempted).');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Submit error:', err);
-      alert('Error saving product in database. Please review parameters.');
+      const errMsg = err?.message || 'Please check your connectivity or permissions.';
+      displayError(`Failed to publish listing: ${errMsg}`);
+      // Show failure alert too for direct notice
+      alert(`Failed to save listing: ${errMsg}`);
     } finally {
-      console.log('Publish action finally block reached. Setting loading to false.');
+      console.log('Publish action complete.');
       setActionLoading(false);
-      setShowPublishConfirm(false);
     }
   };
 
@@ -720,6 +734,13 @@ export default function AdminView({
         <div className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-l-4 border-emerald-500 p-4 rounded-r-2xl mb-8 flex items-center space-x-3 text-xs leading-none shadow-sm animate-fade-in">
           <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span className="font-semibold">{actionSuccess}</span>
+        </div>
+      )}
+
+      {actionError && (
+        <div className="bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-300 border-l-4 border-rose-500 p-4 rounded-r-2xl mb-8 flex items-center space-x-3 text-xs leading-none shadow-sm animate-fade-in">
+          <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
+          <span className="font-semibold">{actionError}</span>
         </div>
       )}
 
