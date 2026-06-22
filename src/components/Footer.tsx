@@ -36,10 +36,10 @@ export default function Footer({
               Nigeria's premier decentralized student marketplace. Buying and selling previous semester study tools, utensils, gadget accessories, and hostel essentials, completely commission-free.
             </p>
             <div className="flex items-center space-x-3 pt-1">
-              <a href={instagramUrl} target="_blank" rel="noreferrer" className="p-2 bg-gray-800 hover:bg-emerald-brand rounded-full text-white transition-colors">
+              <a href={instagramUrl} target="_blank" rel="noreferrer" className="p-2 bg-gray-800 hover:bg-emerald-brand rounded-full text-white transition-colors alive-blink">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href={facebookUrl} target="_blank" rel="noreferrer" className="p-2 bg-gray-800 hover:bg-emerald-brand rounded-full text-white transition-colors">
+              <a href={facebookUrl} target="_blank" rel="noreferrer" className="p-2 bg-gray-800 hover:bg-emerald-brand rounded-full text-white transition-colors alive-blink">
                 <Facebook className="w-4 h-4" />
               </a>
             </div>
@@ -144,14 +144,14 @@ export default function Footer({
               <>
                 <button 
                   onClick={onInstallClick} 
-                  className="text-emerald-brand hover:text-emerald-400 font-bold cursor-pointer flex items-center space-x-1"
+                  className="text-emerald-brand hover:text-emerald-400 font-bold cursor-pointer flex items-center space-x-1 alive-blink"
                 >
                   <span>📲 Install App</span>
                 </button>
                 <span>&bull;</span>
               </>
             )}
-            <button onClick={() => onViewChange('admin')} className="hover:text-emerald-brand cursor-pointer">
+            <button onClick={() => onViewChange('admin')} className="hover:text-emerald-brand cursor-pointer alive-blink">
               Seller Portal
             </button>
             <span>&bull;</span>

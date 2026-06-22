@@ -108,7 +108,7 @@ export default function Header({
                 </div>
                 <button
                   onClick={() => handleNavClick('admin')}
-                  className="text-[10px] bg-emerald-brand hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg cursor-pointer leading-none uppercase tracking-wider flex items-center gap-1"
+                  className="text-[10px] bg-emerald-brand hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg cursor-pointer leading-none uppercase tracking-wider flex items-center gap-1 alive-blink"
                 >
                   <Sparkles className="w-3 h-3 alive-blink text-amber-300" />
                   <span>Stall</span>
@@ -118,7 +118,7 @@ export default function Header({
               <button
                 id="btn-login"
                 onClick={onLoginClick}
-                className="text-xs font-bold text-emerald-brand dark:text-emerald-brand hover:text-white dark:hover:text-white border border-emerald-brand/30 hover:bg-emerald-brand rounded-xl py-2.5 px-5 transition-all cursor-pointer uppercase tracking-wider"
+                className="text-xs font-bold text-emerald-brand dark:text-emerald-brand hover:text-white dark:hover:text-white border border-emerald-brand/30 hover:bg-emerald-brand rounded-xl py-2.5 px-5 transition-all cursor-pointer uppercase tracking-wider alive-blink"
               >
                 Login
               </button>

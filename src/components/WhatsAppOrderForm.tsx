@@ -167,7 +167,7 @@ export default function WhatsAppOrderForm({
       <div className="pt-6 border-t border-gray-150 dark:border-slate-800">
         <button
           onClick={handleFormSubmit}
-          className="w-full bg-emerald-brand hover:bg-emerald-700 text-white font-bold text-xs py-4 rounded-xl tracking-wider uppercase flex items-center justify-center space-x-2 shadow-sm cursor-pointer transition-colors"
+          className="w-full bg-emerald-brand hover:bg-emerald-700 text-white font-bold text-xs py-4 rounded-xl tracking-wider uppercase flex items-center justify-center space-x-2 shadow-sm cursor-pointer transition-colors alive-blink"
         >
           <MessageSquare className="w-4 h-4 fill-white stroke-none" />
           <span>Confirm & Open WhatsApp</span>
