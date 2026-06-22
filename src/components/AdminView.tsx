@@ -904,7 +904,9 @@ export default function AdminView({
                     </tr>
                   ) : (
                     clicksTracker.map((lead) => {
-                      const dt = lead.createdAt?.toDate ? lead.createdAt.toDate() : new Date();
+                      const dt = lead.createdAt?.toDate ? lead.createdAt.toDate() : (lead.createdAt instanceof Date ? lead.createdAt : new Date(lead.createdAt));
+                      const formattedDate = dt.toLocaleDateString();
+                      const formattedTime = dt.toLocaleTimeString();
                       return (
                         <tr key={lead.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/10 transition-all">
                           <td className="p-3.5 sm:p-4 font-bold text-slate-brand dark:text-slate-200">
@@ -1082,7 +1084,7 @@ export default function AdminView({
                           {p.stock} units
                         </td>
                         <td className="px-6 py-4 font-mono text-[10px]">
-                          {p.createdAt ? getRelativeTime(p.createdAt.toDate()) : 'N/A'}
+                          {p.createdAt ? getRelativeTime(p.createdAt?.toDate ? p.createdAt.toDate() : (p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt))) : 'N/A'}
                         </td>
                         <td className="px-6 py-4 text-center">
                           <span className={`text-[9.5px] font-extrabold uppercase px-2.5 py-1 rounded-full ${
