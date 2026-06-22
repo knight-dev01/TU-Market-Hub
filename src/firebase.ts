@@ -17,7 +17,9 @@ const activeConfig = {
 const app = initializeApp(activeConfig);
 
 // CRITICAL: The app will break without specifying the custom databaseId
-export const db = getFirestore(app, activeConfig.firestoreDatabaseId);
+export const db = activeConfig.firestoreDatabaseId && activeConfig.firestoreDatabaseId !== '(default)'
+  ? getFirestore(app, activeConfig.firestoreDatabaseId)
+  : getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
