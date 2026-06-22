@@ -2,8 +2,11 @@ export const getRelativeTime = (timestamp: any): string => {
   if (!timestamp) return '';
   
   let date: Date;
+  // Handle Firestore Timestamp object (both class instance and plain JSON object)
   if (typeof timestamp.toDate === 'function') {
     date = timestamp.toDate();
+  } else if (timestamp && typeof timestamp.seconds === 'number' && typeof timestamp.nanoseconds === 'number') {
+    date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
   } else if (timestamp instanceof Date) {
     date = timestamp;
   } else if (typeof timestamp === 'number') {
