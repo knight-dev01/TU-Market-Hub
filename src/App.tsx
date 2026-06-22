@@ -95,7 +95,20 @@ export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
-  const [isOffline, setIsOffline] = useState<boolean>(false);
+  const [isOffline, setIsOffline] = useState<boolean>(!navigator.onLine);
+  
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
   const [hasSkippedLoginGate, setHasSkippedLoginGate] = useState<boolean>(() => {
     return localStorage.getItem('tu_skipped_login') === 'true';
   });
@@ -314,7 +327,6 @@ export default function App() {
     const unsubscribeSettings = onSnapshot(
       doc(db, 'settings', 'current'), 
       (docSnap) => {
-        setIsOffline(docSnap.metadata.fromCache);
         if (docSnap.exists()) {
           const d = docSnap.data();
           
