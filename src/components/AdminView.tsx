@@ -424,7 +424,7 @@ export default function AdminView({
       price: Number(prodPrice),
       images: preparedImages.length > 0 ? preparedImages : ['https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80'],
       category: prodCategory,
-      stock: Number(prodStock),
+      stock: prodCategory === 'services' ? 999 : Number(prodStock),
       featured: prodFeatured,
       status: prodStatus,
       condition: prodCondition,
@@ -1080,8 +1080,9 @@ export default function AdminView({
                         </td>
                         <td className="px-6 py-4">
                           <span className={`text-[10px] font-bold font-mono py-0.5 px-2 rounded-full text-white uppercase ${
-                            p.condition === 'new' ? 'bg-green-600' :
-                            p.condition === 'like_new' ? 'bg-emerald-500' : 'bg-orange-500'
+                            p.condition === 'ready' || p.condition === 'new' ? 'bg-green-600' :
+                            p.condition === 'like_new' ? 'bg-emerald-500' :
+                            p.condition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
                           }`}>
                             {(p.condition || 'like_new').toUpperCase().replace('_', ' ')}
                           </span>
@@ -1471,7 +1472,15 @@ export default function AdminView({
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Select Hub Category</label>
                   <select
                     value={prodCategory}
-                    onChange={(e) => setProdCategory(e.target.value)}
+                    onChange={(e) => {
+                      const newCat = e.target.value;
+                      setProdCategory(newCat);
+                      if (newCat === 'food') {
+                        setProdCondition('ready');
+                      } else if (prodCondition === 'ready' || prodCondition === 'not_ready') {
+                        setProdCondition('new');
+                      }
+                    }}
                     className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-bold outline-none transition-all text-slate-brand cursor-pointer appearance-none"
                   >
                     {categories.map((c) => (
@@ -1495,15 +1504,26 @@ export default function AdminView({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Condition Grade</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">
+                    {prodCategory === 'food' ? 'Preparation Status' : 'Condition Grade'}
+                  </label>
                   <select
                     value={prodCondition}
                     onChange={(e) => setProdCondition(e.target.value as any)}
                     className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-semibold outline-none transition-all text-slate-brand cursor-pointer"
                   >
-                    <option value="new">Brand New (Packed)</option>
-                    <option value="like_new">Like New (Gently Used)</option>
-                    <option value="used">Fairly Used</option>
+                    {prodCategory === 'food' ? (
+                      <>
+                        <option value="ready">Ready (Hot & Fresh)</option>
+                        <option value="not_ready">Not Ready (Pre-order)</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="new">Brand New (Packed)</option>
+                        <option value="like_new">Like New (Gently Used)</option>
+                        <option value="used">Fairly Used</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
@@ -1532,7 +1552,7 @@ export default function AdminView({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="space-y-1 sm:col-span-2">
+                <div className={`space-y-1 ${prodCategory === 'services' ? 'sm:col-span-3' : 'sm:col-span-2'}`}>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Stall Contact WhatsApp Line for this Listing</label>
                   <input
                     type="text"
@@ -1544,16 +1564,18 @@ export default function AdminView({
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Available Quantity</label>
-                  <input
-                    type="number"
-                    required
-                    value={prodStock}
-                    onChange={(e) => setProdStock(Number(e.target.value))}
-                    className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold outline-none transition-all text-slate-brand dark:text-slate-100"
-                  />
-                </div>
+                {prodCategory !== 'services' && (
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">Available Quantity</label>
+                    <input
+                      type="number"
+                      required
+                      value={prodStock}
+                      onChange={(e) => setProdStock(Number(e.target.value))}
+                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-gray-250 dark:border-slate-700 focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-xl py-2.5 px-3 text-xs font-mono font-bold outline-none transition-all text-slate-brand dark:text-slate-100"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-3 pt-2 pb-2">

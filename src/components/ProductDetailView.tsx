@@ -252,8 +252,9 @@ Please let me know if it's available so we can arrange a secure meetup!`;
             {/* Condition overlay labels */}
             {product.condition && (
               <span className={`absolute top-4 left-4 text-xs font-mono font-bold py-1.5 px-3.5 rounded-full shadow-md text-white alive-blink ${
-                product.condition === 'new' ? 'bg-green-600' :
-                product.condition === 'like_new' ? 'bg-emerald-500' : 'bg-orange-500'
+                product.condition === 'ready' || product.condition === 'new' ? 'bg-green-600' :
+                product.condition === 'like_new' ? 'bg-emerald-500' :
+                product.condition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
               }`}>
                 {product.condition.toUpperCase().replace('_', ' ')}
               </span>

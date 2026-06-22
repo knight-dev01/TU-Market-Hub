@@ -53,7 +53,9 @@ export default function ShopView({
     { label: 'All Conditions', value: 'all' },
     { label: 'New / Packed', value: 'new' },
     { label: 'Like New (Gently Used)', value: 'like_new' },
-    { label: 'Fairly Used', value: 'used' }
+    { label: 'Fairly Used', value: 'used' },
+    { label: 'Ready (Hot & Fresh)', value: 'ready' },
+    { label: 'Not Ready (Pre-order)', value: 'not_ready' }
   ];
 
   // Filtering Logic
@@ -447,8 +449,9 @@ export default function ShopView({
                         {/* Condition Badge */}
                         {product.condition && product.stock > 0 && (
                           <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
-                            product.condition === 'new' ? 'bg-green-600' :
-                            product.condition === 'like_new' ? 'bg-emerald-500' : 'bg-orange-500'
+                            product.condition === 'ready' || product.condition === 'new' ? 'bg-green-600' :
+                            product.condition === 'like_new' ? 'bg-emerald-500' :
+                            product.condition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
                           }`}>
                             {product.condition.toUpperCase().replace('_', ' ')}
                           </span>

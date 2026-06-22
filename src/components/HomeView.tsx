@@ -268,8 +268,9 @@ export default function HomeView({
                       {/* Condition Badge */}
                       {product.condition && (
                         <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
-                          product.condition === 'new' ? 'bg-green-600' :
-                          product.condition === 'like_new' ? 'bg-emerald-500' : 'bg-orange-500'
+                          product.condition === 'ready' || product.condition === 'new' ? 'bg-green-600' :
+                          product.condition === 'like_new' ? 'bg-emerald-500' :
+                          product.condition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
                         }`}>
                           {product.condition.toUpperCase().replace('_', ' ')}
                         </span>

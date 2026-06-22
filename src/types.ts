@@ -16,7 +16,7 @@ export interface Product {
   vendorId?: string;
   vendorName?: string;
   vendorWhatsApp?: string;
-  condition?: 'new' | 'used' | 'like_new';
+  condition?: 'new' | 'used' | 'like_new' | 'ready' | 'not_ready' | string;
   dealType?: 'sell' | 'swap' | 'both';
   discountPercentage?: number;
 }
