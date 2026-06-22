@@ -432,6 +432,7 @@ export default function AdminView({
     };
 
     try {
+      console.log('Starting product submit...', productEditing ? 'Editing' : 'Creating');
       if (productEditing) {
         // Safe Check: Non-admins can only edit their OWN products!
         if (!isAdmin && productEditing.vendorId !== user.uid) {
@@ -441,6 +442,7 @@ export default function AdminView({
         }
         const pRef = doc(db, 'products', productEditing.id);
         await updateDoc(pRef, productPayload);
+        console.log('Product updated successfully.');
         displayNotice('Successfully updated listed product!');
       } else {
         // Create Mode
@@ -449,14 +451,22 @@ export default function AdminView({
           ...productPayload,
           createdAt: serverTimestamp()
         });
+        console.log('Product added successfully.');
         displayNotice('Your hostel product has been successfully listed on the public grid!');
       }
       setIsProductFormOpen(false);
-      await onRefreshData();
+      console.log('Refreshing data...');
+      try {
+        await onRefreshData();
+      } catch (err) {
+        console.error('Refresh data error (non-fatal):', err);
+      }
+      console.log('Data refreshed (or attempted).');
     } catch (err) {
-      console.error(err);
+      console.error('Submit error:', err);
       alert('Error saving product in database. Please review parameters.');
     } finally {
+      console.log('Publish action finally block reached. Setting loading to false.');
       setActionLoading(false);
       setShowPublishConfirm(false);
     }
@@ -1084,7 +1094,7 @@ export default function AdminView({
                           {p.stock} units
                         </td>
                         <td className="px-6 py-4 font-mono text-[10px]">
-                          {p.createdAt ? getRelativeTime(p.createdAt?.toDate ? p.createdAt.toDate() : (p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt))) : 'N/A'}
+                          {getRelativeTime(p.createdAt) || 'N/A'}
                         </td>
                         <td className="px-6 py-4 text-center">
                           <span className={`text-[9.5px] font-extrabold uppercase px-2.5 py-1 rounded-full ${
@@ -1762,7 +1772,7 @@ export default function AdminView({
                       className="px-4 py-2 text-[10px] font-extrabold uppercase tracking-wider rounded-lg bg-emerald-brand hover:bg-emerald-700 text-white shadow-3xs cursor-pointer flex items-center space-x-1"
                     >
                       {actionLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
-                      <span>Publish Listing Live</span>
+                      <span>{actionLoading ? 'Publishing...' : 'Publish Listing Live'}</span>
                     </button>
                   </div>
                 </div>
