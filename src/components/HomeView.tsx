@@ -59,17 +59,8 @@ export default function HomeView({
 
   const categoriesContainerRef = useRef<HTMLDivElement>(null);
   const [isHoveredCategories, setIsHoveredCategories] = useState(false);
-  const [activeHighlightIndex, setActiveHighlightIndex] = useState(0);
 
   const scrollPosRef = useRef(0);
-
-  // Auto cycle active index to highlight one item beautifully as it dynamically moves
-  useEffect(() => {
-    const highlightTimer = setInterval(() => {
-      setActiveHighlightIndex((prev) => (prev + 1) % categories.length);
-    }, 2500);
-    return () => clearInterval(highlightTimer);
-  }, [categories.length]);
 
   // Auto slide effect
   useEffect(() => {
@@ -100,19 +91,19 @@ export default function HomeView({
     }
     
     let animationFrameId: number;
-    const speed = 0.55; // Perfect slow train crawl
+    const speed = 0.55; // Pixels per frame - perfect slow train crawl
 
     const scroll = () => {
       if (categoriesContainerRef.current) {
         const container = categoriesContainerRef.current;
-        const { scrollWidth, clientWidth } = container;
+        const { scrollWidth } = container;
         
         scrollPosRef.current += speed;
-        if (scrollPosRef.current + clientWidth >= scrollWidth - 1) {
+        // Reset to 0 when we passed the first set of items (half the scrollWidth)
+        if (scrollPosRef.current >= scrollWidth / 2) {
           scrollPosRef.current = 0;
         }
-        // Round strictly to prevent browser subpixel rounding jitters/glitches of Layout rendering
-        container.scrollLeft = Math.round(scrollPosRef.current);
+        container.scrollLeft = scrollPosRef.current;
       }
       animationFrameId = requestAnimationFrame(scroll);
     };
@@ -267,18 +258,10 @@ export default function HomeView({
                         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       }
                     }}
-                    animate={{
-                      scale: [1, 1.04, 1],
-                      boxShadow: ["0px 0px 0px rgba(16, 185, 129, 0)", "0px 0px 14px rgba(16, 185, 129, 0.25)", "0px 0px 0px rgba(16, 185, 129, 0)"]
-                    }}
-                    transition={{
-                      duration: 2,
-                      delay: 0.6,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
+                    animate={{ rotate: [0, 1, -1, 0] }}
+                    transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 5 }}
                     className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[9px] sm:text-xs tracking-widest uppercase py-3 px-4 sm:px-6 transition-colors cursor-pointer flex items-center justify-center space-x-1 sm:space-x-2 rounded-full border border-emerald-500/20 shadow-3xs shrink-0"
                   >
                     <Star className="w-3.5 h-3.5 fill-current" />
@@ -350,60 +333,36 @@ export default function HomeView({
         {/* Categories Strip Scroller */}
         <div 
           ref={categoriesContainerRef}
-          onMouseEnter={() => setIsHoveredCategories(true)}
-          onMouseLeave={() => setIsHoveredCategories(false)}
-          onTouchStart={() => setIsHoveredCategories(true)}
-          className="flex overflow-x-auto py-5 scrollbar-none -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6 gap-3.5 relative z-10"
+          className="flex overflow-x-auto pb-4 pt-1 snap-x scrollbar-none scroll-smooth -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6 gap-x-3.5"
         >
-          {categories.map((cat, index) => {
-            const isHighlighted = index === activeHighlightIndex;
+          {[...categories, ...categories].map((cat, index) => {
             return (
               <motion.div
-                key={cat.id}
+                key={`${cat.id}-${index}`}
                 initial={{ opacity: 0, y: 15 }}
-                animate={isHighlighted ? { 
-                  y: -8, 
-                  scale: 1.05,
-                  boxShadow: '0 12px 20px -3px rgba(5, 150, 105, 0.15), 0 4px 6px -2px rgba(5, 150, 105, 0.1)',
-                } : { 
-                  opacity: 1, 
-                  y: 0, 
-                  scale: 1,
-                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-                }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                whileHover={{ 
-                  y: -12,
-                  scale: 1.08,
-                  boxShadow: '0 20px 25px -5px rgba(5, 150, 105, 0.2), 0 10px 10px -5px rgba(5, 150, 105, 0.1)',
-                  zIndex: 20,
-                  transition: { duration: 0.15, ease: 'easeOut' } 
-                }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+                onMouseEnter={() => setIsHoveredCategories(true)}
+                onMouseLeave={() => setIsHoveredCategories(false)}
+                onTouchStart={() => setIsHoveredCategories(true)}
                 onClick={() => onCategorySelect ? onCategorySelect(cat.id) : onViewChange('shop')}
-                className={`group relative h-24 sm:h-36 lg:h-40 min-w-[110px] md:min-w-0 flex-shrink-0 snap-start flex flex-col items-center justify-center cursor-pointer border rounded-2xl transition-all duration-300 ${
-                  isHighlighted 
-                    ? 'border-emerald-500/80 bg-emerald-50/20 dark:bg-emerald-950/10 shadow-md ring-2 ring-emerald-400/30' 
-                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-brand dark:hover:border-emerald-600 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/10'
-                }`}
+                whileHover={{ scale: 1.02 }}
+                className="group relative h-24 sm:h-36 lg:h-40 min-w-[110px] md:min-w-[130px] flex-shrink-0 snap-start flex flex-col items-center justify-center cursor-pointer border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-brand dark:hover:border-emerald-600 rounded-2xl transition-all shadow-3xs"
               >
-                <div className={`mb-2 transition-colors duration-200 transform group-hover:scale-110 ${
-                  isHighlighted ? 'text-emerald-brand dark:text-emerald-400' : 'text-slate-450 group-hover:text-emerald-brand dark:group-hover:text-emerald-400'
-                }`}>
+                <div className="mb-2 text-slate-450 group-hover:text-emerald-brand dark:group-hover:text-emerald-400 transition-colors duration-200">
                   {getCategoryIcon(cat.id, "w-6 h-6 sm:w-10 sm:h-10")}
                 </div>
                 <div className="text-center px-1.5 space-y-1">
-                  <h3 className={`font-bold text-[10px] sm:text-xs tracking-wider uppercase leading-tight line-clamp-1 transition-colors ${
-                    isHighlighted ? 'text-emerald-700 dark:text-emerald-400 font-extrabold' : 'text-slate-900 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400'
-                  }`}>
+                  <h3 className="text-slate-900 dark:text-slate-100 font-bold text-[10px] sm:text-xs tracking-wider uppercase leading-tight line-clamp-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
                     {cat.name}
                   </h3>
-                  <span className={`inline-block font-mono text-[8px] font-bold py-0.5 px-2 rounded-full transition-colors ${
-                    isHighlighted 
-                      ? 'bg-emerald-100/90 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300' 
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-800 dark:group-hover:bg-emerald-950/30 dark:group-hover:text-emerald-450'
-                  }`}>
+                  <motion.span 
+                    animate={{ scale: [1, 1.05, 1], color: ['#059669', '#10b981', '#059669'] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    className="inline-block text-slate-500 font-mono text-[8px] font-bold bg-slate-100 dark:bg-slate-800 py-0.5 px-2 rounded-full"
+                  >
                     {cat.productCount} Items
-                  </span>
+                  </motion.span>
                 </div>
               </motion.div>
             );
@@ -637,34 +596,18 @@ export default function HomeView({
             <p className="text-sm font-medium text-slate-brand/50 dark:text-slate-400">Loading selected campus deals...</p>
           </div>
         ) : (
-          <div 
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6"
-            style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
-          >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {featuredProducts.map((product, index) => {
               const catName = categories.find(c => c.id === product.category)?.name || 'Listing';
-              // Mathematically compute beautiful cylindrical projection for 4 cards
-              const rotateYVal = index === 0 ? 11 : index === 1 ? 4 : index === 2 ? -4 : -11;
-              const translateZVal = index === 0 || index === 3 ? -35 : -10;
-              const translateXVal = index === 0 ? 12 : index === 1 ? 3 : index === 2 ? -3 : -12;
               return (
                 <motion.div
                   key={product.id}
-                  initial={{ opacity: 0, y: 30, rotateY: rotateYVal, z: translateZVal, x: translateXVal }}
-                  animate={{ opacity: 1, y: 0, rotateY: rotateYVal, z: translateZVal, x: translateXVal }}
-                  transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
-                  style={{ transformStyle: 'preserve-3d' }}
-                  whileHover={{ 
-                    y: -14, 
-                    scale: 1.06, 
-                    rotateY: 0, 
-                    z: 50,
-                    x: 0,
-                    boxShadow: '0 25px 30px -5px rgba(0, 0, 0, 0.15), 0 15px 15px -5px rgba(0, 0, 0, 0.08)',
-                    transition: { duration: 0.25, ease: 'easeOut' }
-                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.45), ease: 'easeOut' }}
+                  whileHover={{ y: -6, scale: 1.015, transition: { duration: 0.2 } }}
                   onClick={() => onSelectProduct(product.id)}
-                  className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-lg transition-colors flex flex-col justify-between"
+                  className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-md transition-shadow flex flex-col justify-between"
                 >
                   <div>
                     <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
