@@ -467,7 +467,7 @@ export default function ShopView({
                           From: {product.vendorName || 'TU Peer Store'}
                         </p>
                         <p className="text-[9px] font-mono text-emerald-brand/80">
-                          {getRelativeTime(product.createdAt)}
+                          {getRelativeTime(product.createdAt) || 'recent'}
                         </p>
                       </div>
                     </div>
@@ -497,7 +497,7 @@ export default function ShopView({
                           );
                         })()}
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-brand dark:text-emerald-400 hover:underline uppercase tracking-wide shrink-0 flex items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-emerald-brand dark:text-emerald-400 hover:underline uppercase tracking-wide shrink-0 flex items-center gap-1.5 alive-pulse">
                         <span>View details</span>
                         <ArrowLeft className="w-3.5 h-3.5 rotate-180 text-emerald-brand dark:text-emerald-400 alive-blink shrink-0" />
                       </span>

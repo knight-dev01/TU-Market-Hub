@@ -295,11 +295,10 @@ export default function HomeView({
                         Sold by: {product.vendorName || 'TU Peer Seller'}
                       </p>
                       <p className="text-[9px] font-mono text-emerald-brand/80">
-                        {getRelativeTime(product.createdAt)}
+                        {getRelativeTime(product.createdAt) || 'recent'}
                       </p>
                     </div>
                   </div>
-
                   <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 dark:border-slate-700 mt-3 gap-y-1">
                     <div className="flex flex-col font-mono font-bold">
                       {(() => {
@@ -325,7 +324,7 @@ export default function HomeView({
                         );
                       })()}
                     </div>
-                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 dark:hover:bg-slate-700 hover:text-white dark:hover:border-slate-700 transition-colors cursor-pointer flex items-center gap-1">
+                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 dark:hover:bg-slate-700 hover:text-white dark:hover:border-slate-700 transition-colors cursor-pointer flex items-center gap-1 alive-pulse">
                       <span>View Deal</span>
                       <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 alive-blink" />
                     </button>
