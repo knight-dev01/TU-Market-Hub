@@ -55,7 +55,9 @@ export default function ShopView({
     { label: 'Like New (Gently Used)', value: 'like_new' },
     { label: 'Fairly Used', value: 'used' },
     { label: 'Ready (Hot & Fresh)', value: 'ready' },
-    { label: 'Not Ready (Pre-order)', value: 'not_ready' }
+    { label: 'Not Ready (Pre-order)', value: 'not_ready' },
+    { label: 'Available (Active Service)', value: 'available' },
+    { label: 'Not Available (Paused)', value: 'not_available' }
   ];
 
   // Filtering Logic
@@ -112,53 +114,53 @@ export default function ShopView({
   };
 
   return (
-    <div id="shop-view" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div id="shop-view" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       
       {/* Title Header with back navigation */}
-      <div className="mb-8 space-y-4">
+      <div className="mb-4 sm:mb-8 space-y-2 sm:space-y-4">
         <button
           onClick={onBack || (() => window.location.href = '/')}
-          className="flex items-center space-x-1.5 text-xs text-slate-brand/60 dark:text-slate-400 font-bold uppercase tracking-wider hover:text-emerald-brand cursor-pointer transition-colors"
+          className="flex items-center space-x-1 text-[11px] text-slate-brand/60 dark:text-slate-400 font-bold uppercase tracking-wider hover:text-emerald-brand cursor-pointer transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back</span>
         </button>
-        <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-slate-brand">
+        <div className="space-y-1">
+          <h1 className="text-xl sm:text-4xl font-extrabold font-display tracking-tight text-slate-brand">
             Campus Storefront
           </h1>
-          <p className="text-xs sm:text-sm text-slate-brand/60 font-medium">
+          <p className="text-[11px] sm:text-sm text-slate-brand/60 font-medium">
             Showing <span className="text-emerald-brand font-bold">{filteredProducts.length}</span> verified student listings available. Buy or bargain instantly!
           </p>
         </div>
       </div>
 
       {/* Controls: Search and Mobile Filter Buttons */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
+      <div className="flex flex-col md:flex-row gap-2.5 md:gap-4 mb-5 sm:mb-8">
         {/* Search input bar */}
         <div className="relative flex-grow">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-brand/40">
-            <Search className="w-5 h-5" />
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-brand/40">
+            <Search className="w-4 h-4 sm:w-5 sm:h-5" />
           </span>
           <input
             type="text"
-            placeholder="Search study guide name, laptops, hoodies, vendor name..."
+            placeholder="Search study guides, laptops, outfits, vendor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 focus:border-emerald-brand dark:focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium transition-all text-slate-brand dark:text-slate-100 outline-none"
+            className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 focus:border-emerald-brand dark:focus:border-emerald-brand focus:ring-1 focus:ring-emerald-brand rounded-2xl py-2.5 sm:py-3.5 pl-10 sm:pl-12 pr-4 text-xs sm:text-sm font-medium transition-all text-slate-brand dark:text-slate-100 outline-none"
           />
         </div>
 
         {/* Sort Trigger */}
-        <div className="flex gap-3">
-          <div className="relative flex-grow sm:flex-grow-0 min-w-[180px]">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-brand/40 pointer-events-none">
-              <ArrowUpDown className="w-4 h-4" />
+        <div className="flex gap-2.5">
+          <div className="relative flex-grow sm:flex-grow-0 min-w-[130px] sm:min-w-[180px]">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-brand/40 pointer-events-none">
+              <ArrowUpDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl py-3.5 pl-11 pr-10 text-xs sm:text-sm font-semibold text-slate-brand dark:text-slate-100 outline-none focus:border-emerald-brand transition-all cursor-pointer appearance-none w-full"
+              className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl py-2.5 sm:py-3.5 pl-10 sm:pl-11 pr-8 sm:pr-10 text-xs sm:text-sm font-semibold text-slate-brand dark:text-slate-100 outline-none focus:border-emerald-brand transition-all cursor-pointer appearance-none w-full"
             >
               {sortOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -169,10 +171,10 @@ export default function ShopView({
           {/* Toggle Slide Panel on Mobile */}
           <button
             onClick={() => setShowFiltersMobile(!showFiltersMobile)}
-            className="md:hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-brand dark:text-slate-100 hover:text-emerald-brand p-3.5 rounded-2xl transition-all cursor-pointer flex items-center justify-center"
+            className="md:hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-brand dark:text-slate-100 hover:text-emerald-brand p-2.5 sm:p-3.5 rounded-2xl transition-all cursor-pointer flex items-center justify-center shrink-0"
             title="Toggle Filters"
           >
-            <SlidersHorizontal className="w-5 h-5" />
+            <SlidersHorizontal className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
@@ -452,13 +454,16 @@ export default function ShopView({
                           if (product.category === 'food') {
                             if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
                             else displayCondition = 'not_ready';
+                          } else if (product.category === 'services') {
+                            if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
+                            else displayCondition = 'not_available';
                           }
                           if (!displayCondition || product.stock <= 0) return null;
                           return (
                             <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
-                              displayCondition === 'ready' || displayCondition === 'new' ? 'bg-green-600' :
+                              displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
                               displayCondition === 'like_new' ? 'bg-emerald-500' :
-                              displayCondition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
+                              displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
                             }`}>
                               {displayCondition.toUpperCase().replace('_', ' ')}
                             </span>

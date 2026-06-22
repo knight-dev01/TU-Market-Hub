@@ -97,7 +97,7 @@ export default function ProductDetailView({
     const text = `${greeting}
   
 *Item:* ${product.name}
-*${product.category === 'food' ? 'Preparation' : 'Condition'}:* ${(product.condition || (product.category === 'food' ? 'ready' : 'new')).toUpperCase().replace('_', ' ')}
+*${product.category === 'food' ? 'Preparation Status' : product.category === 'services' ? 'Availability Status' : 'Condition Grade'}:* ${(product.condition || (product.category === 'food' ? 'ready' : product.category === 'services' ? 'available' : 'new')).toUpperCase().replace('_', ' ')}
 *Price:* ₦${formattingPrice}${sizeLine}
 *Image Link:* ${window.location.origin}?product=${product.id}&img=${activeImageIndex}
 
@@ -255,13 +255,16 @@ Please let me know if it's available so we can arrange a secure meetup!`;
               if (product.category === 'food') {
                 if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
                 else displayCondition = 'not_ready';
+              } else if (product.category === 'services') {
+                if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
+                else displayCondition = 'not_available';
               }
               if (!displayCondition) return null;
               return (
                 <span className={`absolute top-4 left-4 text-xs font-mono font-bold py-1.5 px-3.5 rounded-full shadow-md text-white alive-blink ${
-                  displayCondition === 'ready' || displayCondition === 'new' ? 'bg-green-600' :
+                  displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
                   displayCondition === 'like_new' ? 'bg-emerald-500' :
-                  displayCondition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
+                  displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
                 }`}>
                   {displayCondition.toUpperCase().replace('_', ' ')}
                 </span>

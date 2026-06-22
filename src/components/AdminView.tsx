@@ -1093,14 +1093,17 @@ export default function AdminView({
                             if (p.category === 'food') {
                               if (cond === 'new' || cond === 'ready' || !cond) cond = 'ready';
                               else cond = 'not_ready';
+                            } else if (p.category === 'services') {
+                              if (cond === 'new' || cond === 'available' || !cond) cond = 'available';
+                              else cond = 'not_available';
                             } else {
                               if (!cond) cond = 'new';
                             }
                             return (
                               <span className={`text-[10px] font-bold font-mono py-0.5 px-2 rounded-full text-white uppercase ${
-                                cond === 'ready' || cond === 'new' ? 'bg-green-600' :
+                                cond === 'ready' || cond === 'new' || cond === 'available' ? 'bg-green-600' :
                                 cond === 'like_new' ? 'bg-emerald-500' :
-                                cond === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
+                                cond === 'not_ready' || cond === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
                               }`}>
                                 {cond.toUpperCase().replace('_', ' ')}
                               </span>
@@ -1509,7 +1512,9 @@ export default function AdminView({
                       setProdCategory(newCat);
                       if (newCat === 'food') {
                         setProdCondition('ready');
-                      } else if (prodCondition === 'ready' || prodCondition === 'not_ready') {
+                      } else if (newCat === 'services') {
+                        setProdCondition('available');
+                      } else if (prodCondition === 'ready' || prodCondition === 'not_ready' || prodCondition === 'available' || prodCondition === 'not_available') {
                         setProdCondition('new');
                       }
                     }}
@@ -1537,7 +1542,7 @@ export default function AdminView({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-slate-brand/60 dark:text-slate-400 font-sans">
-                    {prodCategory === 'food' ? 'Preparation Status' : 'Condition Grade'}
+                    {prodCategory === 'food' ? 'Preparation Status' : prodCategory === 'services' ? 'Service Availability' : 'Condition Grade'}
                   </label>
                   <select
                     value={prodCondition}
@@ -1548,6 +1553,11 @@ export default function AdminView({
                       <>
                         <option value="ready">Ready (Hot & Fresh)</option>
                         <option value="not_ready">Not Ready (Pre-order)</option>
+                      </>
+                    ) : prodCategory === 'services' ? (
+                      <>
+                        <option value="available">Available (Active Service)</option>
+                        <option value="not_available">Not Available (Paused)</option>
                       </>
                     ) : (
                       <>
