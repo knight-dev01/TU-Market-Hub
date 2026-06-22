@@ -90,20 +90,7 @@ export default function Header({
               {isDarkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-slate-brand/70 dark:text-slate-300" />}
             </button>
 
-            {/* My Order Drafter/Cart Icon */}
-            <button
-              id="cart-trigger"
-              onClick={onCartToggle}
-              className="relative p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 text-slate-brand/80 dark:text-slate-300 hover:text-emerald-brand dark:hover:text-emerald-brand transition-colors cursor-pointer border border-gray-100 dark:border-slate-800"
-              title="Shopping Cart"
-            >
-              <ShoppingBag className="w-5 h-5 text-slate-brand/70 dark:text-slate-300" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-full flex items-center justify-center shadow-xs alive-blink">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+            {/* Shopping Cart button removed for V1 (Direct single product WhatsApp checks preferred) */}
 
             {/* Admin Dashboard Indicator or Login */}
             {user ? (
@@ -149,18 +136,7 @@ export default function Header({
               {isDarkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-slate-brand/70 dark:text-slate-300" />}
             </button>
 
-            {/* Mobile Cart Icon */}
-            <button
-              onClick={onCartToggle}
-              className="relative p-2 text-slate-brand/80 dark:text-slate-300 hover:text-emerald-brand cursor-pointer border border-gray-100 dark:border-slate-800 rounded-xl"
-            >
-              <ShoppingBag className="w-5 h-5 text-slate-brand/70 dark:text-slate-300" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-brand text-white font-mono font-bold text-[9px] rounded-full flex items-center justify-center alive-blink">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+            {/* Mobile Cart Icon removed for V1 single-checkout preference */}
 
             {/* Mobile Nav Toggle */}
             <button

@@ -3,7 +3,7 @@ import {
   collection, query, doc, getDoc, onSnapshot, orderBy, where, addDoc, serverTimestamp
 } from 'firebase/firestore';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store } from 'lucide-react';
+import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store, ArrowRight, LogIn, Sparkles, UserCheck, ShieldAlert, HeartHandshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { db, auth, loginWithGoogle, logoutUser, handleFirestoreError, OperationType } from './firebase';
@@ -94,6 +94,9 @@ export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
+  const [hasSkippedLoginGate, setHasSkippedLoginGate] = useState<boolean>(() => {
+    return localStorage.getItem('tu_skipped_login') === 'true';
+  });
 
   // PWA offline installation promotion state handlers
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -111,21 +114,12 @@ export default function App() {
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowInstallBanner(true);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
-    // Warm encourage prompt launcher 5 seconds after launch to guarantee visibility
-    const delayTimer = setTimeout(() => {
-      if (!isStandalone) {
-        setShowInstallBanner(true);
-      }
-    }, 5000);
-
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
-      clearTimeout(delayTimer);
     };
   }, []);
 
@@ -383,6 +377,8 @@ export default function App() {
   const handleLogout = async () => {
     try {
       await logoutUser();
+      localStorage.removeItem('tu_skipped_login');
+      setHasSkippedLoginGate(false);
       setCurrentView('home');
     } catch (err) {
       console.error(err);
@@ -624,7 +620,11 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
         onViewChange={handleViewChange}
         isAdmin={isAdmin}
         user={user}
-        onLoginClick={() => handleViewChange('admin')}
+        onLoginClick={() => {
+          localStorage.removeItem('tu_skipped_login');
+          setHasSkippedLoginGate(false);
+          handleViewChange('admin');
+        }}
         cartCount={cartItemTotalCount}
         onCartToggle={() => setIsCartOpen(!isCartOpen)}
         isDarkMode={isDarkMode}
@@ -666,6 +666,135 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 currentUser={user}
                 onLoginClick={handleGoogleLogin}
               />
+            </motion.div>
+          ) : (!user && !hasSkippedLoginGate) ? (
+            /* Welcome / Dual-Role Login Gateway */
+            <motion.div
+              key="gateway"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-4xl mx-auto py-12 px-4 whitespace-normal select-none"
+            >
+              <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl space-y-8">
+                {/* Header Section */}
+                <div className="text-center space-y-3">
+                  <div className="w-14 h-14 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                    <Store className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display">
+                      Welcome to TU <span className="text-emerald-brand">Market</span> Hub
+                    </h1>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-lg mx-auto leading-relaxed">
+                      Trinity University's official student marketplace and peer trading stall. Create, explore, and transact instantly within our safe hostel storefronts.
+                    </p>
+                  </div>
+                </div>
+
+                <hr className="border-gray-150 dark:border-slate-800" />
+
+                {/* Left/Right Split Card Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  {/* Buyer Section */}
+                  <div className="bg-slate-50 dark:bg-slate-900/50 border border-gray-200/50 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
+                          <ShoppingBag className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-base text-slate-900 dark:text-slate-100 font-display">Buyer / Shopper Hub</h3>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold">Browse & secure campus deals</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 font-medium">
+                        <div className="flex items-start space-x-2">
+                          <span className="text-emerald-brand font-bold">✓</span>
+                          <span>Browse gadgets, books, and fashion listings instantly</span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-emerald-brand font-bold">✓</span>
+                          <span>Draft orders and click to open pre-filled WhatsApp templates</span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-emerald-brand font-bold">✓</span>
+                          <span>Chat live inside the web browser with verified student sellers</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-gray-150 dark:border-slate-800/60">
+                      <button
+                        onClick={() => {
+                          localStorage.setItem('tu_skipped_login', 'true');
+                          setHasSkippedLoginGate(true);
+                          setCurrentView('shop');
+                        }}
+                        className="w-full bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 focus:ring-2 focus:ring-emerald-brand/35"
+                      >
+                        <span>Redirect to Shop / Marketplace</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        onClick={handleGoogleLogin}
+                        className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs tracking-wider uppercase py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2"
+                      >
+                        <UserCheck className="w-3.5 h-3.5 text-emerald-brand" />
+                        <span>Sign In as Buyer</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Seller Section */}
+                  <div className="bg-emerald-brand/[0.01] dark:bg-emerald-500/[0.01] border border-emerald-brand/10 dark:border-emerald-500/10 rounded-2xl p-6 flex flex-col justify-between space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg">
+                          <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-base text-slate-900 dark:text-slate-100 font-display">Seller / Vendor Portal</h3>
+                          <p className="text-[10px] text-emerald-500 dark:text-emerald-400 uppercase tracking-wider font-bold">List and manage hostel listings</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 font-medium font-sans">
+                        <div className="flex items-start space-x-2">
+                          <span className="text-emerald-brand font-bold">✓</span>
+                          <span>Launch your own hostel storefront and list gadgets or fashion</span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-emerald-brand font-bold">✓</span>
+                          <span>Access personal real-time peer chats and live visitor clicks</span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                          <span className="text-emerald-brand font-bold">✓</span>
+                          <span>Map listings directly to your personal WhatsApp number</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-gray-150 dark:border-slate-800/60">
+                      <button
+                        onClick={handleGoogleLogin}
+                        className="w-full bg-slate-950 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700"
+                      >
+                        <LogIn className="w-3.5 h-3.5 text-emerald-brand dark:text-white" />
+                        <span>Sign In as Student Seller</span>
+                      </button>
+                      <p className="text-[9px] text-center text-slate-400 dark:text-slate-500 mt-3 italic">
+                        Secured with built-in student @google provider auth.
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </motion.div>
           ) : (
             /* Render tabbed views */
@@ -737,6 +866,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
           contactEmail={settings.contactEmail}
           instagramUrl={settings.instagramUrl}
           facebookUrl={settings.facebookUrl}
+          onInstallClick={() => setShowInstallBanner(true)}
         />
       )}
 
@@ -952,44 +1082,52 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
       )}
 
       {/* PWA PERSISTENT INSTALL ENFORCEMENT BANNER */}
-      {showInstallBanner && (
-        <div className="fixed bottom-6 left-6 right-6 sm:left-auto sm:right-6 sm:max-w-md z-50 bg-slate-900 text-slate-100 border border-slate-800 p-5 rounded-2xl shadow-2xl animate-fade-in flex flex-col space-y-3">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-2.5">
-              <span className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-                <span className="alive-blink animate-pulse">🚀</span>
-              </span>
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-widest text-white leading-none">Install TU Market Hub</h4>
-                <p className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-wider mt-0.5 animate-pulse">Enforced Platform Application</p>
+      <AnimatePresence>
+        {showInstallBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: 80, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 35, duration: 1.5 }}
+            className="fixed bottom-6 left-6 right-6 sm:left-auto sm:right-6 sm:max-w-md z-50 bg-slate-900 text-slate-100 border border-slate-800 p-5 rounded-2xl shadow-2xl flex flex-col space-y-3"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-center space-x-2.5">
+                <span className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                  <span className="alive-blink animate-pulse">🚀</span>
+                </span>
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-white leading-none">Install TU Market Hub</h4>
+                  <p className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-wider mt-0.5 animate-pulse">Enforced Platform Application</p>
+                </div>
               </div>
+              <button 
+                onClick={() => setShowInstallBanner(false)} 
+                className="text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <button 
-              onClick={() => setShowInstallBanner(false)} 
-              className="text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <p className="text-[11px] text-slate-300 leading-relaxed text-left">
-            For secure offline access on campus, faster loading, and resilient session saving, enforce the proper installed version of this student marketplace stall!
-          </p>
-          <div className="flex items-center space-x-2 pt-1">
-            <button
-              onClick={handleInstallApp}
-              className="flex-1 bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-[10px] tracking-wider uppercase py-2.5 rounded-xl transition-all cursor-pointer alive-blink flex items-center justify-center space-x-1"
-            >
-              <span>Install App Instantly</span>
-            </button>
-            <button
-              onClick={() => setShowInstallBanner(false)}
-              className="px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] tracking-wider uppercase py-2.5 rounded-xl transition-all cursor-pointer"
-            >
-              Later
-            </button>
-          </div>
-        </div>
-      )}
+            <p className="text-[11px] text-slate-300 leading-relaxed text-left">
+              For secure offline access on campus, faster loading, and resilient session saving, enforce the proper installed version of this student marketplace stall!
+            </p>
+            <div className="flex items-center space-x-2 pt-1">
+              <button
+                onClick={handleInstallApp}
+                className="flex-1 bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-[10px] tracking-wider uppercase py-2.5 rounded-xl transition-all cursor-pointer alive-blink flex items-center justify-center space-x-1"
+              >
+                <span>Install App Instantly</span>
+              </button>
+              <button
+                onClick={() => setShowInstallBanner(false)}
+                className="px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] tracking-wider uppercase py-2.5 rounded-xl transition-all cursor-pointer"
+              >
+                Later
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

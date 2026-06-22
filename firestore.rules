@@ -13,11 +13,13 @@ service cloud.firestore {
     
     function isAdmin() {
       return isSignedIn() && (
-        request.auth.token.email == "greatifet12@gmail.com" || 
-        request.auth.token.email == "aroneefashion@gmail.com" || 
-        request.auth.token.email == "osemenjoy448@gmail.com" || 
+        ('email' in request.auth.token && (
+          request.auth.token.email.toLowerCase() == "greatifet12@gmail.com" || 
+          request.auth.token.email.toLowerCase() == "aroneefashion@gmail.com" || 
+          request.auth.token.email.toLowerCase() == "osemenjoy448@gmail.com"
+        )) ||
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+        ('email' in request.auth.token && exists(/databases/$(database)/documents/admins/$(request.auth.token.email.toLowerCase())))
       );
     }
     
@@ -121,8 +123,12 @@ service cloud.firestore {
     
     // Products Collection
     match /products/{productId} {
-      // Allow general list and read, write is protected for admins and verified product owners (vendors)
-      allow read: if true;
+      // Get: Allow reading any specific product
+      allow get: if true;
+      // List: Allow admins to query any products, and shoppers to query only active or out of stock products
+      // Note: This enforces constraint 12 of security_spec.md by ensuring that non-admin list requests fail unless they filter by status
+      allow list: if isAdmin() || (resource.data.status in ['active', 'out_of_stock']);
+      
       allow create: if isVerifiedUser() && isValidId(productId) && isValidProduct(incoming()) && 
                     incoming().createdAt == request.time && incoming().updatedAt == request.time &&
                     (isAdmin() || (incoming().vendorId == request.auth.uid && incoming().featured == false));
@@ -145,19 +151,23 @@ service cloud.firestore {
     match /admins/{adminId} {
       allow get: if isSignedIn() && (
         request.auth.uid == adminId || 
-        request.auth.token.email == adminId ||
-        request.auth.token.email == "greatifet12@gmail.com" || 
-        request.auth.token.email == "aroneefashion@gmail.com" ||
-        request.auth.token.email == "osemenjoy448@gmail.com" ||
+        ('email' in request.auth.token && (
+          request.auth.token.email.toLowerCase() == adminId.toLowerCase() ||
+          request.auth.token.email.toLowerCase() == "greatifet12@gmail.com" || 
+          request.auth.token.email.toLowerCase() == "aroneefashion@gmail.com" ||
+          request.auth.token.email.toLowerCase() == "osemenjoy448@gmail.com"
+        )) ||
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+        ('email' in request.auth.token && exists(/databases/$(database)/documents/admins/$(request.auth.token.email.toLowerCase())))
       );
       allow list: if isSignedIn() && (
-        request.auth.token.email == "greatifet12@gmail.com" || 
-        request.auth.token.email == "aroneefashion@gmail.com" ||
-        request.auth.token.email == "osemenjoy448@gmail.com" ||
+        ('email' in request.auth.token && (
+          request.auth.token.email.toLowerCase() == "greatifet12@gmail.com" || 
+          request.auth.token.email.toLowerCase() == "aroneefashion@gmail.com" ||
+          request.auth.token.email.toLowerCase() == "osemenjoy448@gmail.com"
+        )) ||
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+        ('email' in request.auth.token && exists(/databases/$(database)/documents/admins/$(request.auth.token.email.toLowerCase())))
       );
       allow create, update: if isVerifiedUser() && isAdmin() && isValidAdmin(incoming());
       allow delete: if isVerifiedUser() && isAdmin();
@@ -166,7 +176,7 @@ service cloud.firestore {
     // Vendors Collection
     match /vendors/{vendorId} {
       allow get: if true;
-      allow list: if isAdmin();
+      allow list: if isSignedIn() && isAdmin();
       allow create, update: if isVerifiedUser() && (request.auth.uid == vendorId || isAdmin()) && isValidVendor(incoming());
       allow delete: if isVerifiedUser() && (request.auth.uid == vendorId || isAdmin());
     }

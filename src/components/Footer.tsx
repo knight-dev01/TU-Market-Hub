@@ -6,6 +6,7 @@ interface FooterProps {
   contactEmail: string;
   instagramUrl: string;
   facebookUrl: string;
+  onInstallClick?: () => void;
 }
 
 export default function Footer({
@@ -13,7 +14,8 @@ export default function Footer({
   whatsappNumber,
   contactEmail,
   instagramUrl,
-  facebookUrl
+  facebookUrl,
+  onInstallClick
 }: FooterProps) {
   return (
     <footer id="app-footer" className="bg-[#111111] text-gray-300 border-t border-gray-800">
@@ -138,6 +140,17 @@ export default function Footer({
             &copy; {new Date().getFullYear()} TU MARKET HUB. Built with ❤️ for student peer-to-peer exchanges in Nigeria.
           </div>
           <div className="flex space-x-5">
+            {onInstallClick && (
+              <>
+                <button 
+                  onClick={onInstallClick} 
+                  className="text-emerald-brand hover:text-emerald-400 font-bold cursor-pointer flex items-center space-x-1"
+                >
+                  <span>📲 Install App</span>
+                </button>
+                <span>&bull;</span>
+              </>
+            )}
             <button onClick={() => onViewChange('admin')} className="hover:text-emerald-brand cursor-pointer">
               Seller Portal
             </button>

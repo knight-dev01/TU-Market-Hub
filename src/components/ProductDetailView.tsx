@@ -33,10 +33,8 @@ export default function ProductDetailView({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>('');
-  const [addFeedback, setAddFeedback] = useState(false);
   const [promoCopied, setPromoCopied] = useState(false);
   const [redirectingWA, setRedirectingWA] = useState(false);
-  const [showLiveChat, setShowLiveChat] = useState(false);
 
   const isFashion = product.category === 'fashion';
   const sizes = isFashion ? ['XS', 'S', 'M', 'L', 'XL', 'EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'] : [];
@@ -78,11 +76,11 @@ export default function ProductDetailView({
     return cleaned;
   };
 
-  const handleWhatsAppOrder = () => {
+  const handleWhatsAppOrder = (type: 'buy' | 'negotiate' = 'buy') => {
     if (!product.stock || product.status === 'out_of_stock') return;
     
     if (isFashion && !selectedSize) {
-      alert("Please select a size/spec option before ordering!");
+      alert("Please select a size/spec option before purchasing!");
       return;
     }
 
@@ -92,31 +90,23 @@ export default function ProductDetailView({
     const formattingPrice = discountedPrice.toLocaleString();
     const sizeLine = isFashion && selectedSize ? `\nSize Preference: ${selectedSize}` : '';
 
-    const text = `Hello ${product.vendorName || 'TU MARKET HUB Seller'},
+    const greeting = type === 'buy'
+      ? `Hello ${product.vendorName || 'TU MARKET HUB Seller'},\n\nI would like to BUY your listing instantly on campus:`
+      : `Hello ${product.vendorName || 'TU MARKET HUB Seller'},\n\nI am interested in your listing on TU Market Hub. Can we NEGOTIATE the price?`;
 
-I saw your listing on the TU MARKET HUB:
+    const text = `${greeting}
   
 *Item:* ${product.name}
 *Condition:* ${product.condition?.toUpperCase().replace('_', ' ') || 'Good'}
 *Price:* ₦${formattingPrice}${sizeLine}
 *Image Link:* ${window.location.origin}?product=${product.id}&img=${activeImageIndex}
 
-Is this item still available? I would like to arrange a purchase.`;
+Please let me know if it's available so we can arrange a secure meetup!`;
 
     const encodedText = encodeURIComponent(text);
     setRedirectingWA(true);
     setTimeout(() => setRedirectingWA(false), 3000);
     window.open(`https://wa.me/${formatWhatsAppLink(targetWhatsApp)}?text=${encodedText}`, '_blank');
-  };
-
-  const handleAddToCartClick = () => {
-    if (isFashion && !selectedSize) {
-      alert("Please select your preferred specification or size first!");
-      return;
-    }
-    onAddToCart(product, selectedSize || 'One Size');
-    setAddFeedback(true);
-    setTimeout(() => setAddFeedback(false), 2500);
   };
 
   const handleShare = async () => {
@@ -400,30 +390,31 @@ Is this item still available? I would like to arrange a purchase.`;
             ) : null}
 
             {product.stock > 0 && (
-              <div className="flex flex-col sm:flex-row gap-3.5">
+              <div className="flex flex-col space-y-3">
                 
                 {/* 1. Direct WhatsApp Purchase (Primary CTA) */}
                 <button
-                  onClick={handleWhatsAppOrder}
+                  onClick={() => handleWhatsAppOrder('buy')}
                   disabled={redirectingWA}
-                  className={`flex-1 text-white font-bold text-xs tracking-widest uppercase py-4.5 px-6 rounded-full transition-colors flex items-center justify-center space-x-2 w-full ${
+                  className={`w-full text-white font-bold text-xs tracking-widest uppercase py-4.5 px-6 rounded-full transition-colors flex items-center justify-center space-x-2 ${
                     redirectingWA 
                       ? 'bg-emerald-600 border border-emerald-600 opacity-90 cursor-default' 
-                      : 'bg-emerald-brand border border-emerald-brand hover:bg-emerald-700 cursor-pointer'
+                      : 'bg-emerald-brand border border-emerald-brand hover:bg-emerald-700 cursor-pointer shadow-md'
                   }`}
                 >
                   <MessageSquare className={`w-4 h-4 fill-white stroke-none alive-blink ${redirectingWA ? 'animate-bounce' : ''}`} />
-                  <span>{redirectingWA ? 'Opening WhatsApp...' : 'Trade / WhatsApp Seller'}</span>
+                  <span>{redirectingWA ? 'Opening WhatsApp...' : 'Buy Instantly via WhatsApp'}</span>
                 </button>
 
-                {/* 2. Add to Order Draft/Cart and Share */}
-                <div className="flex gap-3.5 w-full sm:w-auto">
+                {/* 2. Direct Negotiate / Make Offer Row */}
+                <div className="flex gap-3.5 w-full">
                   <button
-                    onClick={handleAddToCartClick}
-                    className="flex-1 sm:flex-none bg-transparent border border-gray-300 dark:border-slate-600 text-slate-brand dark:text-slate-200 font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-center space-x-2"
+                    onClick={() => handleWhatsAppOrder('negotiate')}
+                    disabled={redirectingWA}
+                    className="flex-1 bg-transparent border border-gray-300 dark:border-slate-700 text-slate-brand dark:text-slate-200 font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-center space-x-2"
                   >
-                    <ShoppingBag className="w-4 h-4 text-slate-brand/80 dark:text-slate-300 alive-blink" />
-                    <span>Draft Offer</span>
+                    <ClipboardCheck className="w-4 h-4 text-slate-brand/80 dark:text-slate-300" />
+                    <span>Negotiate Price</span>
                   </button>
 
                   <button
@@ -431,59 +422,21 @@ Is this item still available? I would like to arrange a purchase.`;
                     className="flex-none bg-transparent border border-gray-300 dark:border-slate-600 text-slate-brand dark:text-slate-200 font-bold py-4 px-5 rounded-full transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center justify-center"
                     title="Share this product"
                   >
-                    <Share2 className="w-4 h-4 text-slate-brand/80 dark:text-slate-300 alive-blink" />
+                    <Share2 className="w-4 h-4 text-slate-brand/80 dark:text-slate-400 alive-blink" />
                   </button>
                 </div>
 
               </div>
             )}
 
-            {/* Live Web Chat Toggle Button */}
+            {/* Live Web Chat Teaser for V2 */}
             <button
-              onClick={() => setShowLiveChat(true)}
-              className="w-full font-bold text-xs tracking-widest uppercase py-4 px-6 rounded-full transition-all flex items-center justify-center space-x-2 border cursor-pointer bg-emerald-brand/10 border-transparent hover:bg-emerald-brand/20 text-emerald-brand"
+              disabled
+              className="w-full font-bold text-[10.5px] tracking-widest uppercase py-4 px-6 rounded-full flex items-center justify-center space-x-2 border border-dashed border-gray-200 dark:border-slate-800 bg-gray-50/40 dark:bg-slate-900/30 text-slate-400 dark:text-slate-500 cursor-not-allowed mt-4"
             >
-              <MessageSquareCode className="w-4 h-4 text-emerald-brand animate-pulse" />
-              <span>Chat Live Inside Marketplace</span>
+              <MessageSquareCode className="w-4 h-4 text-slate-400 dark:text-slate-600" />
+              <span>In-App Live Chat (Coming in V2)</span>
             </button>
-
-            {showLiveChat && (
-              <div 
-                className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-fade-in text-left"
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) {
-                    setShowLiveChat(false);
-                  }
-                }}
-              >
-                <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl relative shadow-2xl overflow-hidden border border-gray-150 dark:border-slate-800">
-                  <div className="absolute right-4 top-4.5 z-10 flex items-center space-x-2">
-                    <button
-                      onClick={() => setShowLiveChat(false)}
-                      className="bg-slate-900/10 hover:bg-slate-900/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 p-2 rounded-full cursor-pointer transition-all"
-                      title="Close Chat"
-                    >
-                      <X className="w-4.5 h-4.5" />
-                    </button>
-                  </div>
-                  
-                  <div className="p-1">
-                    <MarketplaceChat 
-                      currentUser={currentUser}
-                      onLoginClick={onLoginClick}
-                      activeProduct={product}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {addFeedback && (
-              <div className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-l-4 border-emerald-500 p-3.5 rounded-r-xl flex items-center space-x-2.5 text-xs animate-fade-in mt-3">
-                <CheckCircle className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span className="font-semibold">Added to your shopping draft. Click Cart or Basket in header to view.</span>
-              </div>
-            )}
 
             {/* Social Share Link Card / Open Graph Preview Card Mockup */}
             <div className="bg-slate-50 dark:bg-slate-800/20 border border-gray-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 text-left mt-6">
