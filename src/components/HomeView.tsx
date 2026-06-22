@@ -459,6 +459,9 @@ export default function HomeView({
                       <p className="text-[10px] text-slate-brand/50 dark:text-slate-400">
                         Seller: {product.vendorName || 'TU Stall'}
                       </p>
+                      <p className="text-[9px] font-mono text-emerald-brand/80">
+                        {getRelativeTime(product.createdAt)}
+                      </p>
                     </div>
                   </div>
                   <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 dark:border-slate-700 mt-3 gap-y-1">
