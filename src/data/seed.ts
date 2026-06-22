@@ -19,7 +19,7 @@ export interface SeedProduct {
   vendorId?: string;
   vendorName?: string;
   vendorWhatsApp?: string;
-  condition?: 'new' | 'used' | 'like_new';
+  condition?: 'new' | 'used' | 'like_new' | 'ready' | 'not_ready' | string;
   dealType?: 'sell' | 'swap' | 'both';
   discountPercentage?: number;
 }
@@ -124,13 +124,13 @@ export const defaultProducts: SeedProduct[] = [
     price: 5000,
     images: ['https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=800&q=80'],
     category: 'services',
-    stock: 10,
+    stock: 999,
     featured: false,
     status: 'active',
     vendorId: 'vendor-5',
     vendorName: 'DevAyo TU',
     vendorWhatsApp: '+2347012345678',
-    condition: 'new',
+    condition: '',
     dealType: 'sell'
   },
   {
@@ -145,7 +145,7 @@ export const defaultProducts: SeedProduct[] = [
     vendorId: 'vendor-6',
     vendorName: 'Shades Kitchen',
     vendorWhatsApp: '+2348088990011',
-    condition: 'new',
+    condition: 'ready',
     dealType: 'sell'
   }
 ];
@@ -210,7 +210,7 @@ export async function checkAndSeedDatabase() {
         vendorId: prod.vendorId || 'system-vendor',
         vendorName: prod.vendorName || 'TU Official Stall',
         vendorWhatsApp: defaultSettings.whatsappNumber,
-        condition: prod.condition || 'new',
+        condition: prod.condition !== undefined ? prod.condition : (prod.category === 'food' ? 'ready' : prod.category === 'services' ? '' : 'new'),
         dealType: prod.dealType || 'sell',
         discountPercentage: prod.discountPercentage || 0,
         createdAt: serverTimestamp(),
@@ -289,7 +289,7 @@ export async function forceResetDatabase() {
         vendorId: prod.vendorId || 'system-vendor',
         vendorName: prod.vendorName || 'TU Official Stall',
         vendorWhatsApp: defaultSettings.whatsappNumber,
-        condition: prod.condition || 'new',
+        condition: prod.condition !== undefined ? prod.condition : (prod.category === 'food' ? 'ready' : prod.category === 'services' ? '' : 'new'),
         dealType: prod.dealType || 'sell',
         discountPercentage: prod.discountPercentage || 0,
         createdAt: serverTimestamp(),

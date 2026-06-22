@@ -149,7 +149,7 @@ export default function AdminView({
   const [prodStock, setProdStock] = useState<number>(1);
   const [prodFeatured, setProdFeatured] = useState<boolean>(false);
   const [prodStatus, setProdStatus] = useState<'active' | 'draft' | 'out_of_stock'>('active');
-  const [prodCondition, setProdCondition] = useState<'new' | 'like_new' | 'used'>('like_new');
+  const [prodCondition, setProdCondition] = useState<'new' | 'like_new' | 'used' | 'ready' | 'not_ready'>('like_new');
   const [prodDealType, setProdDealType] = useState<'sell' | 'swap' | 'both'>('sell');
   const [prodDiscount, setProdDiscount] = useState<number>(0);
   const [prodWhatsApp, setProdWhatsApp] = useState('');
@@ -377,11 +377,12 @@ export default function AdminView({
       setProdDesc(prod.description);
       setProdPrice(prod.price);
       setProdImages(prod.images.join(', '));
-      setProdCategory(prod.category);
+      const initialCat = prod.category;
+      setProdCategory(initialCat);
       setProdStock(prod.stock);
       setProdFeatured(prod.featured);
       setProdStatus(prod.status);
-      setProdCondition(prod.condition || 'like_new');
+      setProdCondition(prod.condition || (initialCat === 'food' ? 'ready' : 'like_new'));
       setProdDealType(prod.dealType || 'sell');
       setProdDiscount(prod.discountPercentage || 0);
       setProdWhatsApp(prod.vendorWhatsApp || vendorWhatsApp || settings?.whatsappNumber || '');
@@ -391,11 +392,12 @@ export default function AdminView({
       setProdDesc('');
       setProdPrice(8000);
       setProdImages('https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80');
-      setProdCategory(categories[0]?.id || 'academics');
-      setProdStock(1);
+      const defaultCat = categories[0]?.id || 'academics';
+      setProdCategory(defaultCat);
+      setProdStock(defaultCat === 'services' ? 999 : 1);
       setProdFeatured(false);
       setProdStatus('active');
-      setProdCondition('like_new');
+      setProdCondition(defaultCat === 'food' ? 'ready' : 'like_new');
       setProdDealType('sell');
       setProdDiscount(0);
       setProdWhatsApp(vendorWhatsApp || settings?.whatsappNumber || '');
@@ -1079,13 +1081,24 @@ export default function AdminView({
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`text-[10px] font-bold font-mono py-0.5 px-2 rounded-full text-white uppercase ${
-                            p.condition === 'ready' || p.condition === 'new' ? 'bg-green-600' :
-                            p.condition === 'like_new' ? 'bg-emerald-500' :
-                            p.condition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
-                          }`}>
-                            {(p.condition || 'like_new').toUpperCase().replace('_', ' ')}
-                          </span>
+                          {(() => {
+                            let cond = p.condition;
+                            if (p.category === 'food') {
+                              if (cond === 'new' || cond === 'ready' || !cond) cond = 'ready';
+                              else cond = 'not_ready';
+                            } else {
+                              if (!cond) cond = 'new';
+                            }
+                            return (
+                              <span className={`text-[10px] font-bold font-mono py-0.5 px-2 rounded-full text-white uppercase ${
+                                cond === 'ready' || cond === 'new' ? 'bg-green-600' :
+                                cond === 'like_new' ? 'bg-emerald-500' :
+                                cond === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
+                              }`}>
+                                {cond.toUpperCase().replace('_', ' ')}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col font-mono font-bold">
@@ -1413,22 +1426,34 @@ export default function AdminView({
         </div>
       )}
 
-      {/* TAB 7: CHATS & INQUIRIES */}
+      {/* TAB 7: CHATS & INQUIRIES (Dormant Version 2) */}
       {activeTab === 'chats' && (
         <div className="space-y-6 animate-fade-in text-left">
           <div className="border-b border-gray-150 pb-4">
             <h3 className="font-bold text-sm sm:text-base text-slate-brand dark:text-slate-100 font-display">Student Enquiries & Direct Chats</h3>
             <p className="text-[10.5px] text-slate-brand/55 dark:text-slate-400">
-              Respond directly to Trinity University shoppers in real-time. Unread updates display dynamic badges. Negotiate hostel meetup locations and coordinate trading dates.
+              Interactive in-app direct messaging and real-time student negotiations are currently under active development.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <MarketplaceChat 
-              currentUser={user}
-              onLoginClick={onLogin}
-              isVendorDashboard={true}
-            />
+          <div className="max-w-4xl mx-auto py-16 px-6 border-2 border-dashed border-gray-200 dark:border-slate-800 rounded-3xl bg-gray-50/40 dark:bg-slate-900/30 text-center space-y-4">
+            <div className="mx-auto w-12 h-12 rounded-full bg-slate-150/70 dark:bg-slate-800 flex items-center justify-center">
+              <MessageSquare className="w-6 h-6 text-slate-400" />
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-bold text-sm text-slate-brand dark:text-slate-200 tracking-wide">In-App Live Chat & Student Enquiries (V2)</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                This board is currently dormant. High-fidelity instant chat networks, automated read receipts, and live negotiator popups will launch globally with Version 2.
+              </p>
+            </div>
+            <div className="pt-2">
+              <button
+                disabled
+                className="px-6 py-2.5 rounded-full font-bold text-[10px] tracking-widest uppercase border border-dashed border-gray-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 cursor-not-allowed inline-flex items-center space-x-2"
+              >
+                <span>Dormant feature (Coming in V2)</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

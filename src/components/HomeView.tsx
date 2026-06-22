@@ -266,15 +266,23 @@ export default function HomeView({
                         loading="lazy"
                       />
                       {/* Condition Badge */}
-                      {product.condition && (
-                        <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
-                          product.condition === 'ready' || product.condition === 'new' ? 'bg-green-600' :
-                          product.condition === 'like_new' ? 'bg-emerald-500' :
-                          product.condition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
-                        }`}>
-                          {product.condition.toUpperCase().replace('_', ' ')}
-                        </span>
-                      )}
+                      {(() => {
+                        let displayCondition = product.condition;
+                        if (product.category === 'food') {
+                          if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
+                          else displayCondition = 'not_ready';
+                        }
+                        if (!displayCondition) return null;
+                        return (
+                          <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
+                            displayCondition === 'ready' || displayCondition === 'new' ? 'bg-green-600' :
+                            displayCondition === 'like_new' ? 'bg-emerald-500' :
+                            displayCondition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
+                          }`}>
+                            {displayCondition.toUpperCase().replace('_', ' ')}
+                          </span>
+                        );
+                      })()}
                     </div>
 
                     <div className="space-y-1 px-1">
@@ -442,11 +450,19 @@ export default function HomeView({
                       <span className="absolute top-2 right-2 bg-slate-900 text-white p-1.5 rounded-sm">
                         <Star className="w-3.5 h-3.5 fill-white stroke-none" />
                       </span>
-                      {product.condition && (
-                        <span className="absolute top-2 left-2 bg-slate-900/80 text-white text-[8px] font-bold font-mono py-0.5 px-2 rounded-sm alive-blink">
-                          {product.condition.toUpperCase()}
-                        </span>
-                      )}
+                      {(() => {
+                        let displayCondition = product.condition;
+                        if (product.category === 'food') {
+                          if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'READY';
+                          else displayCondition = 'NOT READY';
+                        }
+                        if (!displayCondition) return null;
+                        return (
+                          <span className="absolute top-2 left-2 bg-slate-900/80 text-white text-[8px] font-bold font-mono py-0.5 px-2 rounded-sm alive-blink">
+                            {displayCondition.toUpperCase().replace('_', ' ')}
+                          </span>
+                        );
+                      })()}
                     </div>
                     <div className="space-y-1 px-1">
                       <p className="text-[9px] tracking-widest text-emerald-brand uppercase flex items-center gap-1">

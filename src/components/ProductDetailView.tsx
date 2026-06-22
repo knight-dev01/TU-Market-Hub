@@ -97,7 +97,7 @@ export default function ProductDetailView({
     const text = `${greeting}
   
 *Item:* ${product.name}
-*Condition:* ${product.condition?.toUpperCase().replace('_', ' ') || 'Good'}
+*${product.category === 'food' ? 'Preparation' : 'Condition'}:* ${(product.condition || (product.category === 'food' ? 'ready' : 'new')).toUpperCase().replace('_', ' ')}
 *Price:* ₦${formattingPrice}${sizeLine}
 *Image Link:* ${window.location.origin}?product=${product.id}&img=${activeImageIndex}
 
@@ -250,15 +250,23 @@ Please let me know if it's available so we can arrange a secure meetup!`;
             </button>
             
             {/* Condition overlay labels */}
-            {product.condition && (
-              <span className={`absolute top-4 left-4 text-xs font-mono font-bold py-1.5 px-3.5 rounded-full shadow-md text-white alive-blink ${
-                product.condition === 'ready' || product.condition === 'new' ? 'bg-green-600' :
-                product.condition === 'like_new' ? 'bg-emerald-500' :
-                product.condition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
-              }`}>
-                {product.condition.toUpperCase().replace('_', ' ')}
-              </span>
-            )}
+            {(() => {
+              let displayCondition = product.condition;
+              if (product.category === 'food') {
+                if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
+                else displayCondition = 'not_ready';
+              }
+              if (!displayCondition) return null;
+              return (
+                <span className={`absolute top-4 left-4 text-xs font-mono font-bold py-1.5 px-3.5 rounded-full shadow-md text-white alive-blink ${
+                  displayCondition === 'ready' || displayCondition === 'new' ? 'bg-green-600' :
+                  displayCondition === 'like_new' ? 'bg-emerald-500' :
+                  displayCondition === 'not_ready' ? 'bg-amber-500' : 'bg-orange-500'
+                }`}>
+                  {displayCondition.toUpperCase().replace('_', ' ')}
+                </span>
+              );
+            })()}
           </div>
 
           {/* Gallery Thumbnails List */}
