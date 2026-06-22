@@ -77,8 +77,8 @@ export default function HomeView({
   const newArrivals = [...products]
     .filter(p => p.status === 'active')
     .sort((a, b) => {
-      const timeA = a.createdAt?.seconds || a.createdAt?.toMillis?.() || 0;
-      const timeB = b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
+      const timeA = a.updatedAt?.seconds || a.createdAt?.seconds || a.createdAt?.toMillis?.() || 0;
+      const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
       return timeB - timeA;
     })
     .slice(0, 8);
@@ -304,7 +304,7 @@ export default function HomeView({
                         Sold by: {product.vendorName || 'TU Peer Seller'}
                       </p>
                       <p className="text-[9px] font-mono text-emerald-brand/80">
-                        {getRelativeTime(product.createdAt) || 'recent'}
+                        {getRelativeTime(product.updatedAt || product.createdAt) || 'recent'}
                       </p>
                     </div>
                   </div>
@@ -476,7 +476,7 @@ export default function HomeView({
                         Seller: {product.vendorName || 'TU Stall'}
                       </p>
                       <p className="text-[9px] font-mono text-emerald-brand/80">
-                        {getRelativeTime(product.createdAt)}
+                        {getRelativeTime(product.updatedAt || product.createdAt)}
                       </p>
                     </div>
                   </div>

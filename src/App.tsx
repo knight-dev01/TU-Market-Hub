@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { 
-  collection, query, doc, getDoc, onSnapshot, orderBy, where, addDoc, serverTimestamp
+  collection, query, doc, getDoc, onSnapshot, orderBy, where, addDoc, serverTimestamp, updateDoc
 } from 'firebase/firestore';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store, ArrowRight, LogIn, Sparkles, UserCheck, ShieldAlert, HeartHandshake } from 'lucide-react';
@@ -272,10 +272,10 @@ export default function App() {
           });
         });
 
-        // Always sort by creation timestamp descending in client-side memory
+        // Always sort by latest update or creation timestamp descending in client-side memory
         prodData.sort((a, b) => {
-          const timeA = a.createdAt?.seconds || 0;
-          const timeB = b.createdAt?.seconds || 0;
+          const timeA = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
+          const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
           return timeB - timeA;
         });
 
@@ -460,7 +460,7 @@ export default function App() {
     let totalVal = 0;
     let orderDetailLines = '';
     
-    // Log each ordered item in Firestore for tracking
+    // Log each ordered item in Firestore for tracking and decrement stock in real-time
     items.forEach(async (item) => {
       try {
         await addDoc(collection(db, 'clicks'), {
@@ -472,8 +472,30 @@ export default function App() {
           quantity: Number(item.quantity || 1),
           createdAt: serverTimestamp()
         });
+
+        if (item.product.id && item.product.id !== 'system') {
+          const pRef = doc(db, 'products', item.product.id);
+          const pDoc = await getDoc(pRef);
+          if (pDoc.exists()) {
+            const currentStock = Number(pDoc.data().stock || 0);
+            const category = pDoc.data().category || '';
+            // Services usually have infinite stock/no limit, other physical goods decrease
+            if (category !== 'services') {
+              const newStock = Math.max(0, currentStock - item.quantity);
+              const updatePayload: any = {
+                stock: newStock,
+                updatedAt: serverTimestamp()
+              };
+              if (newStock === 0) {
+                updatePayload.status = 'out_of_stock';
+                updatePayload.stock = 0;
+              }
+              await updateDoc(pRef, updatePayload);
+            }
+          }
+        }
       } catch (clickErr) {
-        console.warn('Logging analytics click error:', clickErr);
+        console.warn('Logging analytics and deducting stock/updating status error:', clickErr);
       }
     });
 

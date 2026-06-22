@@ -338,7 +338,8 @@ export default function AdminView({
       
       await setDoc(vRef, { 
         whatsapp: cleanWhatsApp,
-        shopName: cleanShopName
+        shopName: cleanShopName,
+        updatedAt: serverTimestamp()
       }, { merge: true });
 
       // Synchronize all existing active/draft products belonging to this vendor
@@ -350,7 +351,8 @@ export default function AdminView({
           qSnap.forEach((docSnap) => {
             batch.update(docSnap.ref, {
               vendorName: cleanShopName,
-              vendorWhatsApp: cleanWhatsApp
+              vendorWhatsApp: cleanWhatsApp,
+              updatedAt: serverTimestamp()
             });
           });
           await batch.commit();
@@ -538,7 +540,8 @@ export default function AdminView({
       name: catName,
       image: catImage,
       productCount: categoryEditing ? categoryEditing.productCount : 0,
-      createdAt: categoryEditing ? categoryEditing.createdAt : serverTimestamp()
+      createdAt: categoryEditing ? categoryEditing.createdAt : serverTimestamp(),
+      updatedAt: serverTimestamp()
     };
 
     try {
@@ -610,7 +613,10 @@ export default function AdminView({
       const batch = writeBatch(db);
       let count = 0;
       snap.forEach((docSnap) => {
-        batch.update(docSnap.ref, { vendorWhatsApp: targetNum });
+        batch.update(docSnap.ref, { 
+          vendorWhatsApp: targetNum,
+          updatedAt: serverTimestamp()
+        });
         count++;
       });
       await batch.commit();
@@ -636,7 +642,8 @@ export default function AdminView({
         contactEmail: settingsForm.contactEmail,
         instagramUrl: settingsForm.instagramUrl,
         facebookUrl: settingsForm.facebookUrl,
-        businessHours: settingsForm.businessHours
+        businessHours: settingsForm.businessHours,
+        updatedAt: serverTimestamp()
       });
       displayNotice('Global store settings locked successfully!');
       await onRefreshData();
@@ -1129,7 +1136,7 @@ export default function AdminView({
                           {p.stock} units
                         </td>
                         <td className="px-6 py-4 font-mono text-[10px]">
-                          {getRelativeTime(p.createdAt) || 'N/A'}
+                          {getRelativeTime(p.updatedAt || p.createdAt) || 'N/A'}
                         </td>
                         <td className="px-6 py-4 text-center">
                           <span className={`text-[9.5px] font-extrabold uppercase px-2.5 py-1 rounded-full ${

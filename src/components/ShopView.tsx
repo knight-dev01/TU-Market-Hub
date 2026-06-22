@@ -92,8 +92,8 @@ export default function ShopView({
     // Sorting Logic
     .sort((a, b) => {
       if (sortBy === 'newest') {
-        const timeA = a.createdAt?.seconds || a.createdAt?.toMillis?.() || 0;
-        const timeB = b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
+        const timeA = a.updatedAt?.seconds || a.createdAt?.seconds || a.createdAt?.toMillis?.() || 0;
+        const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
         return timeB - timeA;
       }
       if (sortBy === 'price-asc') return a.price - b.price;
@@ -478,7 +478,7 @@ export default function ShopView({
                           From: {product.vendorName || 'TU Peer Store'}
                         </p>
                         <p className="text-[9px] font-mono text-emerald-brand/80">
-                          {getRelativeTime(product.createdAt) || 'recent'}
+                          {getRelativeTime(product.updatedAt || product.createdAt) || 'recent'}
                         </p>
                       </div>
                     </div>
