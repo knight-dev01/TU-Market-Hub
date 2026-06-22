@@ -19,6 +19,7 @@ import ContactView from './components/ContactView';
 import ProductDetailView from './components/ProductDetailView';
 import WalkthroughGuide from './components/WalkthroughGuide';
 import AdminView from './components/AdminView';
+import { NetworkStatusBanner } from './components/NetworkStatusBanner';
 
 export const formatWhatsAppLink = (number: string): string => {
   let cleaned = number.replace(/\D/g, '');
@@ -94,6 +95,7 @@ export default function App() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
+  const [isOffline, setIsOffline] = useState<boolean>(false);
   const [hasSkippedLoginGate, setHasSkippedLoginGate] = useState<boolean>(() => {
     return localStorage.getItem('tu_skipped_login') === 'true';
   });
@@ -312,6 +314,7 @@ export default function App() {
     const unsubscribeSettings = onSnapshot(
       doc(db, 'settings', 'current'), 
       (docSnap) => {
+        setIsOffline(docSnap.metadata.fromCache);
         if (docSnap.exists()) {
           const d = docSnap.data();
           
@@ -645,6 +648,8 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
   return (
     <div id="application-root" className="min-h-screen bg-white dark:bg-[#0b0f19] flex flex-col justify-between font-sans leading-normal tracking-normal text-slate-800 dark:text-slate-100 transition-colors duration-200">
       
+      <NetworkStatusBanner isOffline={isOffline} />
+
       {/* Dynamic Header Component */}
       <Header
         currentView={selectedProductId ? 'shop' : currentView}

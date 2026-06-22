@@ -58,9 +58,6 @@ export default function HomeView({
   ];
 
   const categoriesContainerRef = useRef<HTMLDivElement>(null);
-  const [isHoveredCategories, setIsHoveredCategories] = useState(false);
-
-  const scrollPosRef = useRef(0);
 
   // Auto slide effect
   useEffect(() => {
@@ -81,40 +78,6 @@ export default function HomeView({
     });
   }, []);
 
-  // Train scrolling effect for Categories with requestAnimationFrame
-  useEffect(() => {
-    if (isHoveredCategories) {
-      if (categoriesContainerRef.current) {
-        scrollPosRef.current = categoriesContainerRef.current.scrollLeft;
-      }
-      return;
-    }
-    
-    let animationFrameId: number;
-    const speed = 0.55; // Pixels per frame - perfect slow train crawl
-
-    const scroll = () => {
-      if (categoriesContainerRef.current) {
-        const container = categoriesContainerRef.current;
-        const { scrollWidth } = container;
-        
-        scrollPosRef.current += speed;
-        // Reset to 0 when we passed the first set of items (half the scrollWidth)
-        if (scrollPosRef.current >= scrollWidth / 2) {
-          scrollPosRef.current = 0;
-        }
-        container.scrollLeft = scrollPosRef.current;
-      }
-      animationFrameId = requestAnimationFrame(scroll);
-    };
-
-    if (categoriesContainerRef.current) {
-      scrollPosRef.current = categoriesContainerRef.current.scrollLeft;
-    }
-    animationFrameId = requestAnimationFrame(scroll);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isHoveredCategories]);
-
   // Scroll categories dynamically using arrows
   const scrollCategories = (direction: 'left' | 'right') => {
     if (categoriesContainerRef.current) {
@@ -123,11 +86,6 @@ export default function HomeView({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
       });
-      setTimeout(() => {
-        if (categoriesContainerRef.current) {
-          scrollPosRef.current = categoriesContainerRef.current.scrollLeft;
-        }
-      }, 500);
     }
   };
 
@@ -335,16 +293,13 @@ export default function HomeView({
           ref={categoriesContainerRef}
           className="flex overflow-x-auto pb-4 pt-1 snap-x scrollbar-none scroll-smooth -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6 gap-x-3.5"
         >
-          {[...categories, ...categories].map((cat, index) => {
+          {categories.map((cat) => {
             return (
               <motion.div
-                key={`${cat.id}-${index}`}
+                key={cat.id}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease: 'easeOut' }}
-                onMouseEnter={() => setIsHoveredCategories(true)}
-                onMouseLeave={() => setIsHoveredCategories(false)}
-                onTouchStart={() => setIsHoveredCategories(true)}
                 onClick={() => onCategorySelect ? onCategorySelect(cat.id) : onViewChange('shop')}
                 whileHover={{ scale: 1.02 }}
                 className="group relative h-24 sm:h-36 lg:h-40 min-w-[110px] md:min-w-[130px] flex-shrink-0 snap-start flex flex-col items-center justify-center cursor-pointer border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-brand dark:hover:border-emerald-600 rounded-2xl transition-all shadow-3xs"
