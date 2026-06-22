@@ -351,7 +351,11 @@ export default function App() {
     console.log('Orchestrating inventory statistics updates...');
   };
 
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const handleGoogleLogin = async () => {
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
     try {
       await loginWithGoogle();
     } catch (err: any) {
@@ -364,6 +368,9 @@ export default function App() {
         } else {
           alert("Firebase Auth network error. Please check your internet connection and try again.");
         }
+      } else if (err?.code === 'auth/cancelled-popup-request') {
+         // Silently ignore or show a friendly message
+         console.log('Popup closed by user');
       } else {
         if (isIframe) {
           alert("Login failed. Please assure popups are enabled, or click the top-right button to run the application in a New Tab.");
@@ -371,6 +378,8 @@ export default function App() {
           alert("Login failed. Please assure popups are enabled, and try again.");
         }
       }
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 

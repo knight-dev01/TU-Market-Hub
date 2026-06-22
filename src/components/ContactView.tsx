@@ -120,7 +120,7 @@ export default function ContactView({
                 href={instagramUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="p-3 bg-slate-50 border border-gray-250 text-slate-brand/80 hover:text-emerald-brand rounded-full cursor-pointer transition-colors flex items-center justify-center"
+                className="p-3 bg-slate-50 dark:bg-slate-800 border border-gray-250 dark:border-slate-700 text-slate-brand/80 dark:text-slate-400 hover:text-emerald-brand dark:hover:text-emerald-400 rounded-full cursor-pointer transition-colors flex items-center justify-center"
               >
                 <Instagram className="w-5 h-5" />
               </a>
@@ -128,7 +128,7 @@ export default function ContactView({
                 href={facebookUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="p-3 bg-slate-50 border border-gray-250 text-slate-brand/80 hover:text-emerald-brand rounded-full cursor-pointer transition-colors flex items-center justify-center"
+                className="p-3 bg-slate-50 dark:bg-slate-800 border border-gray-250 dark:border-slate-700 text-slate-brand/80 dark:text-slate-400 hover:text-emerald-brand dark:hover:text-emerald-400 rounded-full cursor-pointer transition-colors flex items-center justify-center"
               >
                 <Facebook className="w-5 h-5" />
               </a>
@@ -145,7 +145,7 @@ export default function ContactView({
                 Campus Secure Meetup Points
               </h3>
               <p className="text-[10px] text-slate-brand/50 font-medium">
-                Student Union Plaza, Main Library Square & hostel gatehouse coordinates
+                Trinity University Campus - Authorized Meetup Zone
               </p>
             </div>
             <span className="bg-emerald-brand text-white text-[9px] font-bold font-mono py-1 px-3 rounded-full uppercase tracking-wider">
@@ -172,7 +172,7 @@ export default function ContactView({
 
               {/* Buildings & Plazas */}
               <rect x="150" y="70" width="100" height="50" rx="6" fill="#FFFFFF" stroke="#94A3B8" strokeWidth="1" />
-              <text x="155" y="94" fill="#334155" fontSize="8" fontWeight="bold" fontFamily="sans-serif">Student Union Plaza</text>
+              <text x="160" y="94" fill="#334155" fontSize="8" fontWeight="bold" fontFamily="sans-serif">Trinity Uni Campus</text>
 
               {/* Meetup Pin */}
               <g className="animate-bounce">
@@ -187,7 +187,7 @@ export default function ContactView({
                 <rect x="-60" y="0" width="140" height="30" rx="8" fill="#1E293B" />
                 <polygon points="10,30 5,34 0,30" fill="#1E293B" />
                 <text x="-50" y="16" fill="#FFFFFF" fontSize="8" fontWeight="bold" fontFamily="sans-serif">
-                  SU PLAZA MEETUP AREA (Safe)
+                  TRINITY UNI CAMPUS MEETUP (Safe)
                 </text>
               </g>
             </svg>
@@ -198,7 +198,7 @@ export default function ContactView({
                 <div className="w-3.5 h-3.5 rounded-full bg-emerald-brand flex items-center justify-center">
                   <span className="text-[7.5px] text-white font-bold">M</span>
                 </div>
-                <span className="text-[10px] font-bold text-slate-brand">Central Student Union Plaza</span>
+                <span className="text-[10px] font-bold text-slate-brand">Central Trinity Uni Campus</span>
               </div>
               <button
                 onClick={handleWhatsAppChat}

@@ -681,7 +681,7 @@ export default function AdminView({
   const lowStockCount = displayProducts.filter(p => p.stock > 0 && p.stock <= 2).length;
 
   return (
-    <div id="admin-workspace" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 alive-pulse">
+    <div id="admin-workspace" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-gray-150 mb-8">
