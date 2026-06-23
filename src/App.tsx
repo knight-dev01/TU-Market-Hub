@@ -73,10 +73,16 @@ export default function App() {
 
   // Disclaimer State
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(() => localStorage.getItem('tuMarketTermsAccepted') === 'true');
+  const [hasSeenWalkthrough, setHasSeenWalkthrough] = useState(() => localStorage.getItem('tuMarketWalkthroughSeen') === 'true');
 
   const handleAcceptTerms = () => {
     localStorage.setItem('tuMarketTermsAccepted', 'true');
     setHasAcceptedTerms(true);
+    
+    // If first time user, jump to walkthrough onboarding view
+    if (!hasSeenWalkthrough) {
+      handleViewChange('onboarding');
+    }
   };
 
   // Firestore DB States
@@ -944,7 +950,13 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 />
               )}
 
-              {currentView === 'onboarding' && <WalkthroughGuide />}
+              {currentView === 'onboarding' && (
+                <WalkthroughGuide onFinish={() => {
+                  localStorage.setItem('tuMarketWalkthroughSeen', 'true');
+                  setHasSeenWalkthrough(true);
+                  handleViewChange('home');
+                }} />
+              )}
 
               {currentView === 'admin' && (
                 <AdminView

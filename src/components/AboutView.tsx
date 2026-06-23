@@ -1,5 +1,4 @@
-import { Heart, Compass, Target, ShieldCheck, HelpCircle } from 'lucide-react';
-import WalkthroughGuide from './WalkthroughGuide';
+import { Heart, Compass, Target, ShieldCheck } from 'lucide-react';
 
 export default function AboutView() {
   const values = [
@@ -119,11 +118,6 @@ export default function AboutView() {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* 5. Comprehensive Interactive Site Walkthrough */}
-      <section className="pt-8 border-t border-gray-150">
-        <WalkthroughGuide />
       </section>
 
     </div>

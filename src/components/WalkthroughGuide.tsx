@@ -14,7 +14,11 @@ interface GuideStep {
   mockupRenderer: () => any;
 }
 
-export default function WalkthroughGuide() {
+interface WalkthroughProps {
+  onFinish?: () => void;
+}
+
+export default function WalkthroughGuide({ onFinish }: WalkthroughProps) {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<string>('Like New');
   const [whatsappSent, setWhatsappSent] = useState<boolean>(false);
@@ -405,13 +409,23 @@ export default function WalkthroughGuide() {
               disabled={activeStep === steps.length - 1}
               className={`flex items-center space-x-1.5 px-5 py-2.5 rounded-full font-bold uppercase tracking-widest transition-all text-xs ${
                 activeStep === steps.length - 1
-                  ? 'opacity-40 cursor-not-allowed bg-emerald-brand/50 text-white'
+                  ? 'hidden'
                   : 'bg-emerald-brand hover:bg-emerald-700 text-white shadow-xs cursor-pointer'
               }`}
             >
               <span>Next</span>
               <ArrowRight className="w-4 h-4" />
             </button>
+
+            {activeStep === steps.length - 1 && (
+              <button
+                onClick={onFinish}
+                className="flex items-center space-x-1.5 px-6 py-2.5 rounded-full font-bold uppercase tracking-widest transition-all text-xs bg-emerald-brand hover:bg-emerald-700 text-white shadow-lg cursor-pointer animate-bounce"
+              >
+                <span>Enter Marketplace</span>
+                <Check className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
