@@ -28,7 +28,7 @@ export default function WhatsAppOrderForm({
   // Validation state
   const [errors, setErrors] = useState<{ name?: string; hostel?: string; phone?: string; email?: string }>({});
 
-  const validate = () => {
+  const validate = (showErrors = true) => {
     const newErrors: { name?: string; hostel?: string; phone?: string; email?: string } = {};
     if (!name.trim()) newErrors.name = 'Please enter your name';
     if (!hostel.trim()) newErrors.hostel = 'Please enter your hostel location';
@@ -41,16 +41,15 @@ export default function WhatsAppOrderForm({
       newErrors.email = 'Please enter a valid email for payment receipt';
     }
 
-    if (Object.keys(newErrors).length > 0) {
+    if (showErrors && Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      return false;
     }
-    return true;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleFormSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!validate()) return;
+    if (!validate(true)) return;
 
     // Persist details for future easy transactions
     localStorage.setItem('tu_buyer_name', name.trim());
@@ -65,7 +64,8 @@ export default function WhatsAppOrderForm({
     });
   };
 
-  const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_placeholder_key';
+  const paystackPublicKey = (import.meta as any).env.VITE_PAYSTACK_PUBLIC_KEY;
+  const isKeyMissing = !paystackPublicKey || paystackPublicKey === 'pk_test_placeholder_key';
   
   const componentProps = {
     email: email || 'customer@example.com',
@@ -77,7 +77,7 @@ export default function WhatsAppOrderForm({
         { display_name: "Phone", variable_name: "phone", value: phone },
       ],
     },
-    publicKey: paystackPublicKey,
+    publicKey: paystackPublicKey || 'pk_test_placeholder_key',
     text: "Pay Online Now",
     onSuccess: (reference: any) => {
       console.log("Payment successful:", reference);
@@ -109,6 +109,17 @@ export default function WhatsAppOrderForm({
             Include details for <span className="text-emerald-brand font-bold">{vendorName}</span> to process your order!
           </p>
         </div>
+
+        {isKeyMissing && (
+          <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30 p-3 rounded-xl">
+            <p className="text-[10px] text-orange-700 dark:text-orange-400 font-bold leading-tight flex items-start gap-2">
+              <CreditCard className="w-3 h-3 mt-0.5 shrink-0" />
+              <span>
+                Paystack Key Not Configured. Please add <strong>VITE_PAYSTACK_PUBLIC_KEY</strong> in the App Settings Secrets menu to enable online payments.
+              </span>
+            </p>
+          </div>
+        )}
 
         {/* Short Order Info Summary */}
         <div className="bg-slate-50 dark:bg-slate-800/40 border border-gray-150 dark:border-slate-800 rounded-2xl p-4 flex justify-between items-center text-xs">
@@ -226,14 +237,14 @@ export default function WhatsAppOrderForm({
 
       {/* Payment Buttons */}
       <div className="pt-5 border-t border-gray-150 dark:border-slate-800 space-y-3">
-        {validate() ? (
+        {validate(false) ? (
           <PaystackButton
             {...componentProps}
             className="w-full bg-slate-900 border border-slate-800 dark:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs py-3.5 rounded-xl uppercase flex items-center justify-center space-x-2 cursor-pointer transition-all hover:opacity-90"
           />
         ) : (
           <button 
-            onClick={() => validate()}
+            onClick={() => validate(true)}
             className="w-full bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-bold text-xs py-3.5 rounded-xl uppercase flex items-center justify-center space-x-2 cursor-not-allowed"
           >
             <CreditCard className="w-4 h-4" />

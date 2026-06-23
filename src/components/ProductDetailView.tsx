@@ -16,6 +16,7 @@ interface ProductDetailViewProps {
   onLogClick?: (product: Product, quantity: number, buyerInfo?: { name: string }) => void;
   currentUser: FirebaseUser | null;
   onLoginClick: () => void;
+  onCheckoutDirect?: (vendorId: string, vendorName: string, vendorNumber: string, items: any[]) => void;
 }
 
 export default function ProductDetailView({
@@ -28,7 +29,8 @@ export default function ProductDetailView({
   onAddToCart,
   onLogClick,
   currentUser,
-  onLoginClick
+  onLoginClick,
+  onCheckoutDirect
 }: ProductDetailViewProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -86,6 +88,16 @@ export default function ProductDetailView({
 
     // Call dynamic analytics click logger if provided
     onLogClick?.(product, 1);
+
+    if (type === 'buy' && onCheckoutDirect) {
+      onCheckoutDirect(
+        product.vendorId || 'admin',
+        product.vendorName || 'TU MARKET HUB Seller',
+        targetWhatsApp,
+        [{ product, quantity: 1, size: selectedSize }]
+      );
+      return;
+    }
 
     const formattingPrice = discountedPrice.toLocaleString();
     const sizeLine = isFashion && selectedSize ? `\nSize Preference: ${selectedSize}` : '';

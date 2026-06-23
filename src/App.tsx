@@ -754,6 +754,15 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 onSelectProduct={handleSelectProduct}
                 whatsappNumber={settings?.whatsappNumber || '09047226729'}
                 onAddToCart={handleAddToCart}
+                onCheckoutDirect={(vId, vName, vNum, items) => {
+                  setCheckoutGroup({
+                    vendorId: vId,
+                    vendorName: vName,
+                    vendorNumber: vNum,
+                    items: items
+                  });
+                  setIsCartOpen(true);
+                }}
                 onLogClick={logDirectWhatsAppClick}
                 currentUser={user}
                 onLoginClick={handleGoogleLogin}
@@ -1028,9 +1037,10 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
       )}
 
       {/* 8. SHOPPING CART / WhatsApp Multiple-Item Draft DRAWER OVERLAY */}
+      {/* Cart & Checkout Overlay System */}
       <AnimatePresence>
-        {isCartOpen && (
-          <div className="fixed inset-0 z-50 overflow-hidden font-sans hover:outline-none text-xs flex justify-end items-center p-3 sm:p-4 pointer-events-none">
+        {(isCartOpen || checkoutGroup) && (
+          <div className="fixed inset-0 z-[100] overflow-hidden font-sans text-xs flex justify-center items-center sm:items-center p-0 sm:p-4 pointer-events-none">
             
             {/* Backdrop */}
             <motion.div 
@@ -1038,37 +1048,51 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              onClick={() => setIsCartOpen(false)} 
-              className="absolute inset-0 bg-black/40 backdrop-blur-3xs cursor-pointer pointer-events-auto" 
+              onClick={() => {
+                setIsCartOpen(false);
+                setCheckoutGroup(null);
+              }} 
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer pointer-events-auto" 
             />
 
-            {/* Draggable/Animated Floating Panel */}
-            <motion.div 
-               initial={{ x: '110%', opacity: 0.9 }}
-               animate={{ x: 0, opacity: 1 }}
-               exit={{ x: '110%', opacity: 0.9 }}
-               transition={{ type: 'spring', damping: 28, stiffness: 240 }}
-               className="pointer-events-auto w-[90vw] sm:w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900 shadow-3xl flex flex-col justify-between border border-gray-150 dark:border-slate-800 h-[calc(100vh-2rem)] rounded-3xl overflow-hidden relative ml-auto"
-            >
+            {/* Content Container */}
+            <div className={`relative w-full h-full flex pointer-events-none ${checkoutGroup ? 'justify-center items-center p-4' : 'justify-end items-center'}`}>
+              
               {checkoutGroup ? (
-                <WhatsAppOrderForm
-                  vendorName={checkoutGroup.vendorName}
-                  itemsCount={checkoutGroup.items.reduce((acc, curr) => acc + curr.quantity, 0)}
-                  totalPrice={checkoutGroup.items.reduce((acc, curr) => acc + (curr.product.price * curr.quantity), 0)}
-                  onClose={() => setCheckoutGroup(null)}
-                  onSubmit={(buyerInfo) => {
-                    handleLaunchWhatsAppForVendor(
-                      checkoutGroup.vendorId,
-                      checkoutGroup.vendorName,
-                      checkoutGroup.vendorNumber,
-                      checkoutGroup.items,
-                      buyerInfo
-                    );
-                    setCheckoutGroup(null);
-                  }}
-                />
+                /* 1. Centered Checkout Modal */
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                  className="pointer-events-auto w-full max-w-lg bg-white dark:bg-slate-900 shadow-2xl relative rounded-3xl overflow-hidden max-h-[90vh] flex flex-col ring-1 ring-black/5 dark:ring-white/10"
+                >
+                  <WhatsAppOrderForm
+                    vendorName={checkoutGroup.vendorName}
+                    itemsCount={checkoutGroup.items.reduce((acc, curr) => acc + curr.quantity, 0)}
+                    totalPrice={checkoutGroup.items.reduce((acc, curr) => acc + (curr.product.price * curr.quantity), 0)}
+                    onClose={() => setCheckoutGroup(null)}
+                    onSubmit={(buyerInfo) => {
+                      handleLaunchWhatsAppForVendor(
+                        checkoutGroup.vendorId,
+                        checkoutGroup.vendorName,
+                        checkoutGroup.vendorNumber,
+                        checkoutGroup.items,
+                        buyerInfo
+                      );
+                      setCheckoutGroup(null);
+                    }}
+                    customerEmail={user?.email || ''}
+                  />
+                </motion.div>
               ) : (
-                <>
+                /* 2. Side Reveal Cart Panel */
+                <motion.div 
+                  initial={{ x: '110%', opacity: 0.9 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: '110%', opacity: 0.9 }}
+                  transition={{ type: 'spring', damping: 28, stiffness: 240 }}
+                  className="pointer-events-auto w-[90vw] sm:w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900 shadow-3xl flex flex-col justify-between border border-gray-150 dark:border-slate-800 h-[calc(100vh-2rem)] rounded-3xl overflow-hidden relative ml-auto"
+                >
                   {/* Drawer Header */}
                   <div className="p-5 sm:p-6 border-b border-gray-150 dark:border-slate-800 flex items-center justify-between">
                     <div>
@@ -1207,9 +1231,9 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                       Start your order now by selecting items from the shop!
                     </p>
                   </div>
-                </>
+                </motion.div>
               )}
-            </motion.div>
+            </div>
           </div>
         )}
       </AnimatePresence>
