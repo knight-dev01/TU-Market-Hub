@@ -9,8 +9,6 @@ interface HeaderProps {
   isVendor?: boolean;
   user: FirebaseUser | null;
   onLoginClick: () => void;
-  cartCount: number;
-  onCartToggle: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
 }
@@ -22,8 +20,6 @@ export default function Header({
   isVendor = false,
   user,
   onLoginClick,
-  cartCount,
-  onCartToggle,
   isDarkMode,
   onToggleDarkMode
 }: HeaderProps) {

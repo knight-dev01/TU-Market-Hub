@@ -152,8 +152,6 @@ export default function App() {
   };
 
   // Shopper's Order Draft (Cart Drawer) States
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [checkoutGroup, setCheckoutGroup] = useState<{
     vendorId: string;
     vendorName: string;
@@ -198,12 +196,6 @@ export default function App() {
       clearInterval(checkInactivityInterval);
     };
   }, [user]);
-
-  useEffect(() => {
-    if (!isCartOpen) {
-      setCheckoutGroup(null);
-    }
-  }, [isCartOpen]);
 
   // 1. Listen for auth changes
   useEffect(() => {
@@ -452,41 +444,13 @@ export default function App() {
     }
   };
 
-  // Add Item to draft list
+  // Open Direct Checkout Form for a specific product
   const handleAddToCart = (product: Product, size: string) => {
-    setCartItems((prevItems) => {
-      const existingIdx = prevItems.findIndex(
-        (item) => item.product.id === product.id && item.size === size
-      );
-      if (existingIdx > -1) {
-        const updated = [...prevItems];
-        updated[existingIdx].quantity += 1;
-        return updated;
-      }
-      return [...prevItems, { product, size, quantity: 1 }];
-    });
-    setIsCartOpen(true);
-  };
-
-  const handleUpdateCartQty = (idx: number, amount: number) => {
-    setCartItems((prevItems) => {
-      const updated = [...prevItems];
-      const target = updated[idx];
-      const newQty = target.quantity + amount;
-      if (newQty <= 0) {
-        updated.splice(idx, 1);
-      } else {
-        target.quantity = newQty;
-      }
-      return updated;
-    });
-  };
-
-  const handleRemoveFromCart = (idx: number) => {
-    setCartItems((prevItems) => {
-      const updated = [...prevItems];
-      updated.splice(idx, 1);
-      return updated;
+    setCheckoutGroup({
+      vendorId: product.vendorId || 'admin',
+      vendorName: product.vendorName || 'TU MARKET HUB Seller',
+      vendorNumber: product.vendorWhatsApp || settings?.whatsappNumber || '09047226729',
+      items: [{ product, size, quantity: 1 }]
     });
   };
 
@@ -581,13 +545,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
     const encoded = encodeURIComponent(bodyText);
     const whatsappClean = vendorNumber ? formatWhatsAppLink(vendorNumber) : formatWhatsAppLink(settings?.whatsappNumber || '09047226729');
     window.open(`https://wa.me/${whatsappClean}?text=${encoded}`, '_blank');
-    
-    // Auto remove items belonging to this specific vendor from cart
-    setCartItems((prev) => prev.filter(item => (item.product.vendorId || 'admin') !== vendorId));
   };
-
-  const cartItemTotalCount = cartItems.reduce((acc, curr) => acc + curr.quantity, 0);
-  const cartItemsTotalPrice = cartItems.reduce((acc, curr) => acc + (curr.product.price * curr.quantity), 0);
 
   // Synchronize deep link for shared products (e.g., ?product=id) on load or products hydration
   useEffect(() => {
@@ -684,22 +642,6 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
     ? displayProducts.find((p) => p.id === selectedProductId) 
     : null;
 
-  // Group items in cart by Vendor for decoupled multi-vendor checkouts
-  const vendorGroups: { [key: string]: { name: string; whatsapp: string; items: CartItem[] } } = {};
-  cartItems.forEach((item) => {
-    const vId = item.product.vendorId || 'admin';
-    const vName = item.product.vendorName || 'System Admin';
-    const vWhatsApp = item.product.vendorWhatsApp || settings?.whatsappNumber || '';
-    if (!vendorGroups[vId]) {
-      vendorGroups[vId] = {
-        name: vName,
-        whatsapp: vWhatsApp,
-        items: []
-      };
-    }
-    vendorGroups[vId].items.push(item);
-  });
-
   return (
     <div id="application-root" className="min-h-screen bg-white dark:bg-[#0b0f19] flex flex-col justify-between font-sans leading-normal tracking-normal text-slate-800 dark:text-slate-100 transition-colors duration-200">
       
@@ -717,8 +659,6 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
           setHasSkippedLoginGate(false);
           handleViewChange('admin');
         }}
-        cartCount={cartItemTotalCount}
-        onCartToggle={() => setIsCartOpen(!isCartOpen)}
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       />
@@ -761,7 +701,6 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                     vendorNumber: vNum,
                     items: items
                   });
-                  setIsCartOpen(true);
                 }}
                 onLogClick={logDirectWhatsAppClick}
                 currentUser={user}
@@ -1036,11 +975,10 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
         />
       )}
 
-      {/* 8. SHOPPING CART / WhatsApp Multiple-Item Draft DRAWER OVERLAY */}
-      {/* Cart & Checkout Overlay System */}
+      {/* Checkout Details Overlay */}
       <AnimatePresence>
-        {(isCartOpen || checkoutGroup) && (
-          <div className="fixed inset-0 z-[100] overflow-hidden font-sans text-xs flex justify-center items-center sm:items-center p-0 sm:p-4 pointer-events-none">
+        {checkoutGroup && (
+          <div className="fixed inset-0 z-[100] overflow-hidden font-sans text-xs flex justify-center items-center p-0 sm:p-4 pointer-events-none">
             
             {/* Backdrop */}
             <motion.div 
@@ -1048,18 +986,12 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              onClick={() => {
-                setIsCartOpen(false);
-                setCheckoutGroup(null);
-              }} 
+              onClick={() => setCheckoutGroup(null)} 
               className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer pointer-events-auto" 
             />
 
             {/* Content Container */}
-            <div className={`relative w-full h-full flex pointer-events-none ${checkoutGroup ? 'justify-center items-center p-4' : 'justify-end items-center'}`}>
-              
-              {checkoutGroup ? (
-                /* 1. Centered Checkout Modal */
+            <div className="relative w-full h-full flex justify-center items-center p-4 pointer-events-none">
                 <motion.div
                   initial={{ scale: 0.95, opacity: 0, y: 10 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -1081,158 +1013,8 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                       );
                       setCheckoutGroup(null);
                     }}
-                    customerEmail={user?.email || ''}
                   />
                 </motion.div>
-              ) : (
-                /* 2. Side Reveal Cart Panel */
-                <motion.div 
-                  initial={{ x: '110%', opacity: 0.9 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: '110%', opacity: 0.9 }}
-                  transition={{ type: 'spring', damping: 28, stiffness: 240 }}
-                  className="pointer-events-auto w-[90vw] sm:w-full max-w-sm sm:max-w-md bg-white dark:bg-slate-900 shadow-3xl flex flex-col justify-between border border-gray-150 dark:border-slate-800 h-[calc(100vh-2rem)] rounded-3xl overflow-hidden relative ml-auto"
-                >
-                  {/* Drawer Header */}
-                  <div className="p-5 sm:p-6 border-b border-gray-150 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <h3 className="font-bold text-sm sm:text-base text-slate-brand dark:text-slate-100 font-display">My Deal Cart Offer Board</h3>
-                      <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 font-medium">Grouped by student stalls for easy secure exchange!</p>
-                    </div>
-                    <button onClick={() => setIsCartOpen(false)} className="p-2 text-slate-brand/40 dark:text-slate-400 hover:text-red-700 dark:hover:text-red-500 cursor-pointer transition-colors rounded-full hover:bg-slate-50 dark:hover:bg-slate-800">
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-
-                  {/* Drawer Items Center scrolling */}
-                  <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
-                    {cartItems.length === 0 ? (
-                      <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-12">
-                        <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800/80 text-slate-300 dark:text-slate-600 border border-gray-200 dark:border-slate-700/50 rounded-full flex items-center justify-center">
-                          <ShoppingBag className="w-8 h-8" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-brand/70 leading-none">Your Offer List is Empty</p>
-                          <p className="text-[10.5px] text-slate-brand/45 leading-relaxed mt-1 max-w-[200px] mx-auto">
-                            Explore study tools, hostellers mattress options, or shoes to add here!
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-6">
-                        {Object.keys(vendorGroups).map((vId) => {
-                          const group = vendorGroups[vId];
-                          return (
-                            <div key={vId} className="border border-emerald-100 dark:border-emerald-900/50 bg-emerald-50/20 dark:bg-emerald-900/10 p-4 rounded-3xl space-y-3.5">
-                              {/* Vendor Group Header */}
-                              <div className="flex items-center justify-between border-b border-gray-150/60 dark:border-slate-700/60 pb-2">
-                                <div className="flex items-center space-x-1.5 min-w-0">
-                                  <Store className="w-4 h-4 text-emerald-brand dark:text-emerald-400 shrink-0" />
-                                  <span className="font-bold text-[11px] text-slate-800 dark:text-slate-200 font-display truncate">Stall: {group.name}</span>
-                                </div>
-                                <span className="text-[9px] font-mono font-bold bg-white dark:bg-slate-800 text-emerald-brand dark:text-emerald-400 px-2 py-0.5 border border-emerald-100 dark:border-emerald-900/50 rounded-full shrink-0">
-                                  {group.items.length} item(s)
-                                </span>
-                              </div>
-
-                              {/* Items belonging to this vendor */}
-                              <div className="space-y-2.5">
-                                {group.items.map((item) => {
-                                  // Find exact global index of this item in state array so we can increment/remove it
-                                  const originalIdx = cartItems.findIndex(ci => ci.product.id === item.product.id && ci.size === item.size);
-                                  return (
-                                    <div key={`${item.product.id}-${item.size}`} className="flex items-start space-x-3 bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-gray-150/40 dark:border-slate-700/50 relative">
-                                      <img
-                                        src={item.product.images[0]}
-                                        alt=""
-                                        className="w-10 h-10 object-cover rounded-lg shrink-0 border border-gray-100 dark:border-slate-700"
-                                      />
-                                      <div className="flex-grow min-w-0 pr-4">
-                                        <h4 className="font-bold text-[11px] text-slate-brand dark:text-slate-200 truncate leading-tight">{item.product.name}</h4>
-                                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                                          {item.size && (
-                                            <span className="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[8px] font-mono font-bold px-1 rounded">
-                                              {item.size}
-                                            </span>
-                                          )}
-                                          <span className="text-[10px] font-mono font-bold text-slate-brand dark:text-emerald-400">
-                                            &#8358;{item.product.price.toLocaleString()}
-                                          </span>
-                                        </div>
-
-                                        {/* Incrementor */}
-                                        <div className="flex items-center space-x-2 pt-1.5">
-                                          <button
-                                            onClick={() => handleUpdateCartQty(originalIdx, -1)}
-                                            className="w-4.5 h-4.5 rounded bg-slate-50 dark:bg-slate-700 border border-gray-250 dark:border-slate-600 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand dark:hover:border-emerald-500"
-                                          >
-                                            -
-                                          </button>
-                                          <span className="font-bold text-xs px-1 text-slate-brand dark:text-slate-200">{item.quantity}</span>
-                                          <button
-                                            onClick={() => handleUpdateCartQty(originalIdx, 1)}
-                                            className="w-4.5 h-4.5 rounded bg-slate-50 dark:bg-slate-700 border border-gray-250 dark:border-slate-600 text-[10px] font-bold flex items-center justify-center cursor-pointer hover:border-emerald-brand dark:hover:border-emerald-500"
-                                          >
-                                            +
-                                          </button>
-                                        </div>
-                                      </div>
-
-                                      {/* Absolute delete button */}
-                                      <button
-                                        onClick={() => handleRemoveFromCart(originalIdx)}
-                                        className="absolute top-2 right-2 p-1 text-slate-brand/35 dark:text-slate-500 hover:text-red-700 dark:hover:text-red-400 cursor-pointer"
-                                      >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                      </button>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-
-                              {/* Quick Message Button for this SPECIFIC Vendor */}
-                              <button
-                                onClick={() => setCheckoutGroup({
-                                  vendorId: vId,
-                                  vendorName: group.name,
-                                  vendorNumber: group.whatsapp,
-                                  items: group.items
-                                })}
-                                className="w-full bg-emerald-brand hover:bg-emerald-700 text-white font-bold text-[10px] py-2 px-3 rounded-xl tracking-wider uppercase flex items-center justify-center space-x-2 shadow-3xs cursor-pointer"
-                              >
-                                <MessageSquare className="w-3.5 h-3.5 fill-white stroke-none" />
-                                <span>Discuss with {group.name}</span>
-                                <ArrowUpRight className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Drawer Footer summary & Info */}
-                  <div className="p-5 sm:p-6 border-t border-gray-150 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 space-y-4">
-                    
-                    {cartItems.length > 0 && (
-                      <div className="space-y-1.5 text-xs text-left">
-                        <div className="flex justify-between font-medium text-slate-brand/60 dark:text-slate-400">
-                          <span>Total draft items checklist:</span>
-                          <span className="font-mono text-slate-brand dark:text-slate-300">{cartItemTotalCount} units</span>
-                        </div>
-                        <div className="flex justify-between font-bold text-sm text-slate-brand dark:text-slate-200 pt-1 border-t border-gray-200 dark:border-slate-700/60">
-                          <span>Consolidated Estimate:</span>
-                          <span className="font-mono text-emerald-brand text-base">&#8358; {cartItemsTotalPrice.toLocaleString()}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    <p className="text-[10px] text-slate-brand/40 text-center leading-relaxed">
-                      Start your order now by selecting items from the shop!
-                    </p>
-                  </div>
-                </motion.div>
-              )}
             </div>
           </div>
         )}
