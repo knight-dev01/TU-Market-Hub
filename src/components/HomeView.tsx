@@ -57,8 +57,6 @@ export default function HomeView({
     }
   ];
 
-  const categoriesContainerRef = useRef<HTMLDivElement>(null);
-
   // Auto slide effect
   useEffect(() => {
     const timer = setInterval(() => {
@@ -77,17 +75,6 @@ export default function HomeView({
       colors: ['#059669', '#34d399', '#f97316', '#1e293b']
     });
   }, []);
-
-  // Scroll categories dynamically using arrows
-  const scrollCategories = (direction: 'left' | 'right') => {
-    if (categoriesContainerRef.current) {
-      const scrollAmount = 260;
-      categoriesContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
 
   const handleNextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
@@ -144,13 +131,11 @@ export default function HomeView({
             }`}
           >
             <div className="max-w-3xl mx-auto flex flex-col items-center text-center space-y-4 sm:space-y-6 px-3 sm:px-4">
-                <motion.div 
-                  animate={isActive ? { scale: [1, 1.08, 1], rotate: [0, 5, -5, 0] } : {}}
-                  transition={{ duration: 4, repeat: Infinity }}
+                <div 
                   className="opacity-90 text-emerald-brand dark:text-emerald-400 hidden sm:block"
                 >
                   <Icon className="w-12 h-12 sm:w-16 sm:h-16 stroke-[1.5] mx-auto" />
-                </motion.div>
+                </div>
                 <span className="inline-block bg-white dark:bg-slate-800 shadow-3xs text-slate-800 dark:text-slate-200 font-mono font-bold text-[8px] sm:text-xs tracking-widest px-2.5 sm:px-4 py-0.5 sm:py-1.5 uppercase rounded-full border border-gray-150 dark:border-slate-700">
                   {slide.badge}
                 </span>
@@ -159,7 +144,7 @@ export default function HomeView({
                   initial={{ opacity: 0, y: 15 }}
                   animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="text-xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-display leading-tight tracking-tight text-slate-900 dark:text-white"
+                  className="text-2xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold font-display leading-tight tracking-tight text-slate-900 dark:text-white"
                 >
                   {slide.title}
                 </motion.h1>
@@ -270,28 +255,9 @@ export default function HomeView({
           <div className="w-12 h-1 bg-emerald-brand mx-auto rounded-sm mt-1" />
         </div>
 
-        {/* Carousel Arrow Controls */}
-        <div className="absolute left-1 sm:left-4 top-[60%] -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
-          <button
-            onClick={() => scrollCategories('left')}
-            className="p-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 hover:text-emerald-brand dark:hover:text-emerald-400 cursor-pointer transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="absolute right-1 sm:right-4 top-[60%] -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
-          <button
-            onClick={() => scrollCategories('right')}
-            className="p-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 hover:text-emerald-brand dark:hover:text-emerald-400 cursor-pointer transition-colors"
-          >
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Categories Strip Scroller */}
+        {/* Categories Grid */}
         <div 
-          ref={categoriesContainerRef}
-          className="flex overflow-x-auto pb-4 pt-1 snap-x scrollbar-none scroll-smooth -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6 gap-x-3.5"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4"
         >
           {categories.map((cat) => {
             return (
@@ -299,25 +265,20 @@ export default function HomeView({
                 key={cat.id}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease: 'easeOut' }}
+                transition={{ duration: 0.3 }}
                 onClick={() => onCategorySelect ? onCategorySelect(cat.id) : onViewChange('shop')}
-                whileHover={{ scale: 1.02 }}
-                className="group relative h-24 sm:h-36 lg:h-40 min-w-[110px] md:min-w-[130px] flex-shrink-0 snap-start flex flex-col items-center justify-center cursor-pointer border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-brand dark:hover:border-emerald-600 rounded-2xl transition-all shadow-3xs"
+                className="group relative h-24 sm:h-32 flex flex-col items-center justify-center cursor-pointer border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl transition-all shadow-3xs"
               >
                 <div className="mb-2 text-slate-450 group-hover:text-emerald-brand dark:group-hover:text-emerald-400 transition-colors duration-200">
-                  {getCategoryIcon(cat.id, "w-6 h-6 sm:w-10 sm:h-10")}
+                  {getCategoryIcon(cat.id, "w-6 h-6 sm:w-8 sm:h-8")}
                 </div>
                 <div className="text-center px-1.5 space-y-1">
-                  <h3 className="text-slate-900 dark:text-slate-100 font-bold text-[10px] sm:text-xs tracking-wider uppercase leading-tight line-clamp-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-400">
+                  <h3 className="text-slate-900 dark:text-slate-100 font-bold text-[10px] sm:text-xs tracking-wider uppercase leading-tight line-clamp-1">
                     {cat.name}
                   </h3>
-                  <motion.span 
-                    animate={{ scale: [1, 1.05, 1], color: ['#059669', '#10b981', '#059669'] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    className="inline-block text-slate-500 font-mono text-[8px] font-bold bg-slate-100 dark:bg-slate-800 py-0.5 px-2 rounded-full"
-                  >
+                  <span className="inline-block text-slate-500 font-mono text-[8px] font-bold bg-slate-100 dark:bg-slate-800 py-0.5 px-2 rounded-full">
                     {cat.productCount} Items
-                  </motion.span>
+                  </span>
                 </div>
               </motion.div>
             );
