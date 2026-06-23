@@ -19,6 +19,7 @@ export interface Product {
   condition?: 'new' | 'used' | 'like_new' | 'ready' | 'not_ready' | string;
   dealType?: 'sell' | 'swap' | 'both';
   discountPercentage?: number;
+  vendorType?: 'student' | 'outside';
 }
 
 export interface Category {

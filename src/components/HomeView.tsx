@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { ArrowLeft, ArrowRight, Star, BookOpen, Laptop, Sparkles, ShoppingBag, ArrowUpRight, MessageCircle, RefreshCw, Shirt, Home, Briefcase, Coffee } from 'lucide-react';
 import { motion } from 'motion/react';
 import confetti from 'canvas-confetti';
@@ -84,16 +84,21 @@ export default function HomeView({
     setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
   };
 
-  // Filter products
-  const featuredProducts = products.filter(p => p.featured && p.status === 'active').slice(0, 4);
-  const newArrivals = [...products]
-    .filter(p => p.status === 'active')
-    .sort((a, b) => {
-      const timeA = a.updatedAt?.seconds || a.createdAt?.seconds || a.createdAt?.toMillis?.() || 0;
-      const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
-      return timeB - timeA;
-    })
-    .slice(0, 4);
+  // Optimized memoized sections for speed
+  const featuredProducts = useMemo(() => 
+    products.filter(p => p.featured && p.status === 'active').slice(0, 4),
+  [products]);
+
+  const newArrivals = useMemo(() => 
+    [...products]
+      .filter(p => p.status === 'active')
+      .sort((a, b) => {
+        const timeA = a.updatedAt?.seconds || a.createdAt?.seconds || a.createdAt?.toMillis?.() || 0;
+        const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
+        return timeB - timeA;
+      })
+      .slice(0, 4),
+  [products]);
 
   const isProductsEmpty = products.length === 0;
 

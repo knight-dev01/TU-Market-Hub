@@ -16,6 +16,7 @@ import MarketplaceChat from './MarketplaceChat';
 interface AdminViewProps {
   user: FirebaseUser | null;
   isAdmin: boolean;
+  vendorType: 'student' | 'outside' | null;
   onLogin: () => void;
   onLogout: () => void;
   products: Product[];
@@ -27,6 +28,7 @@ interface AdminViewProps {
 export default function AdminView({
   user,
   isAdmin,
+  vendorType,
   onLogin,
   onLogout,
   products,
@@ -457,12 +459,13 @@ export default function AdminView({
         console.log('Product updated successfully.');
         displayNotice(`Successfully saved changes for "${prodName}"!`);
       } else {
-        // Create Mode
-        const productsColRef = collection(db, 'products');
-        await addDoc(productsColRef, {
-          ...productPayload,
-          createdAt: serverTimestamp()
-        });
+      {/* Created Mode */}
+         const productsColRef = collection(db, 'products');
+         await addDoc(productsColRef, {
+           ...productPayload,
+           vendorType: vendorType || 'student',
+           createdAt: serverTimestamp()
+         });
         console.log('Product added successfully.');
         displayNotice(`"${prodName}" has been successfully listed live on Trinity University's seeker grid!`);
       }
@@ -714,19 +717,34 @@ export default function AdminView({
   const lowStockCount = displayProducts.filter(p => p.stock > 0 && p.stock <= 2).length;
 
   return (
-    <div id="admin-workspace" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      
-      {/* Header Panel */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-gray-150 mb-8">
+    <div id="admin-workspace" className={`min-h-screen px-4 sm:px-6 lg:px-8 py-8 transition-colors duration-300 ${
+      vendorType === 'outside' 
+        ? 'bg-blue-50/20 dark:bg-slate-900/40' 
+        : 'bg-white dark:bg-slate-900'
+    }`}>
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Header Panel */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-gray-150 mb-8 font-sans">
         <div>
-          <span className="text-[10px] font-bold text-emerald-brand font-mono uppercase tracking-widest leading-none">
-            {isAdmin ? 'SYSTEM ADMINISTRATOR CONSOLE' : 'STUDENT SELLER WORKSPACE'}
+          <span className="text-[10px] font-black text-emerald-brand font-mono uppercase tracking-[0.2em] leading-none mb-1 block">
+            {isAdmin 
+              ? 'SYSTEM ADMINISTRATOR CONSOLE' 
+              : vendorType === 'outside' 
+                ? 'OUTSIDE VENDOR DASHBOARD' 
+                : 'STUDENT VENDOR WORKSPACE'}
           </span>
-          <h1 className="text-3xl font-extrabold font-display tracking-tight text-slate-brand mt-1">
-            {isAdmin ? 'University Platform Control' : 'My Student Stall Manager'}
+          <h1 className="text-3xl font-extrabold font-display tracking-tight text-slate-brand dark:text-slate-100 flex items-center gap-2">
+            {isAdmin 
+              ? 'University Platform Control' 
+              : vendorType === 'outside'
+                ? 'Vendor Business Manager'
+                : 'My Student Stall Hub'}
+            {vendorType === 'outside' && <span className="bg-blue-100 text-blue-600 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">Verified Outside</span>}
+            {vendorType === 'student' && <span className="bg-emerald-100 text-emerald-600 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter">Primary Student</span>}
           </h1>
-          <p className="text-xs text-slate-brand/60 font-medium">
-            Active Store Account: <span className="font-bold text-slate-brand font-mono">{user.email}</span>
+          <p className="text-xs text-slate-brand/60 dark:text-slate-400 font-medium mt-1">
+            Logged in as {vendorType === 'student' ? 'Student Vendor' : vendorType === 'outside' ? 'Outside Vendor' : 'Administrator'}: <span className="font-bold text-slate-brand dark:text-slate-200 font-mono">{user.email}</span>
           </p>
         </div>
 
@@ -1972,6 +1990,7 @@ export default function AdminView({
         </div>
       )}
 
+      </div>
     </div>
   );
 }

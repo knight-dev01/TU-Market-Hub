@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   collection, query, doc, getDoc, onSnapshot, orderBy, where, addDoc, serverTimestamp, updateDoc
 } from 'firebase/firestore';
 import { onAuthStateChanged, User as FirebaseUser, signOut } from 'firebase/auth';
-import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store, ArrowRight, LogIn, Sparkles, UserCheck, ShieldAlert, HeartHandshake } from 'lucide-react';
+import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store, ArrowRight, LogIn, Sparkles, UserCheck, ShieldAlert, HeartHandshake, DownloadCloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { db, auth, loginWithGoogle, logoutUser, handleFirestoreError, OperationType } from './firebase';
@@ -135,12 +135,34 @@ export default function App() {
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      
+      // Delay showing the banner for a 'gentle' feel on first reload
+      const hasDisplayed = sessionStorage.getItem('tu_install_banner_shown');
+      if (!hasDisplayed) {
+        setTimeout(() => {
+          setShowInstallBanner(true);
+          sessionStorage.setItem('tu_install_banner_shown', 'true');
+        }, 3000);
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    
+    // Listen for successful app installation to give feedback
+    const handleAppInstalled = () => {
+      setDeferredPrompt(null);
+      setShowInstallBanner(false);
+      console.log('Hub marketplace has been installed locally');
+      // Toast notification for background install success
+      setTimeout(() => {
+        alert('🚀 Platform Secured! TU Market Hub has been successfully installed in the background. You can now access it from your homescreen anytime!');
+      }, 500);
+    };
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
@@ -150,10 +172,18 @@ export default function App() {
       const userChoice = await deferredPrompt.userChoice;
       if (userChoice.outcome === 'accepted') {
         setShowInstallBanner(false);
+        setDeferredPrompt(null);
+        alert('🎉 Installation Successful! TU Market Hub has been safely added to your campus application library.');
+      } else {
+        setShowInstallBanner(false);
       }
-      setDeferredPrompt(null);
     } else {
-      alert("Enforced PWA Installation Guide:\nTo access offline catalogs directly on iOS Safari: Tap the Share icon along the bottom tray of your screen, scroll down, and select 'Add to Home Screen'!");
+      const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      const instruction = isiOS 
+        ? "Tap the Share icon ⎋ along the bottom tray, scroll down, and select 'Add to Home Screen'!"
+        : "Tap the three dots (⋮) in the top-right corner of your browser and select 'Install App' or 'Add to Home Screen'!";
+      
+      alert(`Enforced PWA Installation Guide:\n\nTo access offline catalogs directly on ${isiOS ? 'iOS Safari' : 'your browser'}: ${instruction}`);
     }
   };
 
@@ -215,12 +245,15 @@ export default function App() {
           // Check for surname.firstname@trinityuniversity.edu.ng format strictly
           const isValidStudent = /^[^.]+\.[^.]+@trinityuniversity\.edu\.ng$/;
           if (!isValidStudent.test(userEmail || '')) {
+            alert("Invalid student email format. Please use 'surname.firstname@trinityuniversity.edu.ng' to continue as a Student Vendor.");
             await signOut(auth);
             setLoginError("Invalid student email format. Please use 'surname.firstname@trinityuniversity.edu.ng'");
             localStorage.removeItem('tu_vendor_login_type');
             setVendorType(null);
             setUser(null);
             setIsInitializing(false);
+            // Ensure they return to the admin/login view
+            handleViewChange('admin');
             return;
           }
         }
@@ -261,6 +294,26 @@ export default function App() {
   useEffect(() => {
     if (isInitializing) return;
 
+    // Handle Deep Linking ONCE after products load (?product=ID)
+    const handleDeepLinking = (allProducts: Product[]) => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const productIdParam = urlParams.get('product') || urlParams.get('productId');
+      const imgIndexParam = urlParams.get('img');
+      
+      if (productIdParam) {
+        const match = allProducts.find(p => p.id === productIdParam);
+        if (match) {
+          setSelectedProductId(productIdParam);
+          setCurrentView('shop');
+          // If we have an image index, we might need to pass it to ProductDetailView
+          // via a side-effect or state
+          if (imgIndexParam) {
+            sessionStorage.setItem('tu_deep_link_img', imgIndexParam);
+          }
+        }
+      }
+    };
+
     // Refresh/Initialize database
     const handleDbInit = async () => {
       try {
@@ -271,7 +324,7 @@ export default function App() {
     };
     handleDbInit();
 
-    // Query active & out_of_stock products for public shoppers to prevent blank-query permissions violations
+    // Query active & out_of_stock products for public shoppers
     const productsQuery = isAdmin
       ? query(collection(db, 'products'), orderBy('createdAt', 'desc'))
       : query(collection(db, 'products'), where('status', 'in', ['active', 'out_of_stock']));
@@ -297,13 +350,14 @@ export default function App() {
             vendorId: d.vendorId || 'admin',
             vendorName: d.vendorName || 'Independence Stall',
             vendorWhatsApp: d.vendorWhatsApp || '',
+            vendorType: d.vendorType || 'student',
             discountPercentage: typeof d.discountPercentage === 'number' ? d.discountPercentage : 0,
             createdAt: d.createdAt,
             updatedAt: d.updatedAt
           });
         });
 
-        // Always sort by latest update or creation timestamp descending in client-side memory
+        // Always sort by latest update or creation timestamp descending
         prodData.sort((a, b) => {
           const timeA = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
           const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
@@ -311,6 +365,7 @@ export default function App() {
         });
 
         setProducts(prodData);
+        handleDeepLinking(prodData);
       },
       (err) => {
         console.error("Products subscriber error:", err);
@@ -567,6 +622,14 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
   }, [products]);
 
   const handleViewChange = (view: 'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding') => {
+    if (view === 'admin' && !user) {
+      setHasSkippedLoginGate(false);
+      setShowVendorOptions(true);
+      setCurrentView('home');
+      localStorage.setItem('tu_session_view', 'home');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     if (view === 'shop') {
       setShopInitialCategory('all');
     }
@@ -588,6 +651,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
     const url = new URL(window.location.href);
     url.searchParams.delete('product');
     url.searchParams.delete('productId');
+    url.searchParams.delete('img');
     window.history.pushState({}, '', url.toString());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -634,19 +698,29 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
     productCount: defaultProducts.filter(p => p.category === c.id && p.status === 'active').length
   } as Category));
 
-  const displayProducts = products.length > 0 ? products : fallbackProducts;
-  const baseCategories = categories.length > 0 ? categories : fallbackCategories;
-  const displayCategories: Category[] = baseCategories.map(cat => {
-    const actCount = displayProducts.filter(p => p.category === cat.id && p.status === 'active').length;
-    return {
-      ...cat,
-      productCount: actCount
-    };
-  });
+  const displayProducts = useMemo(() => {
+    return products.length > 0 ? products : fallbackProducts;
+  }, [products, fallbackProducts]);
 
-  const activeDetailProduct = selectedProductId 
-    ? displayProducts.find((p) => p.id === selectedProductId) 
-    : null;
+  const baseCategories = useMemo(() => {
+    return categories.length > 0 ? categories : fallbackCategories;
+  }, [categories, fallbackCategories]);
+
+  const displayCategories: Category[] = useMemo(() => {
+    return baseCategories.map(cat => {
+      const actCount = displayProducts.filter(p => p.category === cat.id && p.status === 'active').length;
+      return {
+        ...cat,
+        productCount: actCount
+      };
+    });
+  }, [baseCategories, displayProducts]);
+
+  const activeDetailProduct = useMemo(() => {
+    return selectedProductId 
+      ? displayProducts.find((p) => p.id === selectedProductId) 
+      : null;
+  }, [selectedProductId, displayProducts]);
 
   return (
     <div id="application-root" className="min-h-screen bg-white dark:bg-[#0b0f19] flex flex-col justify-between font-sans leading-normal tracking-normal text-slate-800 dark:text-slate-100 transition-colors duration-200">
@@ -962,6 +1036,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 <AdminView
                   user={user}
                   isAdmin={isAdmin}
+                  vendorType={vendorType}
                   onLogin={handleGoogleLogin}
                   onLogout={handleLogout}
                   products={displayProducts}
@@ -1060,10 +1135,10 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
       <AnimatePresence>
         {showInstallBanner && (
           <motion.div
-            initial={{ opacity: 0, y: 80, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 35, duration: 1.5 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="fixed bottom-6 left-6 right-6 sm:left-auto sm:right-6 sm:max-w-md z-50 bg-slate-900 text-slate-100 border border-slate-800 p-5 rounded-2xl shadow-2xl flex flex-col space-y-3"
           >
             <div className="flex items-start justify-between">
@@ -1103,6 +1178,26 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Persistent PWA Install Icon Launcher (Bottom Right) */}
+      {deferredPrompt && !showInstallBanner && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setShowInstallBanner(true)}
+          className="fixed bottom-6 right-6 z-[45] w-12 h-12 bg-emerald-brand text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer border-2 border-white dark:border-slate-800"
+          title="Install TU Market Hub"
+        >
+          <DownloadCloud className="w-5 h-5" />
+          <motion.span 
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-white dark:border-slate-800"
+          />
+        </motion.button>
+      )}
 
     </div>
   );

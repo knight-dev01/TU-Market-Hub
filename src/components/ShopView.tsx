@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon, ArrowLeft } from 'lucide-react';
 import { getRelativeTime, calculateDiscount } from '../utils';
 import { Product, Category } from '../types';
@@ -60,49 +60,50 @@ export default function ShopView({
     { label: 'Not Available (Paused)', value: 'not_available' }
   ];
 
-  // Filtering Logic
-  const filteredProducts = products
-    .filter((product) => {
-      // 1. Search filter
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            (product.vendorName && product.vendorName.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      // 2. Category filter
-      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+  // Filtering & Sorting Logic Optimized for low-end devices
+  const filteredProducts = useMemo(() => {
+    return products
+      .filter((product) => {
+        // 1. Search filter
+        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (product.vendorName && product.vendorName.toLowerCase().includes(searchQuery.toLowerCase()));
+        
+        // 2. Category filter
+        const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
 
-      // 3. Price filter
-      let matchesPrice = true;
-      if (priceRange === 'under-5') matchesPrice = product.price < 5000;
-      else if (priceRange === '5-20') matchesPrice = product.price >= 5000 && product.price <= 20000;
-      else if (priceRange === '20-50') matchesPrice = product.price >= 20000 && product.price <= 50000;
-      else if (priceRange === 'over-50') matchesPrice = product.price > 50000;
+        // 3. Price filter
+        let matchesPrice = true;
+        if (priceRange === 'under-5') matchesPrice = product.price < 5000;
+        else if (priceRange === '5-20') matchesPrice = product.price >= 5000 && product.price <= 20000;
+        else if (priceRange === '20-50') matchesPrice = product.price >= 20000 && product.price <= 50000;
+        else if (priceRange === 'over-50') matchesPrice = product.price > 50000;
 
-      // 4. Stock filter
-      let matchesStock = true;
-      if (stockFilter === 'instock') matchesStock = product.stock > 0 && product.status !== 'out_of_stock';
-      else if (stockFilter === 'outofstock') matchesStock = product.stock === 0 || product.status === 'out_of_stock';
+        // 4. Stock filter
+        let matchesStock = true;
+        if (stockFilter === 'instock') matchesStock = product.stock > 0 && product.status !== 'out_of_stock';
+        else if (stockFilter === 'outofstock') matchesStock = product.stock === 0 || product.status === 'out_of_stock';
 
-      // 5. Condition filter
-      let matchesCondition = true;
-      if (conditionFilter !== 'all') {
-        matchesCondition = product.condition === conditionFilter;
-      }
+        // 5. Condition filter
+        let matchesCondition = true;
+        if (conditionFilter !== 'all') {
+          matchesCondition = product.condition === conditionFilter;
+        }
 
-      return matchesSearch && matchesCategory && matchesPrice && matchesStock && matchesCondition;
-    })
-    // Sorting Logic
-    .sort((a, b) => {
-      if (sortBy === 'newest') {
-        const timeA = a.updatedAt?.seconds || a.createdAt?.seconds || a.createdAt?.toMillis?.() || 0;
-        const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
-        return timeB - timeA;
-      }
-      if (sortBy === 'price-asc') return a.price - b.price;
-      if (sortBy === 'price-desc') return b.price - a.price;
-      if (sortBy === 'popular') return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-      return 0;
-    });
+        return matchesSearch && matchesCategory && matchesPrice && matchesStock && matchesCondition;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'newest') {
+          const timeA = a.updatedAt?.seconds || a.createdAt?.seconds || a.createdAt?.toMillis?.() || 0;
+          const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
+          return timeB - timeA;
+        }
+        if (sortBy === 'price-asc') return a.price - b.price;
+        if (sortBy === 'price-desc') return b.price - a.price;
+        if (sortBy === 'popular') return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+        return 0;
+      });
+  }, [products, searchQuery, selectedCategory, priceRange, stockFilter, conditionFilter, sortBy]);
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -417,11 +418,16 @@ export default function ShopView({
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {filteredProducts.map((product) => {
                 const catName = categories.find(c => c.id === product.category)?.name || 'Listing';
+                const isOutside = product.vendorType === 'outside';
                 return (
                   <div
                     key={product.id}
                     onClick={() => onSelectProduct(product.id)}
-                    className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-lg transition-all flex flex-col justify-between"
+                    className={`group cursor-pointer rounded-2xl overflow-hidden border p-2 sm:p-3 hover:shadow-xl transition-all flex flex-col justify-between ${
+                      isOutside 
+                        ? 'bg-blue-50/30 dark:bg-slate-800/80 border-blue-100/50 dark:border-blue-900/30 hover:border-blue-400' 
+                        : 'bg-white dark:bg-slate-800 border-gray-150/70 dark:border-slate-700/50 hover:border-emerald-400'
+                    }`}
                   >
                     <div>
                       <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
@@ -429,9 +435,16 @@ export default function ShopView({
                           src={product.images[0]}
                           alt={product.name}
                           referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover object-center group-hover:scale-104 transition-transform duration-500"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                           loading="lazy"
                         />
+                        {/* Vendor Type Badge */}
+                        <div className={`absolute bottom-2 right-2 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-tighter shadow-sm ${
+                          isOutside ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
+                        }`}>
+                          {isOutside ? 'Outside' : 'Student'}
+                        </div>
+
                         {product.featured && (
                           <span className="absolute top-2 right-2 bg-orange-brand text-white p-1 rounded-full shadow-xs">
                             <Star className="w-3.5 h-3.5 fill-white stroke-none" />
@@ -479,8 +492,11 @@ export default function ShopView({
                         <h3 className="font-semibold text-xs sm:text-sm text-slate-brand dark:text-slate-100 line-clamp-1 group-hover:text-emerald-brand transition-colors leading-snug">
                           {product.name}
                         </h3>
-                        <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 line-clamp-1 italic">
-                          From: {product.vendorName || 'TU Peer Store'}
+                        <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 line-clamp-1 font-medium">
+                          From: <span className="font-bold text-slate-brand dark:text-slate-200">{product.vendorName || 'TU Peer Store'}</span>
+                          <span className={`ml-1 text-[9px] font-bold ${isOutside ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                            ({isOutside ? 'Outside Vendor' : 'Student Vendor'})
+                          </span>
                         </p>
                         <p className="text-[9px] font-mono text-emerald-brand/80">
                           {getRelativeTime(product.updatedAt || product.createdAt) || 'recent'}

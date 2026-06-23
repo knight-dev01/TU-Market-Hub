@@ -347,8 +347,10 @@ Please let me know if it's available so we can arrange a secure meetup!`;
           <hr className="border-gray-150 dark:border-slate-800" />
 
           {/* Vendor Identification Card */}
-          <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 p-4 rounded-2xl space-y-2.5">
-            <h4 className="font-mono text-[10px] font-bold text-emerald-brand dark:text-emerald-500 uppercase tracking-wider">VERIFIED STUDENT SELLER</h4>
+          <div className={`border p-4 rounded-2xl space-y-2.5 ${product.vendorType === 'outside' ? 'bg-blue-50/30 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-700/50'}`}>
+            <h4 className={`font-mono text-[10px] font-bold uppercase tracking-wider ${product.vendorType === 'outside' ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-brand dark:text-emerald-500'}`}>
+              {product.vendorType === 'outside' ? 'VERIFIED OUTSIDE VENDOR' : 'VERIFIED STUDENT SELLER'}
+            </h4>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-slate-brand dark:text-slate-200">{product.vendorName || 'TU MARKET HUB Seller'}</p>
