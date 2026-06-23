@@ -117,8 +117,8 @@ export default function HomeView({
       <section id="hero-slider" className="relative min-h-[380px] sm:min-h-[500px] lg:min-h-[580px] w-full overflow-hidden bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-center">
         {/* Blurred/Faded Background Preview Image - Static Parallax */}
          <div 
-          className="absolute inset-0 bg-fixed bg-cover bg-center pointer-events-none opacity-[0.15] dark:opacity-[0.22] blur-[1px]" 
-          style={{ backgroundImage: "url('/og-image.jpeg.20.42.jpeg')" }}
+          className="absolute inset-0 bg-fixed bg-cover bg-center pointer-events-none opacity-[0.35] dark:opacity-[0.45] blur-[1px]" 
+          style={{ backgroundImage: "url('/og-image.jpg')" }}
         />
         {heroSlides.map((slide, index) => {
           const Icon = slide.icon;
@@ -163,14 +163,14 @@ export default function HomeView({
                     onClick={() => onViewChange('shop')}
                     animate={{
                       scale: [1, 1.04, 1],
-                      boxShadow: ["0px 0px 0px rgba(5, 150, 105, 0)", "0px 0px 14px rgba(5, 150, 105, 0.45)", "0px 0px 0px rgba(5, 150, 105, 0)"]
+                      boxShadow: ["0px 0px 0px rgba(249, 115, 22, 0)", "0px 0px 14px rgba(249, 115, 22, 0.45)", "0px 0px 0px rgba(249, 115, 22, 0)"]
                     }}
                     transition={{
                       duration: 2,
                       repeat: Infinity,
                       ease: "easeInOut"
                     }}
-                    className="bg-slate-900 dark:bg-emerald-brand text-white hover:bg-slate-800 dark:hover:bg-emerald-600 font-bold text-[9px] sm:text-xs tracking-widest uppercase py-3 px-5 sm:px-8 transition-colors cursor-pointer flex items-center justify-center space-x-1 sm:space-x-2 rounded-full shadow-md shrink-0"
+                    className="bg-slate-900 dark:bg-orange-600/90 text-white hover:bg-slate-800 dark:hover:bg-orange-700/90 font-bold text-[9px] sm:text-xs tracking-widest uppercase py-3 px-5 sm:px-8 transition-colors cursor-pointer flex items-center justify-center space-x-1 sm:space-x-2 rounded-full shadow-md shrink-0"
                   >
                     <span>Shop Now</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -436,18 +436,23 @@ export default function HomeView({
       <section id="why-choose-us" className="relative py-10 sm:py-16 border-y border-emerald-brand/10 dark:border-emerald-900/20 overflow-hidden">
         {/* Stationary matching background image */}
         <div 
-          className="absolute inset-0 bg-fixed bg-cover bg-center pointer-events-none opacity-[0.14] dark:opacity-[0.20] blur-[1px]" 
-          style={{ backgroundImage: "url('/og-image.jpeg.20.42.jpeg')" }}
+          className="absolute inset-0 bg-fixed bg-cover bg-center pointer-events-none opacity-[0.35] dark:opacity-[0.45] blur-[1px]" 
+          style={{ backgroundImage: "url('/og-image.jpg')" }}
         />
-        {/* Soft overlay tint */}
-        <div className="absolute inset-0 bg-emerald-brand/[0.04] dark:bg-slate-950/80 pointer-events-none" />
+        {/* Transparent overlay tint matching hero */}
+        <div className="absolute inset-0 bg-slate-50/[0.94] dark:bg-slate-900/[0.90] pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <div className="text-center max-w-xl mx-auto mb-6 sm:mb-12">
-            <span className="text-orange-brand dark:text-orange-500 font-mono font-bold text-[9px] sm:text-[10px] tracking-widest uppercase block mb-0.5">
+            <motion.span 
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-orange-brand dark:text-orange-500 font-mono font-bold text-[9px] sm:text-[10px] tracking-widest uppercase block mb-1"
+            >
               THE THREE-PILLAR PROTOCOL
-            </span>
-            <h2 className="text-xl sm:text-3xl font-extrabold font-display text-slate-brand dark:text-slate-100">
+            </motion.span>
+            <h2 className="text-xl sm:text-3xl font-extrabold font-display text-slate-brand dark:text-white">
               How TU Market Hub Works
             </h2>
             <p className="text-xs text-slate-brand/60 dark:text-slate-400 font-semibold mt-1">
@@ -455,42 +460,66 @@ export default function HomeView({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
-            <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-3xs border border-gray-150 dark:border-slate-800 text-center space-y-2 sm:space-y-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-brand/15 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto">
-                <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-brand dark:text-emerald-400" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="group relative bg-white/40 dark:bg-slate-900/30 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-lg hover:shadow-xl border border-white/50 dark:border-slate-800/40 text-center space-y-4 sm:space-y-6 transition-all duration-300 hover:translate-y-[-8px]"
+            >
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-brand/15 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto shadow-sm transform transition-transform group-hover:scale-110 duration-300">
+                <ShoppingBag className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-brand dark:text-emerald-400" />
               </div>
-              <h3 className="font-display font-semibold text-sm sm:text-lg text-slate-brand dark:text-slate-200">
-                1. Browse Student Stalls
-              </h3>
-              <p className="text-[11px] sm:text-xs text-slate-brand/60 dark:text-slate-400 font-sans leading-relaxed">
-                Connect with student sellers offering verified study guide files, tech accessories, or homemade recipes right around dorm networks.
-              </p>
-            </div>
+              <div className="space-y-2">
+                <h3 className="font-display font-black text-base sm:text-xl text-slate-brand dark:text-slate-200">
+                  1. Browse Stalls
+                </h3>
+                <p className="text-[11px] sm:text-[13px] text-slate-brand/70 dark:text-slate-400 font-medium font-sans leading-relaxed">
+                  Connect with student sellers offering verified study guide files, tech accessories, or homemade recipes right around dorm networks.
+                </p>
+              </div>
+            </motion.div>
 
-            <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-3xs border border-gray-150 dark:border-slate-800 text-center space-y-2 sm:space-y-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md flex items-center justify-center mx-auto">
-                <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-brand dark:text-orange-500" />
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+              className="group relative bg-white/40 dark:bg-slate-900/30 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-lg hover:shadow-xl border border-white/50 dark:border-slate-800/40 text-center space-y-4 sm:space-y-6 transition-all duration-300 hover:translate-y-[-8px]"
+            >
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 rounded-2xl flex items-center justify-center mx-auto shadow-sm transform transition-transform group-hover:scale-110 duration-300">
+                <MessageCircle className="w-7 h-7 sm:w-8 sm:h-8 text-orange-brand dark:text-orange-500" />
               </div>
-              <h3 className="font-display font-semibold text-sm sm:text-lg text-slate-brand dark:text-slate-200">
-                2. Chat Directly on WhatsApp
-              </h3>
-              <p className="text-[11px] sm:text-xs text-slate-brand/60 dark:text-slate-400 font-sans leading-relaxed">
-                No middleman or complex wallet holds. Tap 'Chat' to instantly connect with the seller to arrange safe physical meetups.
-              </p>
-            </div>
+              <div className="space-y-2">
+                <h3 className="font-display font-black text-base sm:text-xl text-slate-brand dark:text-slate-200">
+                  2. Secure Checkout
+                </h3>
+                <p className="text-[11px] sm:text-[13px] text-slate-brand/70 dark:text-slate-400 font-medium font-sans leading-relaxed">
+                  Lock in your order through our automated WhatsApp routing system that instantly connects you to the seller to finalize payment.
+                </p>
+              </div>
+            </motion.div>
 
-            <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-3xs border border-gray-150 dark:border-slate-800 text-center space-y-2 sm:space-y-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-brand/15 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto">
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-brand dark:text-emerald-400" />
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+              className="group relative bg-white/40 dark:bg-slate-900/30 backdrop-blur-xl p-6 sm:p-8 rounded-3xl shadow-lg hover:shadow-xl border border-white/50 dark:border-slate-800/40 text-center space-y-4 sm:space-y-6 transition-all duration-300 hover:translate-y-[-8px]"
+            >
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-brand/15 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto shadow-sm transform transition-transform group-hover:scale-110 duration-300">
+                <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-brand dark:text-emerald-400" />
               </div>
-              <h3 className="font-display font-semibold text-sm sm:text-lg text-slate-brand dark:text-slate-200">
-                3. Buy or Sell Items!
-              </h3>
-              <p className="text-[11px] sm:text-xs text-slate-brand/60 dark:text-slate-400 font-sans leading-relaxed">
-                Meet safely at designated campus meetspots (Plaza, library, hostels). Trade food, books, and gadgets cleanly!
-              </p>
-            </div>
+              <div className="space-y-2">
+                <h3 className="font-display font-black text-base sm:text-xl text-slate-brand dark:text-slate-200">
+                  3. Peer Pick-up
+                </h3>
+                <p className="text-[11px] sm:text-[13px] text-slate-brand/70 dark:text-slate-400 font-medium font-sans leading-relaxed">
+                  Collect your items from trusted peers at convenient campus drop-off points. Safe, local, and incredibly fast delivery.
+                </p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>

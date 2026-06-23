@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { 
   collection, query, doc, getDoc, onSnapshot, orderBy, where, addDoc, serverTimestamp, updateDoc
 } from 'firebase/firestore';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { onAuthStateChanged, User as FirebaseUser, signOut } from 'firebase/auth';
 import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store, ArrowRight, LogIn, Sparkles, UserCheck, ShieldAlert, HeartHandshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -209,9 +209,26 @@ export default function App() {
   useEffect(() => {
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
       if (currentUser) {
         const userEmail = currentUser.email?.toLowerCase();
+        
+        const currentVendorType = localStorage.getItem('tu_vendor_login_type');
+        if (currentVendorType === 'student') {
+          // Check for surname.firstname@trinityuniversity.edu.ng format strictly
+          const isValidStudent = /^[^.]+\.[^.]+@trinityuniversity\.edu\.ng$/;
+          if (!isValidStudent.test(userEmail || '')) {
+            await signOut(auth);
+            setLoginError("Invalid student email format. Please use 'surname.firstname@trinityuniversity.edu.ng'");
+            localStorage.removeItem('tu_vendor_login_type');
+            setVendorType(null);
+            setUser(null);
+            setIsInitializing(false);
+            return;
+          }
+        }
+        
+        setLoginError(null);
+        setUser(currentUser);
         const hardcodedAdmins = ['greatifet12@gmail.com', 'aroneefashion@gmail.com', 'osemenjoy448@gmail.com'];
         const isHardcodedAdmin = userEmail ? hardcodedAdmins.includes(userEmail) : false;
         
@@ -231,6 +248,7 @@ export default function App() {
           setIsAdmin(isHardcodedAdmin);
         }
       } else {
+        setUser(null);
         setIsAdmin(false);
       }
       setIsInitializing(false);
@@ -367,9 +385,32 @@ export default function App() {
   };
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [showVendorOptions, setShowVendorOptions] = useState(false);
+  const [isAdminLoginHint, setIsAdminLoginHint] = useState(false);
+  const [vendorType, setVendorType] = useState<'student' | 'outside' | null>(() => {
+    return localStorage.getItem('tu_vendor_login_type') as 'student' | 'outside' | null;
+  });
+
+  const handleVendorLogin = async (type: 'student' | 'outside') => {
+    setLoginError(null);
+    localStorage.setItem('tu_vendor_login_type', type);
+    setVendorType(type);
+    setIsLoggingIn(true);
+    try {
+        await loginWithGoogle();
+    } catch (err) {
+        setIsLoggingIn(false);
+        setLoginError("Login failed. Authentication request was interrupted.");
+        localStorage.removeItem('tu_vendor_login_type');
+        setVendorType(null);
+        console.error("Login failed:", err);
+    }
+  };
 
   const handleGoogleLogin = async () => {
     if (isLoggingIn) return;
+    setLoginError(null);
     setIsLoggingIn(true);
     try {
       await loginWithGoogle();
@@ -402,6 +443,8 @@ export default function App() {
     try {
       await logoutUser();
       localStorage.removeItem('tu_skipped_login');
+      localStorage.removeItem('tu_vendor_login_type');
+      setVendorType(null);
       setHasSkippedLoginGate(false);
       setCurrentView('home');
     } catch (err) {
@@ -667,6 +710,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
         currentView={selectedProductId ? 'shop' : currentView}
         onViewChange={handleViewChange}
         isAdmin={isAdmin}
+        isVendor={user !== null && (vendorType !== null || isAdmin)}
         user={user}
         onLoginClick={() => {
           localStorage.removeItem('tu_skipped_login');
@@ -795,6 +839,29 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                         <UserCheck className="w-3.5 h-3.5 text-emerald-brand" />
                         <span>Sign In as Buyer</span>
                       </button>
+
+                      <div className="relative pt-2 text-center">
+                        <button 
+                          onClick={() => setIsAdminLoginHint(!isAdminLoginHint)}
+                          className="text-[9px] text-slate-300 dark:text-slate-800 hover:text-slate-400 dark:hover:text-slate-700 transition-colors cursor-help italic uppercase tracking-widest font-bold"
+                        >
+                          · System Maintenance ·
+                        </button>
+                        {isAdminLoginHint && (
+                          <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="mt-2"
+                          >
+                            <button 
+                              onClick={handleGoogleLogin}
+                              className="text-[10px] bg-emerald-500/10 text-emerald-500 py-1 px-3 rounded-full border border-emerald-500/20 hover:bg-emerald-500/20 transition-all font-bold cursor-pointer"
+                            >
+                              Admin Entrance
+                            </button>
+                          </motion.div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -828,13 +895,55 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                     </div>
 
                     <div className="pt-4 border-t border-gray-150 dark:border-slate-800/60">
-                      <button
-                        onClick={handleGoogleLogin}
-                        className="w-full bg-slate-950 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700"
-                      >
-                        <LogIn className="w-3.5 h-3.5 text-emerald-brand dark:text-white" />
-                        <span>Sign In as Student Seller</span>
-                      </button>
+                      {loginError && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 p-3 rounded-xl mb-4"
+                        >
+                          <div className="flex items-center space-x-2 text-red-600 dark:text-red-400">
+                            <ShieldAlert className="w-4 h-4 shrink-0" />
+                            <p className="text-[10px] font-bold leading-tight uppercase tracking-wide">Authentication Alert</p>
+                          </div>
+                          <p className="text-[11px] text-red-600 dark:text-red-400 mt-1 font-medium leading-relaxed">{loginError}</p>
+                        </motion.div>
+                      )}
+
+                      {!showVendorOptions ? (
+                        <button
+                          onClick={() => setShowVendorOptions(true)}
+                          className="w-full bg-slate-950 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-emerald-brand/35"
+                        >
+                          <Store className="w-3.5 h-3.5" />
+                          <span>Sign In as Vendor</span>
+                        </button>
+                      ) : (
+                        <div className="space-y-2.5">
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Select Vendor Category:</p>
+                          <button
+                            onClick={() => handleVendorLogin('student')}
+                            disabled={isLoggingIn}
+                            className="w-full bg-slate-950 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700"
+                          >
+                            <LogIn className="w-3.5 h-3.5 text-emerald-brand dark:text-white" />
+                            <span>Sign In as Student Vendor</span>
+                          </button>
+                          <button
+                            onClick={() => handleVendorLogin('outside')}
+                            disabled={isLoggingIn}
+                            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2"
+                          >
+                            <LogIn className="w-3.5 h-3.5 text-emerald-brand" />
+                            <span>Sign In as Outside Vendor</span>
+                          </button>
+                          <button
+                            onClick={() => setShowVendorOptions(false)}
+                            className="w-full bg-transparent hover:bg-gray-100 dark:hover:bg-slate-800 text-slate-500 font-bold text-xs py-2 rounded-xl transition-all cursor-pointer text-center"
+                          >
+                            ← Go Back
+                          </button>
+                        </div>
+                      )}
                       <p className="text-[9px] text-center text-slate-400 dark:text-slate-500 mt-3 italic">
                         Secured with built-in student @google provider auth.
                       </p>

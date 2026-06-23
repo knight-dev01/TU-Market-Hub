@@ -6,6 +6,7 @@ interface HeaderProps {
   currentView: string;
   onViewChange: (view: 'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding') => void;
   isAdmin: boolean;
+  isVendor?: boolean;
   user: FirebaseUser | null;
   onLoginClick: () => void;
   cartCount: number;
@@ -18,6 +19,7 @@ export default function Header({
   currentView,
   onViewChange,
   isAdmin,
+  isVendor = false,
   user,
   onLoginClick,
   cartCount,
@@ -48,7 +50,7 @@ export default function Header({
           {/* Brand Logo & Name */}
           <div className="flex-shrink-0 cursor-pointer flex items-center space-x-2.5" onClick={() => handleNavClick('home')}>
             <div className="w-10 h-10 rounded-xl bg-emerald-brand flex items-center justify-center overflow-hidden">
-              <img src="/og-image.jpeg.20.42.jpeg" alt="TU Market Hub Logo" className="w-full h-full object-cover" />
+              <img src="/og-image.jpg" alt="TU Market Hub Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
               <span className="font-display font-black text-lg sm:text-xl tracking-wider text-slate-brand dark:text-white leading-none">
@@ -106,13 +108,15 @@ export default function Header({
                     {isAdmin ? 'System Admin' : 'Seller'}
                   </span>
                 </div>
-                <button
-                  onClick={() => handleNavClick('admin')}
-                  className="text-[10px] bg-emerald-brand hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg cursor-pointer leading-none uppercase tracking-wider flex items-center gap-1 alive-blink"
-                >
-                  <Sparkles className="w-3 h-3 alive-blink text-amber-300" />
-                  <span>Stall</span>
-                </button>
+                {(isAdmin || isVendor) && (
+                  <button
+                    onClick={() => handleNavClick('admin')}
+                    className="text-[10px] bg-emerald-brand hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg cursor-pointer leading-none uppercase tracking-wider flex items-center gap-1 alive-blink"
+                  >
+                    <Sparkles className="w-3 h-3 alive-blink text-amber-300" />
+                    <span>Stall</span>
+                  </button>
+                )}
               </div>
             ) : (
               <button
