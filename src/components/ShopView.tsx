@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon, ArrowLeft } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon, ArrowLeft, Heart } from 'lucide-react';
 import { getRelativeTime, calculateDiscount } from '../utils';
 import { Product, Category } from '../types';
 
@@ -9,6 +9,8 @@ interface ShopViewProps {
   onSelectProduct: (productId: string) => void;
   initialCategory?: string;
   onBack?: () => void;
+  favorites: string[];
+  onToggleFavorite: (productId: string) => void;
 }
 
 export default function ShopView({
@@ -16,7 +18,9 @@ export default function ShopView({
   categories,
   onSelectProduct,
   initialCategory,
-  onBack
+  onBack,
+  favorites,
+  onToggleFavorite
 }: ShopViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
@@ -25,6 +29,7 @@ export default function ShopView({
   const [conditionFilter, setConditionFilter] = useState<string>('all'); // 'all', 'new', 'like_new', 'used'
   const [sortBy, setSortBy] = useState<string>('newest'); // 'newest', 'price-asc', 'price-desc', 'popular'
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
   // Synchronize state when home page category selector triggers a navigation search
   useEffect(() => {
@@ -90,7 +95,10 @@ export default function ShopView({
           matchesCondition = product.condition === conditionFilter;
         }
 
-        return matchesSearch && matchesCategory && matchesPrice && matchesStock && matchesCondition;
+        // 6. Favorites filter
+        const matchesFavorites = !showFavoritesOnly || favorites?.includes(product.id);
+
+        return matchesSearch && matchesCategory && matchesPrice && matchesStock && matchesCondition && matchesFavorites;
       })
       .sort((a, b) => {
         if (sortBy === 'newest') {
@@ -103,7 +111,7 @@ export default function ShopView({
         if (sortBy === 'popular') return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
         return 0;
       });
-  }, [products, searchQuery, selectedCategory, priceRange, stockFilter, conditionFilter, sortBy]);
+  }, [products, searchQuery, selectedCategory, priceRange, stockFilter, conditionFilter, sortBy, showFavoritesOnly, favorites]);
 
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -112,6 +120,7 @@ export default function ShopView({
     setStockFilter('all');
     setConditionFilter('all');
     setSortBy('newest');
+    setShowFavoritesOnly(false);
   };
 
   return (
@@ -197,6 +206,26 @@ export default function ShopView({
               <RefreshCw className="w-3 h-3" />
               <span>Reset</span>
             </button>
+          </div>
+
+          {/* Favorites Filter (Sleek heart switch) */}
+          <div className="space-y-2.5 bg-rose-50/20 dark:bg-rose-950/10 border border-rose-100/45 dark:border-rose-900/15 p-3.5 rounded-2xl shadow-3xs">
+            <label className="flex items-center justify-between cursor-pointer select-none">
+              <span className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                <Heart className={`w-4 h-4 ${showFavoritesOnly ? 'fill-rose-500 text-rose-500' : 'text-rose-400'}`} />
+                <span>Favorites Only</span>
+              </span>
+              <input
+                type="checkbox"
+                checked={showFavoritesOnly}
+                onChange={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                className="sr-only peer"
+              />
+              <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-rose-500"></div>
+            </label>
+            <p className="text-[10px] text-slate-500 block leading-tight font-medium">
+              Filter down to peer listings you saved in this session.
+            </p>
           </div>
 
           {/* Categories select list */}
@@ -444,6 +473,23 @@ export default function ShopView({
                         }`}>
                           {isOutside ? 'Outside' : 'Student'}
                         </div>
+
+                        {/* Favorite Heart Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleFavorite(product.id);
+                          }}
+                          className={`absolute top-2 ${product.featured ? 'right-10' : 'right-2'} p-1.5 bg-white/95 dark:bg-slate-900/95 hover:bg-white dark:hover:bg-slate-900 rounded-full shadow-xs text-slate-500 hover:text-rose-500 transition-colors z-25 cursor-pointer`}
+                        >
+                          <Heart
+                            className={`w-3.5 h-3.5 ${
+                              favorites?.includes(product.id)
+                                ? 'fill-rose-500 text-rose-500'
+                                : 'text-slate-500 dark:text-slate-400'
+                            }`}
+                          />
+                        </button>
 
                         {product.featured && (
                           <span className="absolute top-2 right-2 bg-orange-brand text-white p-1 rounded-full shadow-xs">

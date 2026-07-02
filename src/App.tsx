@@ -102,6 +102,24 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [isOffline, setIsOffline] = useState<boolean>(!navigator.onLine);
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('tu_market_favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const toggleFavorite = (productId: string) => {
+    setFavorites(prev => {
+      const updated = prev.includes(productId)
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId];
+      localStorage.setItem('tu_market_favorites', JSON.stringify(updated));
+      return updated;
+    });
+  };
   
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
@@ -240,9 +258,24 @@ export default function App() {
       if (currentUser) {
         const userEmail = currentUser.email?.toLowerCase();
         
-        const currentVendorType = localStorage.getItem('tu_vendor_login_type');
-        if (currentVendorType === 'student') {
-          // Check for surname.firstname@trinityuniversity.edu.ng format strictly
+        // 1. Check if user already has an existing profile in Firestore
+        let hasExistingVendorProfile = false;
+        let dbVendorType: 'student' | 'outside' | null = null;
+        try {
+          const vSnap = await getDoc(doc(db, 'vendors', currentUser.uid));
+          if (vSnap.exists()) {
+            hasExistingVendorProfile = true;
+            const data = vSnap.data();
+            dbVendorType = data.vendorType || 'student';
+          }
+        } catch (err) {
+          console.warn("Could not check existing vendor profile:", err);
+        }
+
+        const currentVendorType = dbVendorType || localStorage.getItem('tu_vendor_login_type') as 'student' | 'outside' | null;
+        
+        if (currentVendorType === 'student' && !hasExistingVendorProfile) {
+          // Check for surname.firstname@trinityuniversity.edu.ng format strictly ONLY FOR NEW VENDORS
           const isValidStudent = /^[^.]+\.[^.]+@trinityuniversity\.edu\.ng$/;
           if (!isValidStudent.test(userEmail || '')) {
             alert("Invalid student email format. Please use 'surname.firstname@trinityuniversity.edu.ng' to continue as a Student Vendor.");
@@ -252,12 +285,20 @@ export default function App() {
             setVendorType(null);
             setUser(null);
             setIsInitializing(false);
-            // Ensure they return to the admin/login view
             handleViewChange('admin');
             return;
           }
         }
         
+        // If they have an existing vendor profile, synchronize the state
+        if (dbVendorType) {
+          setVendorType(dbVendorType);
+          localStorage.setItem('tu_vendor_login_type', dbVendorType);
+        } else if (currentVendorType) {
+          setVendorType(currentVendorType);
+          localStorage.setItem('tu_vendor_login_type', currentVendorType);
+        }
+
         setLoginError(null);
         setUser(currentUser);
         const hardcodedAdmins = ['greatifet12@gmail.com', 'aroneefashion@gmail.com', 'osemenjoy448@gmail.com'];
@@ -275,8 +316,22 @@ export default function App() {
           }
           setIsAdmin(isHardcodedAdmin || isDocAdmin);
         } catch (err) {
-          // Fallback to email match if blocked by firestore read
           setIsAdmin(isHardcodedAdmin);
+        }
+
+        // Seamless routing for returning vendors
+        if (hasExistingVendorProfile) {
+          setCurrentView('admin');
+          localStorage.setItem('tu_session_view', 'admin');
+        } else if (currentVendorType) {
+          // New vendor registering
+          if (!hasSeenWalkthrough) {
+            setCurrentView('onboarding');
+            localStorage.setItem('tu_session_view', 'onboarding');
+          } else {
+            setCurrentView('admin');
+            localStorage.setItem('tu_session_view', 'admin');
+          }
         }
       } else {
         setUser(null);
@@ -785,6 +840,8 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 onLogClick={logDirectWhatsAppClick}
                 currentUser={user}
                 onLoginClick={handleGoogleLogin}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
               />
             </motion.div>
           ) : (!user && !hasSkippedLoginGate) ? (
@@ -938,23 +995,41 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                       )}
 
                       {!showVendorOptions ? (
-                        <button
-                          onClick={() => setShowVendorOptions(true)}
-                          className="w-full bg-slate-950 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-emerald-brand/35"
-                        >
-                          <Store className="w-3.5 h-3.5" />
-                          <span>Sign In as Vendor</span>
-                        </button>
+                        <div className="space-y-3">
+                          {/* Option 1: Log In (Existing/Returning Vendors) */}
+                          <button
+                            onClick={handleGoogleLogin}
+                            disabled={isLoggingIn}
+                            className="w-full bg-slate-950 dark:bg-slate-800 hover:bg-slate-900 dark:hover:bg-slate-700 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm"
+                          >
+                            <LogIn className="w-3.5 h-3.5 text-emerald-brand" />
+                            <span>Log In (Returning Vendor)</span>
+                          </button>
+                          
+                          {/* Option 2: Join / Register (New Vendors) */}
+                          <button
+                            onClick={() => setShowVendorOptions(true)}
+                            disabled={isLoggingIn}
+                            className="w-full bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm"
+                          >
+                            <Store className="w-3.5 h-3.5" />
+                            <span>Register New Stall (New Vendor)</span>
+                          </button>
+                          
+                          <p className="text-[10px] text-slate-500 text-center font-medium leading-normal italic mt-1.5">
+                            Returning vendors should use <strong>Log In</strong> to bypass role setup and access their dashboard immediately.
+                          </p>
+                        </div>
                       ) : (
                         <div className="space-y-2.5">
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Select Vendor Category:</p>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Select Vendor Category to Register:</p>
                           <button
                             onClick={() => handleVendorLogin('student')}
                             disabled={isLoggingIn}
                             className="w-full bg-slate-950 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700"
                           >
                             <LogIn className="w-3.5 h-3.5 text-emerald-brand dark:text-white" />
-                            <span>Sign In as Student Vendor</span>
+                            <span>Register as Student Vendor</span>
                           </button>
                           <button
                             onClick={() => handleVendorLogin('outside')}
@@ -962,7 +1037,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                             className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2"
                           >
                             <LogIn className="w-3.5 h-3.5 text-emerald-brand" />
-                            <span>Sign In as Outside Vendor</span>
+                            <span>Register as Outside Vendor</span>
                           </button>
                           <button
                             onClick={() => setShowVendorOptions(false)}
@@ -998,6 +1073,8 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   onSelectProduct={handleSelectProduct}
                   whatsappNumber={settings?.whatsappNumber || '09047226729'}
                   onCategorySelect={handleViewCategoryFromHome}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
                 />
               )}
 
@@ -1008,6 +1085,8 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   onSelectProduct={handleSelectProduct}
                   initialCategory={shopInitialCategory}
                   onBack={() => setCurrentView('home')}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
                 />
               )}
 
