@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { ArrowLeft, ArrowRight, Star, BookOpen, Laptop, Sparkles, ShoppingBag, ArrowUpRight, MessageCircle, RefreshCw, Shirt, Home, Briefcase, Coffee, Heart } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Star, BookOpen, Laptop, Sparkles, ShoppingBag, ArrowUpRight, MessageCircle, RefreshCw, Shirt, Home, Briefcase, Coffee } from 'lucide-react';
 import { motion } from 'motion/react';
 import confetti from 'canvas-confetti';
 import { getRelativeTime, calculateDiscount } from '../utils';
@@ -12,8 +12,6 @@ interface HomeViewProps {
   onSelectProduct: (productId: string) => void;
   whatsappNumber: string;
   onCategorySelect?: (categoryId: string) => void;
-  favorites: string[];
-  onToggleFavorite: (productId: string) => void;
 }
 
 const getCategoryIcon = (id: string, className: string) => {
@@ -34,9 +32,7 @@ export default function HomeView({
   onViewChange,
   onSelectProduct,
   whatsappNumber,
-  onCategorySelect,
-  favorites,
-  onToggleFavorite
+  onCategorySelect
 }: HomeViewProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -103,26 +99,6 @@ export default function HomeView({
       })
       .slice(0, 4),
   [products]);
-
-  const recommendedProducts = useMemo(() => {
-    // Look up the user's favorited categories
-    const favProducts = products.filter(p => favorites?.includes(p.id));
-    const favCategories = favProducts.map(p => p.category);
-    
-    // Pool of all active products not already favorited
-    let pool = products.filter(p => p.status === 'active' && !favorites?.includes(p.id));
-    
-    // If we have favorited categories, prioritize matching products from those categories
-    if (favCategories.length > 0) {
-      const matching = pool.filter(p => favCategories.includes(p.category));
-      if (matching.length >= 2) {
-        return matching.slice(0, 4);
-      }
-    }
-    
-    // Fallback: recommend products with the best active discounts
-    return pool.sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0)).slice(0, 4);
-  }, [products, favorites]);
 
   const isProductsEmpty = products.length === 0;
 
@@ -315,149 +291,6 @@ export default function HomeView({
         </div>
       </section>
 
-      {/* Personalized Recommendations Section */}
-      {recommendedProducts.length > 0 && (
-        <section id="recommended-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8">
-          <div className="flex justify-between items-end mb-6 sm:mb-10 border-b border-gray-150 dark:border-slate-800 pb-2 sm:pb-4">
-            <div>
-              <motion.span 
-                initial={{ opacity: 0, x: -15 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="text-orange-brand dark:text-orange-400 font-mono font-bold text-[9px] sm:text-[10px] tracking-widest uppercase block mb-0.5 animate-pulse"
-              >
-                ★ Tailored For You
-              </motion.span>
-              <motion.h2 
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-xl sm:text-3xl font-extrabold font-display text-slate-brand dark:text-slate-100 leading-tight"
-              >
-                Recommended For You
-              </motion.h2>
-            </div>
-            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 py-1.5 px-3 rounded-xl">
-              Based on Activity
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {recommendedProducts.map((product, index) => {
-              const catName = categories.find(c => c.id === product.category)?.name || 'Listing';
-              const isOutside = product.vendorType === 'outside';
-              return (
-                <motion.div
-                  key={`rec-${product.id}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.4), ease: 'easeOut' }}
-                  whileHover={{ y: -6, scale: 1.015, transition: { duration: 0.2 } }}
-                  onClick={() => onSelectProduct(product.id)}
-                  className={`group cursor-pointer rounded-2xl overflow-hidden border p-2 sm:p-3 hover:shadow-md transition-shadow flex flex-col justify-between ${
-                    isOutside 
-                      ? 'bg-blue-50/20 dark:bg-slate-800/80 border-blue-100/40 dark:border-blue-900/20 hover:border-blue-300' 
-                      : 'bg-white dark:bg-slate-800 border-gray-150/70 dark:border-slate-700/50 hover:border-emerald-400'
-                  }`}
-                >
-                  <div>
-                    <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover object-center group-hover:scale-104 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      
-                      {/* Vendor Type Badge */}
-                      <div className={`absolute bottom-2 right-2 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-tighter shadow-sm ${
-                        isOutside ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
-                      }`}>
-                        {isOutside ? 'Outside' : 'Student'}
-                      </div>
-
-                      {/* Favorite Heart Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleFavorite(product.id);
-                        }}
-                        className={`absolute top-2 ${product.featured ? 'right-10' : 'right-2'} p-1.5 bg-white/95 dark:bg-slate-900/95 hover:bg-white dark:hover:bg-slate-900 rounded-full shadow-xs text-slate-500 hover:text-rose-500 transition-colors z-25 cursor-pointer`}
-                      >
-                        <Heart
-                          className={`w-3.5 h-3.5 ${
-                            favorites?.includes(product.id)
-                              ? 'fill-rose-500 text-rose-500'
-                              : 'text-slate-500 dark:text-slate-400'
-                          }`}
-                        />
-                      </button>
-
-                      {product.featured && (
-                        <span className="absolute top-2 right-2 bg-orange-brand text-white p-1 rounded-full shadow-xs z-20">
-                          <Star className="w-3.5 h-3.5 fill-white stroke-none" />
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="space-y-1 sm:space-y-1.5 px-1 sm:px-2">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="text-[9px] sm:text-[10px] font-extrabold text-emerald-brand uppercase tracking-wider block truncate">
-                          {catName}
-                        </span>
-                        {product.stock <= 3 && product.stock > 0 && (
-                          <span className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-[8px] font-bold px-1 rounded-sm uppercase tracking-tighter">
-                            Low Stock
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-100 line-clamp-2 leading-snug group-hover:text-emerald-brand transition-colors">
-                        {product.name}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 sm:pt-3 border-t border-gray-100 dark:border-slate-800/80 mt-3 flex items-center justify-between px-1 sm:px-2">
-                    <div className="flex flex-col">
-                      {(() => {
-                        const { hasDiscount, originalPrice, discountedPrice, discountPercentage } = calculateDiscount(product.price, product.discountPercentage);
-
-                        return hasDiscount ? (
-                          <>
-                            <span className="text-[9px] sm:text-[10px] text-slate-400 line-through">
-                              &#8358; {originalPrice.toLocaleString()}
-                            </span>
-                            <div className="flex items-center space-x-1">
-                              <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200">
-                                &#8358; {discountedPrice.toLocaleString()}
-                              </span>
-                              <span className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-[8px] px-1 py-0.5 rounded ml-1 whitespace-nowrap font-extrabold">
-                                -{discountPercentage}%
-                              </span>
-                            </div>
-                          </>
-                        ) : (
-                          <span className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200">
-                            &#8358; {originalPrice.toLocaleString()}
-                          </span>
-                        );
-                      })()}
-                    </div>
-                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2 rounded-xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer flex items-center gap-1">
-                      <span>View</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
       {/* 3. New Arrivals Sections */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-end mb-6 sm:mb-10 border-b border-gray-150 dark:border-slate-800 pb-2 sm:pb-4">
@@ -522,23 +355,6 @@ export default function HomeView({
                         loading="lazy"
                       />
                       
-                      {/* Favorite Heart Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleFavorite(product.id);
-                        }}
-                        className={`absolute top-2 ${product.featured ? 'right-10' : 'right-2'} p-1.5 bg-white/95 dark:bg-slate-900/95 hover:bg-white dark:hover:bg-slate-900 rounded-full shadow-xs text-slate-500 hover:text-rose-500 transition-colors z-25 cursor-pointer`}
-                      >
-                        <Heart
-                          className={`w-3.5 h-3.5 ${
-                            favorites?.includes(product.id)
-                              ? 'fill-rose-500 text-rose-500'
-                              : 'text-slate-500 dark:text-slate-400'
-                          }`}
-                        />
-                      </button>
-
                       {/* Condition Badge */}
                       {(() => {
                         let displayCondition = product.condition;
@@ -740,23 +556,6 @@ export default function HomeView({
                       <span className="absolute top-2 right-2 bg-slate-900 text-white p-1.5 rounded-sm">
                         <Star className="w-3.5 h-3.5 fill-white stroke-none" />
                       </span>
-                      
-                      {/* Favorite Heart Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleFavorite(product.id);
-                        }}
-                        className="absolute top-2 right-10 p-1.5 bg-white/95 dark:bg-slate-900/95 hover:bg-white dark:hover:bg-slate-900 rounded-full shadow-xs text-slate-500 hover:text-rose-500 transition-colors z-25 cursor-pointer"
-                      >
-                        <Heart
-                          className={`w-3.5 h-3.5 ${
-                            favorites?.includes(product.id)
-                              ? 'fill-rose-500 text-rose-500'
-                              : 'text-slate-500 dark:text-slate-400'
-                          }`}
-                        />
-                      </button>
                       {(() => {
                         let displayCondition = product.condition;
                         if (product.category === 'food') {

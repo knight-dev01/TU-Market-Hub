@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight, MessageSquareCode, Heart } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight, MessageSquareCode } from 'lucide-react';
 import { User as FirebaseUser } from 'firebase/auth';
 import { Product, Category } from '../types';
 import { calculateDiscount } from '../utils';
@@ -17,8 +17,6 @@ interface ProductDetailViewProps {
   currentUser: FirebaseUser | null;
   onLoginClick: () => void;
   onCheckoutDirect?: (vendorId: string, vendorName: string, vendorNumber: string, items: any[]) => void;
-  favorites: string[];
-  onToggleFavorite: (productId: string) => void;
 }
 
 export default function ProductDetailView({
@@ -32,9 +30,7 @@ export default function ProductDetailView({
   onLogClick,
   currentUser,
   onLoginClick,
-  onCheckoutDirect,
-  favorites,
-  onToggleFavorite
+  onCheckoutDirect
 }: ProductDetailViewProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -453,23 +449,6 @@ Please let me know if it's available so we can arrange a secure meetup!`;
                     title="Share this product"
                   >
                     <Share2 className="w-4 h-4 text-slate-brand/80 dark:text-slate-400 alive-blink" />
-                  </button>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onToggleFavorite(product.id);
-                    }}
-                    className="flex-none bg-transparent border border-gray-300 dark:border-slate-600 py-4 px-5 rounded-full transition-colors hover:bg-rose-55 hover:text-rose-500 dark:hover:bg-rose-950/20 cursor-pointer flex items-center justify-center"
-                    title="Add to Favorites"
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${
-                        favorites?.includes(product.id)
-                          ? 'fill-rose-500 text-rose-500'
-                          : 'text-slate-brand/80 dark:text-slate-400'
-                      }`}
-                    />
                   </button>
                 </div>
 

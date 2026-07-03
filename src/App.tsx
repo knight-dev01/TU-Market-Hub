@@ -102,24 +102,6 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [isOffline, setIsOffline] = useState<boolean>(!navigator.onLine);
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('tu_market_favorites');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const toggleFavorite = (productId: string) => {
-    setFavorites(prev => {
-      const updated = prev.includes(productId)
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId];
-      localStorage.setItem('tu_market_favorites', JSON.stringify(updated));
-      return updated;
-    });
-  };
   
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
@@ -840,8 +822,6 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                 onLogClick={logDirectWhatsAppClick}
                 currentUser={user}
                 onLoginClick={handleGoogleLogin}
-                favorites={favorites}
-                onToggleFavorite={toggleFavorite}
               />
             </motion.div>
           ) : (!user && !hasSkippedLoginGate) ? (
@@ -852,207 +832,182 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              className="max-w-4xl mx-auto py-12 px-4 whitespace-normal select-none"
+              className="max-w-md mx-auto py-12 px-4 whitespace-normal select-none"
             >
-              <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-xl space-y-8">
+              <div className="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
                 {/* Header Section */}
-                <div className="text-center space-y-3">
-                  <div className="w-14 h-14 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-sm">
-                    <Store className="w-7 h-7" />
+                <div className="text-center space-y-2.5">
+                  <div className="w-12 h-12 bg-emerald-brand/10 dark:bg-emerald-900/40 text-emerald-brand dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-xs">
+                    <Store className="w-6 h-6" />
                   </div>
-                  <div className="space-y-1.5">
-                    <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display">
+                  <div className="space-y-1">
+                    <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display">
                       Welcome to TU <span className="text-emerald-brand">Market</span> Hub
                     </h1>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium max-w-lg mx-auto leading-relaxed">
-                      Trinity University's official student marketplace and peer trading stall. Create, explore, and transact instantly within our safe hostel storefronts.
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed max-w-sm mx-auto">
+                      Trinity University's official student marketplace and peer trading stall.
                     </p>
                   </div>
                 </div>
 
-                <hr className="border-gray-150 dark:border-slate-800" />
+                {/* Primary Action (Shopper - Frictionless) */}
+                <div className="space-y-3 pt-2">
+                  <button
+                    onClick={() => {
+                      localStorage.setItem('tu_skipped_login', 'true');
+                      setHasSkippedLoginGate(true);
+                      setCurrentView('shop');
+                    }}
+                    className="w-full bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm hover:scale-[1.015]"
+                  >
+                    <span>Explore Marketplace</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <p className="text-[10px] text-center text-slate-400 dark:text-slate-500 font-medium">
+                    No sign-in required to browse listings or contact sellers.
+                  </p>
+                </div>
 
-                {/* Left/Right Split Card Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  
-                  {/* Buyer Section */}
-                  <div className="bg-slate-50 dark:bg-slate-900/50 border border-gray-200/50 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
-                          <ShoppingBag className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-base text-slate-900 dark:text-slate-100 font-display">Buyer / Shopper Hub</h3>
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold">Browse & secure campus deals</p>
-                        </div>
+                {/* Aesthetic Divider */}
+                <div className="relative flex py-2 items-center">
+                  <div className="flex-grow border-t border-gray-150 dark:border-slate-800/80"></div>
+                  <span className="flex-shrink mx-4 text-[9px] text-slate-400 dark:text-slate-500 font-mono uppercase tracking-widest font-bold">or seller portal</span>
+                  <div className="flex-grow border-t border-gray-150 dark:border-slate-800/80"></div>
+                </div>
+
+                {/* Seller/Vendor Segment Controls */}
+                <div className="space-y-4">
+                  {loginError && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 p-3 rounded-xl"
+                    >
+                      <div className="flex items-center space-x-2 text-red-600 dark:text-red-400">
+                        <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                        <p className="text-[10px] font-bold leading-tight uppercase tracking-wide">Authentication Alert</p>
                       </div>
+                      <p className="text-[10px] text-red-600 dark:text-red-400 mt-1 font-medium leading-relaxed">{loginError}</p>
+                    </motion.div>
+                  )}
 
-                      <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 font-medium">
-                        <div className="flex items-start space-x-2">
-                          <span className="text-emerald-brand font-bold">✓</span>
-                          <span>Browse gadgets, books, and fashion listings instantly</span>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <span className="text-emerald-brand font-bold">✓</span>
-                          <span>Draft orders and click to open pre-filled WhatsApp templates</span>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <span className="text-emerald-brand font-bold">✓</span>
-                          <span>Chat live inside the web browser with verified student sellers</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-4 border-t border-gray-150 dark:border-slate-800/60">
-                      <button
-                        onClick={() => {
-                          localStorage.setItem('tu_skipped_login', 'true');
-                          setHasSkippedLoginGate(true);
-                          setCurrentView('shop');
-                        }}
-                        className="w-full bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 focus:ring-2 focus:ring-emerald-brand/35"
-                      >
-                        <span>Redirect to Shop / Marketplace</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
-                        onClick={handleGoogleLogin}
-                        className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs tracking-wider uppercase py-3 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2"
-                      >
-                        <UserCheck className="w-3.5 h-3.5 text-emerald-brand" />
-                        <span>Sign In as Buyer</span>
-                      </button>
-
-                      <div className="relative pt-2 text-center">
-                        <button 
-                          onClick={() => setIsAdminLoginHint(!isAdminLoginHint)}
-                          className="text-[9px] text-slate-300 dark:text-slate-800 hover:text-slate-400 dark:hover:text-slate-700 transition-colors cursor-help italic uppercase tracking-widest font-bold"
-                        >
-                          · System Maintenance ·
-                        </button>
-                        {isAdminLoginHint && (
-                          <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="mt-2"
-                          >
-                            <button 
-                              onClick={handleGoogleLogin}
-                              className="text-[10px] bg-emerald-500/10 text-emerald-500 py-1 px-3 rounded-full border border-emerald-500/20 hover:bg-emerald-500/20 transition-all font-bold cursor-pointer"
-                            >
-                              Admin Entrance
-                            </button>
-                          </motion.div>
-                        )}
-                      </div>
-                    </div>
+                  {/* Sleek Tabs */}
+                  <div className="bg-slate-50 dark:bg-slate-800/40 p-1 rounded-xl border border-gray-150 dark:border-slate-800/60 flex space-x-1">
+                    <button
+                      onClick={() => {
+                        setShowVendorOptions(false);
+                        localStorage.removeItem('tu_vendor_login_type');
+                        setVendorType(null);
+                      }}
+                      className={`flex-1 text-[9px] sm:text-[10px] font-bold py-2 rounded-lg transition-all uppercase tracking-wider ${
+                        !showVendorOptions
+                          ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                          : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-350'
+                      }`}
+                    >
+                      Log In
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowVendorOptions(true);
+                        localStorage.setItem('tu_vendor_login_type', 'student');
+                        setVendorType('student');
+                      }}
+                      className={`flex-1 text-[9px] sm:text-[10px] font-bold py-2 rounded-lg transition-all uppercase tracking-wider ${
+                        showVendorOptions && vendorType === 'student'
+                          ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                          : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-350'
+                      }`}
+                    >
+                      Student Reg
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowVendorOptions(true);
+                        localStorage.setItem('tu_vendor_login_type', 'outside');
+                        setVendorType('outside');
+                      }}
+                      className={`flex-1 text-[9px] sm:text-[10px] font-bold py-2 rounded-lg transition-all uppercase tracking-wider ${
+                        showVendorOptions && vendorType === 'outside'
+                          ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                          : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-350'
+                      }`}
+                    >
+                      Outside Reg
+                    </button>
                   </div>
 
-                  {/* Seller Section */}
-                  <div className="bg-emerald-brand/[0.01] dark:bg-emerald-500/[0.01] border border-emerald-brand/10 dark:border-emerald-500/10 rounded-2xl p-6 flex flex-col justify-between space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg">
-                          <Sparkles className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <h3 className="font-bold text-base text-slate-900 dark:text-slate-100 font-display">Seller / Vendor Portal</h3>
-                          <p className="text-[10px] text-emerald-500 dark:text-emerald-400 uppercase tracking-wider font-bold">List and manage hostel listings</p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300 font-medium font-sans">
-                        <div className="flex items-start space-x-2">
-                          <span className="text-emerald-brand font-bold">✓</span>
-                          <span>Launch your own hostel storefront and list gadgets or fashion</span>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <span className="text-emerald-brand font-bold">✓</span>
-                          <span>Access personal real-time peer chats and live visitor clicks</span>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <span className="text-emerald-brand font-bold">✓</span>
-                          <span>Map listings directly to your personal WhatsApp number</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-gray-150 dark:border-slate-800/60">
-                      {loginError && (
-                        <motion.div 
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 p-3 rounded-xl mb-4"
-                        >
-                          <div className="flex items-center space-x-2 text-red-600 dark:text-red-400">
-                            <ShieldAlert className="w-4 h-4 shrink-0" />
-                            <p className="text-[10px] font-bold leading-tight uppercase tracking-wide">Authentication Alert</p>
-                          </div>
-                          <p className="text-[11px] text-red-600 dark:text-red-400 mt-1 font-medium leading-relaxed">{loginError}</p>
-                        </motion.div>
-                      )}
-
-                      {!showVendorOptions ? (
-                        <div className="space-y-3">
-                          {/* Option 1: Log In (Existing/Returning Vendors) */}
-                          <button
-                            onClick={handleGoogleLogin}
-                            disabled={isLoggingIn}
-                            className="w-full bg-slate-950 dark:bg-slate-800 hover:bg-slate-900 dark:hover:bg-slate-700 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm"
-                          >
-                            <LogIn className="w-3.5 h-3.5 text-emerald-brand" />
-                            <span>Log In (Returning Vendor)</span>
-                          </button>
-                          
-                          {/* Option 2: Join / Register (New Vendors) */}
-                          <button
-                            onClick={() => setShowVendorOptions(true)}
-                            disabled={isLoggingIn}
-                            className="w-full bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm"
-                          >
-                            <Store className="w-3.5 h-3.5" />
-                            <span>Register New Stall (New Vendor)</span>
-                          </button>
-                          
-                          <p className="text-[10px] text-slate-500 text-center font-medium leading-normal italic mt-1.5">
-                            Returning vendors should use <strong>Log In</strong> to bypass role setup and access their dashboard immediately.
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-2.5">
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-2">Select Vendor Category to Register:</p>
-                          <button
-                            onClick={() => handleVendorLogin('student')}
-                            disabled={isLoggingIn}
-                            className="w-full bg-slate-950 dark:bg-emerald-brand hover:bg-slate-800 dark:hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700"
-                          >
-                            <LogIn className="w-3.5 h-3.5 text-emerald-brand dark:text-white" />
-                            <span>Register as Student Vendor</span>
-                          </button>
-                          <button
-                            onClick={() => handleVendorLogin('outside')}
-                            disabled={isLoggingIn}
-                            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2"
-                          >
-                            <LogIn className="w-3.5 h-3.5 text-emerald-brand" />
-                            <span>Register as Outside Vendor</span>
-                          </button>
-                          <button
-                            onClick={() => setShowVendorOptions(false)}
-                            className="w-full bg-transparent hover:bg-gray-100 dark:hover:bg-slate-800 text-slate-500 font-bold text-xs py-2 rounded-xl transition-all cursor-pointer text-center"
-                          >
-                            ← Go Back
-                          </button>
-                        </div>
-                      )}
-                      <p className="text-[9px] text-center text-slate-400 dark:text-slate-500 mt-3 italic">
-                        Secured with built-in student @google provider auth.
+                  {/* Helper Hint text depending on active tab */}
+                  <div className="text-center px-1">
+                    {!showVendorOptions ? (
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
+                        Access your existing storefront, update inventory, and handle active inquiries.
                       </p>
-                    </div>
+                    ) : vendorType === 'student' ? (
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
+                        Open a Student Stall. Requires student email format: <code className="bg-slate-100 dark:bg-slate-800/80 px-1 py-0.5 rounded text-emerald-600 dark:text-emerald-400 font-mono font-bold text-[9px]">surname.firstname@trinityuniversity.edu.ng</code>
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal">
+                        Open an Outside Stall to list external services, products, or books for students.
+                      </p>
+                    )}
                   </div>
 
+                  {/* Combined Google authentication Action Button */}
+                  <button
+                    onClick={async () => {
+                      if (showVendorOptions && vendorType) {
+                        await handleVendorLogin(vendorType);
+                      } else {
+                        await handleGoogleLogin();
+                      }
+                    }}
+                    disabled={isLoggingIn}
+                    className="w-full bg-slate-950 dark:bg-slate-800 hover:bg-slate-900 dark:hover:bg-slate-700 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-750 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm hover:scale-[1.01]"
+                  >
+                    {isLoggingIn ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-brand" />
+                    ) : (
+                      <LogIn className="w-3.5 h-3.5 text-emerald-brand" />
+                    )}
+                    <span>
+                      {isLoggingIn
+                        ? 'Connecting Securely...'
+                        : !showVendorOptions
+                        ? 'Sign In with Google'
+                        : 'Register with Google'}
+                    </span>
+                  </button>
+                </div>
+
+                {/* System Maintenance & Secured Auth Note */}
+                <div className="pt-2 text-center space-y-2.5">
+                  <div className="relative">
+                    <button 
+                      onClick={() => setIsAdminLoginHint(!isAdminLoginHint)}
+                      className="text-[9px] text-slate-300 dark:text-slate-700 hover:text-slate-400 dark:hover:text-slate-600 transition-colors cursor-help italic uppercase tracking-widest font-bold"
+                    >
+                      · System Maintenance ·
+                    </button>
+                    {isAdminLoginHint && (
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-2"
+                      >
+                        <button 
+                          onClick={handleGoogleLogin}
+                          className="text-[10px] bg-emerald-500/10 text-emerald-500 py-1 px-3 rounded-full border border-emerald-500/20 hover:bg-emerald-500/20 transition-all font-bold cursor-pointer"
+                        >
+                          Admin Entrance
+                        </button>
+                      </motion.div>
+                    )}
+                  </div>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 italic">
+                    Secured by Google Authentication.
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -1073,8 +1028,6 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   onSelectProduct={handleSelectProduct}
                   whatsappNumber={settings?.whatsappNumber || '09047226729'}
                   onCategorySelect={handleViewCategoryFromHome}
-                  favorites={favorites}
-                  onToggleFavorite={toggleFavorite}
                 />
               )}
 
@@ -1085,8 +1038,6 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                   onSelectProduct={handleSelectProduct}
                   initialCategory={shopInitialCategory}
                   onBack={() => setCurrentView('home')}
-                  favorites={favorites}
-                  onToggleFavorite={toggleFavorite}
                 />
               )}
 
