@@ -56,7 +56,7 @@ export default function WalkthroughGuide({ onFinish }: WalkthroughProps) {
             <div className="flex gap-2">
               <span className="text-[9px] bg-emerald-brand text-white font-semibold py-1 px-2 rounded-full">All Items</span>
               <span className="text-[9px] bg-slate-800 text-slate-300 font-medium py-1 px-2 rounded-full">Academics</span>
-              <span className="text-[9px] bg-slate-800 text-slate-300 font-medium py-1 px-2 rounded-full">electronics</span>
+              <span className="text-[9px] bg-slate-800 text-slate-300 font-medium py-1 px-2 rounded-full">Electronics</span>
             </div>
 
             {/* Simulated Grid of item */}
