@@ -858,7 +858,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                       setHasSkippedLoginGate(true);
                       setCurrentView('shop');
                     }}
-                    className="w-full bg-emerald-brand hover:bg-emerald-600 text-white font-bold text-xs tracking-wider uppercase py-4 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm hover:scale-[1.015]"
+                    className="w-full bg-emerald-brand hover:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs tracking-wider uppercase py-4 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm hover:scale-[1.015]"
                   >
                     <span>Explore Marketplace</span>
                     <ArrowRight className="w-4 h-4" />
@@ -964,7 +964,7 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
                       }
                     }}
                     disabled={isLoggingIn}
-                    className="w-full bg-slate-950 dark:bg-slate-800 hover:bg-slate-900 dark:hover:bg-slate-700 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-750 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm hover:scale-[1.01]"
+                    className="w-full bg-slate-950 dark:bg-slate-800 hover:bg-slate-900 dark:hover:bg-slate-700/80 text-white font-bold text-xs tracking-wider uppercase py-3.5 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2 border border-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-emerald-brand/35 shadow-sm hover:scale-[1.01]"
                   >
                     {isLoggingIn ? (
                       <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-brand" />

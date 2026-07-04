@@ -117,7 +117,7 @@ export default function Header({
               <button
                 id="btn-login"
                 onClick={onLoginClick}
-                className="text-xs font-bold text-emerald-brand dark:text-emerald-brand hover:text-white dark:hover:text-white border border-emerald-brand/30 hover:bg-emerald-brand rounded-xl py-2.5 px-5 transition-all cursor-pointer uppercase tracking-wider alive-blink"
+                className="text-xs font-bold text-emerald-brand dark:text-emerald-400 hover:text-white dark:hover:text-white border border-emerald-brand/30 dark:border-emerald-500/30 hover:bg-emerald-brand dark:hover:bg-emerald-500 rounded-xl py-2.5 px-5 transition-all duration-300 cursor-pointer uppercase tracking-wider alive-blink"
               >
                 Login
               </button>

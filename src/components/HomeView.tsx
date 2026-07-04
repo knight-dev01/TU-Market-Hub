@@ -355,27 +355,39 @@ export default function HomeView({
                         loading="lazy"
                       />
                       
-                      {/* Condition Badge */}
-                      {(() => {
-                        let displayCondition = product.condition;
-                        if (product.category === 'food') {
-                          if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
-                          else displayCondition = 'not_ready';
-                        } else if (product.category === 'services') {
-                          if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
-                          else displayCondition = 'not_available';
-                        }
-                        if (!displayCondition) return null;
-                        return (
-                          <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
-                            displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
-                            displayCondition === 'like_new' ? 'bg-emerald-500' :
-                            displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
-                          }`}>
-                            {displayCondition.toUpperCase().replace('_', ' ')}
+                      {/* Top Left Badges flex layout prevents overlap */}
+                      <div className="absolute top-2 left-2 flex flex-col gap-1 items-start z-10">
+                        {product.stock === 0 && (
+                          <span className="text-[9px] font-bold font-mono py-0.5 px-2 rounded-full text-white bg-red-600 shadow-sm">
+                            SOLD OUT
                           </span>
-                        );
-                      })()}
+                        )}
+                        {product.stock > 0 && product.stock <= 3 && (
+                          <span className="text-[9px] font-bold font-mono py-0.5 px-2 rounded-full text-slate-900 bg-amber-400 shadow-sm font-sans">
+                            LOW STOCK
+                          </span>
+                        )}
+                        {(() => {
+                          let displayCondition = product.condition;
+                          if (product.category === 'food') {
+                            if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
+                            else displayCondition = 'not_ready';
+                          } else if (product.category === 'services') {
+                            if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
+                            else displayCondition = 'not_available';
+                          }
+                          if (!displayCondition) return null;
+                          return (
+                            <span className={`text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
+                              displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
+                              displayCondition === 'like_new' ? 'bg-emerald-500' :
+                              displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
+                            }`}>
+                              {displayCondition.toUpperCase().replace('_', ' ')}
+                            </span>
+                          );
+                        })()}
+                      </div>
                     </div>
 
                     <div className="space-y-1 px-1">
@@ -426,9 +438,9 @@ export default function HomeView({
                         );
                       })()}
                     </div>
-                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 dark:hover:bg-slate-700 hover:text-white dark:hover:border-slate-700 transition-colors cursor-pointer flex items-center gap-1 alive-pulse">
+                    <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-1.5 px-3.5 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 hover:border-emerald-brand dark:hover:border-emerald-500 transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-3xs group-hover:scale-[1.02]">
                       <span>View Deal</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 alive-blink" />
+                      <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 group-hover:text-white transition-colors duration-300 shrink-0" />
                     </button>
                   </div>
                 </motion.div>
@@ -553,25 +565,43 @@ export default function HomeView({
                         className="w-full h-full object-cover object-center group-hover:scale-104 transition-transform duration-500"
                         loading="lazy"
                       />
-                      <span className="absolute top-2 right-2 bg-slate-900 text-white p-1.5 rounded-sm">
+                      <span className="absolute top-2 right-2 bg-slate-900 text-white p-1.5 rounded-sm z-10">
                         <Star className="w-3.5 h-3.5 fill-white stroke-none" />
                       </span>
-                      {(() => {
-                        let displayCondition = product.condition;
-                        if (product.category === 'food') {
-                          if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'READY';
-                          else displayCondition = 'NOT READY';
-                        } else if (product.category === 'services') {
-                          if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'AVAILABLE';
-                          else displayCondition = 'NOT AVAILABLE';
-                        }
-                        if (!displayCondition) return null;
-                        return (
-                          <span className="absolute top-2 left-2 bg-slate-900/80 text-white text-[8px] font-bold font-mono py-0.5 px-2 rounded-sm alive-blink">
-                            {displayCondition.toUpperCase().replace('_', ' ')}
+                      
+                      {/* Top Left Badges flex layout prevents overlap */}
+                      <div className="absolute top-2 left-2 flex flex-col gap-1 items-start z-10">
+                        {product.stock === 0 && (
+                          <span className="text-[9px] font-bold font-mono py-0.5 px-2 rounded-full text-white bg-red-600 shadow-sm">
+                            SOLD OUT
                           </span>
-                        );
-                      })()}
+                        )}
+                        {product.stock > 0 && product.stock <= 3 && (
+                          <span className="text-[9px] font-bold font-mono py-0.5 px-2 rounded-full text-slate-900 bg-amber-400 shadow-sm font-sans">
+                            LOW STOCK
+                          </span>
+                        )}
+                        {(() => {
+                          let displayCondition = product.condition;
+                          if (product.category === 'food') {
+                            if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
+                            else displayCondition = 'not_ready';
+                          } else if (product.category === 'services') {
+                            if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
+                            else displayCondition = 'not_available';
+                          }
+                          if (!displayCondition) return null;
+                          return (
+                            <span className={`text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
+                              displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
+                              displayCondition === 'like_new' ? 'bg-emerald-500' :
+                              displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
+                            }`}>
+                              {displayCondition.toUpperCase().replace('_', ' ')}
+                            </span>
+                          );
+                        })()}
+                      </div>
                     </div>
                     <div className="space-y-1 px-1">
                       <p className="text-[9px] tracking-widest text-emerald-brand uppercase flex items-center gap-1">
@@ -614,9 +644,9 @@ export default function HomeView({
                         );
                       })()}
                     </div>
-                    <button className="text-[10px] font-bold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 py-1 px-2.5 rounded-xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-colors cursor-pointer flex items-center gap-1">
+                    <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-1.5 px-3.5 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 hover:border-emerald-brand dark:hover:border-emerald-500 transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-3xs group-hover:scale-[1.02]">
                       <span>View Deal</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-450 alive-blink" />
+                      <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 group-hover:text-white transition-colors duration-300 shrink-0" />
                     </button>
                   </div>
                 </motion.div>

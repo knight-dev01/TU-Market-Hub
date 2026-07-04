@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight, MessageSquareCode } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight, MessageSquareCode, ArrowUpRight, Star } from 'lucide-react';
 import { User as FirebaseUser } from 'firebase/auth';
 import { Product, Category } from '../types';
 import { calculateDiscount } from '../utils';
@@ -261,27 +261,39 @@ Please let me know if it's available so we can arrange a secure meetup!`;
               <ZoomIn className="w-4 h-4" />
             </button>
             
-            {/* Condition overlay labels */}
-            {(() => {
-              let displayCondition = product.condition;
-              if (product.category === 'food') {
-                if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
-                else displayCondition = 'not_ready';
-              } else if (product.category === 'services') {
-                if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
-                else displayCondition = 'not_available';
-              }
-              if (!displayCondition) return null;
-              return (
-                <span className={`absolute top-4 left-4 text-xs font-mono font-bold py-1.5 px-3.5 rounded-full shadow-md text-white alive-blink ${
-                  displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
-                  displayCondition === 'like_new' ? 'bg-emerald-500' :
-                  displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
-                }`}>
-                  {displayCondition.toUpperCase().replace('_', ' ')}
+            {/* Top Left Badges flex layout prevents overlap */}
+            <div className="absolute top-4 left-4 flex flex-col gap-1.5 items-start z-10">
+              {product.stock === 0 && (
+                <span className="text-xs font-bold font-mono py-1.5 px-3.5 rounded-full text-white bg-red-600 shadow-md">
+                  SOLD OUT
                 </span>
-              );
-            })()}
+              )}
+              {product.stock > 0 && product.stock <= 3 && (
+                <span className="text-xs font-bold font-mono py-1.5 px-3.5 rounded-full text-slate-900 bg-amber-400 shadow-md">
+                  LOW STOCK
+                </span>
+              )}
+              {(() => {
+                let displayCondition = product.condition;
+                if (product.category === 'food') {
+                  if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
+                  else displayCondition = 'not_ready';
+                } else if (product.category === 'services') {
+                  if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
+                  else displayCondition = 'not_available';
+                }
+                if (!displayCondition) return null;
+                return (
+                  <span className={`text-xs font-mono font-bold py-1.5 px-3.5 rounded-full shadow-md text-white alive-blink ${
+                    displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
+                    displayCondition === 'like_new' ? 'bg-emerald-500' :
+                    displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
+                  }`}>
+                    {displayCondition.toUpperCase().replace('_', ' ')}
+                  </span>
+                );
+              })()}
+            </div>
           </div>
 
           {/* Gallery Thumbnails List */}
@@ -492,38 +504,89 @@ Please let me know if it's available so we can arrange a secure meetup!`;
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {relatedProducts.map((p) => (
-              <div
-                key={p.id}
-                onClick={() => {
-                  onSelectProduct(p.id);
-                  setActiveImageIndex(0);
-                  setSelectedSize('');
-                }}
-                className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-lg transition-all"
-              >
-                <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
-                  <img
-                    src={p.images[0]}
-                    alt={p.name}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover object-center"
-                    loading="lazy"
-                  />
-                  {p.condition && (
-                    <span className="absolute top-2 left-2 bg-slate-900/80 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full font-mono">
-                      {p.condition.toUpperCase()}
-                    </span>
-                  )}
+            {relatedProducts.map((p) => {
+              const catName = categories.find(c => c.id === p.category)?.name || 'Listing';
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => {
+                    onSelectProduct(p.id);
+                    setActiveImageIndex(0);
+                    setSelectedSize('');
+                  }}
+                  className="group cursor-pointer bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-150/70 dark:border-slate-700/50 p-2 sm:p-3 hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="relative aspect-square w-full rounded-xl bg-gray-brand overflow-hidden mb-3">
+                      <img
+                        src={p.images[0]}
+                        alt={p.name}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover object-center group-hover:scale-104 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      
+                      {/* Top Left Badges flex layout prevents overlap */}
+                      <div className="absolute top-2 left-2 flex flex-col gap-1 items-start z-10">
+                        {p.stock === 0 && (
+                          <span className="text-[9px] font-bold font-mono py-0.5 px-2 rounded-full text-white bg-red-600 shadow-sm">
+                            SOLD OUT
+                          </span>
+                        )}
+                        {p.stock > 0 && p.stock <= 3 && (
+                          <span className="text-[9px] font-bold font-mono py-0.5 px-2 rounded-full text-slate-900 bg-amber-400 shadow-sm font-sans">
+                            LOW STOCK
+                          </span>
+                        )}
+                        {(() => {
+                          let displayCondition = p.condition;
+                          if (p.category === 'food') {
+                            if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
+                            else displayCondition = 'not_ready';
+                          } else if (p.category === 'services') {
+                            if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
+                            else displayCondition = 'not_available';
+                          }
+                          if (!displayCondition) return null;
+                          return (
+                            <span className={`text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
+                              displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
+                              displayCondition === 'like_new' ? 'bg-emerald-500' :
+                              displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
+                            }`}>
+                              {displayCondition.toUpperCase().replace('_', ' ')}
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1 px-1">
+                      <p className="text-[9px] tracking-widest text-emerald-brand uppercase flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-emerald-brand alive-blink" />
+                        {catName}
+                      </p>
+                      <h3 className="font-semibold text-xs sm:text-sm text-slate-brand dark:text-slate-100 line-clamp-1 group-hover:text-emerald-brand transition-colors">
+                        {p.name}
+                      </h3>
+                      <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 line-clamp-1 italic">
+                        Sold by: {p.vendorName || 'TU Peer Seller'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-3 px-1 border-t border-gray-100 dark:border-slate-700 mt-3 gap-y-1">
+                    <p className="text-xs sm:text-sm font-extrabold text-slate-brand dark:text-slate-200 font-mono">
+                      &#8358; {p.price.toLocaleString()}
+                    </p>
+                    <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-1.5 px-3.5 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 hover:border-emerald-brand dark:hover:border-emerald-500 transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-3xs group-hover:scale-[1.02]">
+                      <span>View Deal</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 group-hover:text-white transition-colors duration-300 shrink-0" />
+                    </button>
+                  </div>
                 </div>
-                <h3 className="font-semibold text-xs sm:text-sm text-slate-brand line-clamp-1 group-hover:text-emerald-brand transition-colors">
-                  {p.name}
-                </h3>
-                <p className="text-xs font-extrabold text-slate-brand font-mono pt-1">
-                  &#8358; {p.price.toLocaleString()}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

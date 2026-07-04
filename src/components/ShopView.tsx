@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon, ArrowLeft } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowUpDown, RefreshCw, Star, Tag, RefreshCw as SwapIcon, ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { getRelativeTime, calculateDiscount } from '../utils';
 import { Product, Category } from '../types';
 
@@ -439,49 +439,51 @@ export default function ShopView({
                           loading="lazy"
                         />
                         {/* Vendor Type Badge */}
-                        <div className={`absolute bottom-2 right-2 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-tighter shadow-sm ${
+                        <div className={`absolute bottom-2 right-2 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-tighter shadow-sm z-10 ${
                           isOutside ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
                         }`}>
                           {isOutside ? 'Outside' : 'Student'}
                         </div>
 
                         {product.featured && (
-                          <span className="absolute top-2 right-2 bg-orange-brand text-white p-1 rounded-full shadow-xs">
+                          <span className="absolute top-2 right-2 bg-orange-brand text-white p-1 rounded-full shadow-xs z-10">
                             <Star className="w-3.5 h-3.5 fill-white stroke-none" />
                           </span>
                         )}
-                        {product.stock === 0 && (
-                          <span className="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-bold font-mono py-1 px-2 rounded-full">
-                            SOLD OUT
-                          </span>
-                        )}
-                        {product.stock > 0 && product.stock <= 3 && (
-                          <span className="absolute top-2 left-2 bg-amber-500 text-slate-brand text-[9px] font-bold font-mono py-1 px-2 rounded-full">
-                            LOW STOCK
-                          </span>
-                        )}
 
-                        {/* Condition Badge */}
-                        {(() => {
-                          let displayCondition = product.condition;
-                          if (product.category === 'food') {
-                            if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
-                            else displayCondition = 'not_ready';
-                          } else if (product.category === 'services') {
-                            if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
-                            else displayCondition = 'not_available';
-                          }
-                          if (!displayCondition || product.stock <= 0) return null;
-                          return (
-                            <span className={`absolute top-2 left-2 text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
-                              displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
-                              displayCondition === 'like_new' ? 'bg-emerald-500' :
-                              displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
-                            }`}>
-                              {displayCondition.toUpperCase().replace('_', ' ')}
+                        {/* Top Left Badges flex layout prevents overlap */}
+                        <div className="absolute top-2 left-2 flex flex-col gap-1 items-start z-10">
+                          {product.stock === 0 && (
+                            <span className="text-[9px] font-bold font-mono py-0.5 px-2 rounded-full text-white bg-red-600 shadow-sm">
+                              SOLD OUT
                             </span>
-                          );
-                        })()}
+                          )}
+                          {product.stock > 0 && product.stock <= 3 && (
+                            <span className="text-[9px] font-bold font-mono py-0.5 px-2 rounded-full text-slate-900 bg-amber-400 shadow-sm font-sans">
+                              LOW STOCK
+                            </span>
+                          )}
+                          {(() => {
+                            let displayCondition = product.condition;
+                            if (product.category === 'food') {
+                              if (displayCondition === 'new' || displayCondition === 'ready' || !displayCondition) displayCondition = 'ready';
+                              else displayCondition = 'not_ready';
+                            } else if (product.category === 'services') {
+                              if (displayCondition === 'new' || displayCondition === 'available' || !displayCondition) displayCondition = 'available';
+                              else displayCondition = 'not_available';
+                            }
+                            if (!displayCondition || product.stock <= 0) return null;
+                            return (
+                              <span className={`text-[9px] font-bold font-mono py-0.5 px-2 rounded-full shadow-sm text-white alive-blink ${
+                                displayCondition === 'ready' || displayCondition === 'new' || displayCondition === 'available' ? 'bg-green-600' :
+                                displayCondition === 'like_new' ? 'bg-emerald-500' :
+                                displayCondition === 'not_ready' || displayCondition === 'not_available' ? 'bg-amber-500' : 'bg-orange-500'
+                              }`}>
+                                {displayCondition.toUpperCase().replace('_', ' ')}
+                              </span>
+                            );
+                          })()}
+                        </div>
                       </div>
                       
                       <div className="space-y-1 px-1">
@@ -495,7 +497,7 @@ export default function ShopView({
                         <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 line-clamp-1 font-medium">
                           From: <span className="font-bold text-slate-brand dark:text-slate-200">{product.vendorName || 'TU Peer Store'}</span>
                           <span className={`ml-1 text-[9px] font-bold ${isOutside ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                            ({isOutside ? 'Outside Vendor' : 'Student Vendor'})
+                            ({isOutside ? 'Outside' : 'Student'})
                           </span>
                         </p>
                         <p className="text-[9px] font-mono text-emerald-brand/80">
@@ -529,10 +531,10 @@ export default function ShopView({
                           );
                         })()}
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-brand dark:text-emerald-400 hover:underline uppercase tracking-wide shrink-0 flex items-center gap-1.5 alive-pulse">
-                        <span>View details</span>
-                        <ArrowLeft className="w-3.5 h-3.5 rotate-180 text-emerald-brand dark:text-emerald-400 alive-blink shrink-0" />
-                      </span>
+                      <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-1.5 px-3.5 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 hover:border-emerald-brand dark:hover:border-emerald-500 transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-3xs group-hover:scale-[1.02]">
+                        <span>View Deal</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 group-hover:text-white transition-colors duration-300 shrink-0" />
+                      </button>
                     </div>
                   </div>
                 );
