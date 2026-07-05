@@ -531,7 +531,7 @@ export default function ShopView({
                           );
                         })()}
                       </div>
-                      <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-1.5 px-3.5 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 hover:border-emerald-brand dark:hover:border-emerald-500 transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-3xs group-hover:scale-[1.02]">
+                      <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-1.5 px-3.5 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 dark:hover:text-white hover:border-emerald-brand dark:hover:border-emerald-500 transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-3xs group-hover:scale-[1.02]">
                         <span>View Deal</span>
                         <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 group-hover:text-white transition-colors duration-300 shrink-0" />
                       </button>

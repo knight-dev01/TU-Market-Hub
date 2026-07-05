@@ -297,6 +297,10 @@ export default function App() {
             isDocAdmin = adminDocEmail.exists();
           }
           setIsAdmin(isHardcodedAdmin || isDocAdmin);
+          
+          // Route to dashboard
+          alert("Login successful!");
+          handleViewChange('admin');
         } catch (err) {
           setIsAdmin(isHardcodedAdmin);
         }
@@ -575,6 +579,11 @@ export default function App() {
     items: CartItem[],
     buyerInfo?: { name: string; hostel: string; phone: string }
   ) => {
+    if (!user) {
+      alert("Please log in to contact vendors via WhatsApp.");
+      handleGoogleLogin();
+      return;
+    }
     if (items.length === 0) return;
     
     let totalVal = 0;

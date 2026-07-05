@@ -4,6 +4,9 @@ import {
   Settings, LogOut, CheckCircle, Save, X, RefreshCw, MessageSquare, Tag, Repeat, Sparkles, AlertCircle,
   Store, ShoppingBag, PlusCircle, Link, Copy, Eye, Users
 } from 'lucide-react';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
+} from 'recharts';
 import { User as FirebaseUser } from 'firebase/auth';
 import { addDoc, doc, updateDoc, deleteDoc, collection, serverTimestamp, setDoc, getDoc, writeBatch, query, getDocs, onSnapshot, where } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -318,6 +321,22 @@ export default function AdminView({
 
     return () => unsubscribeClicks();
   }, [user, isAdmin]);
+
+  const getChartData = () => {
+    const data = [];
+    const now = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const day = new Date(now);
+      day.setDate(now.getDate() - i);
+      const dayStr = day.toLocaleDateString('en-US', { weekday: 'short' });
+      const count = clicksTracker.filter(click => {
+        const clickDate = click.createdAt?.toDate ? click.createdAt.toDate() : new Date(click.createdAt);
+        return clickDate.toDateString() === day.toDateString();
+      }).length;
+      data.push({ name: dayStr, clicks: count });
+    }
+    return data;
+  };
 
   const displayNotice = (message: string) => {
     setActionSuccess(message);
