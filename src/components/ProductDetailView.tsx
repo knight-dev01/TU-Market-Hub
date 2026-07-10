@@ -3,7 +3,6 @@ import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCir
 import { User as FirebaseUser } from 'firebase/auth';
 import { Product, Category } from '../types';
 import { calculateDiscount } from '../utils';
-import MarketplaceChat from './MarketplaceChat';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -467,14 +466,7 @@ Please let me know if it's available so we can arrange a secure meetup!`;
               </div>
             )}
 
-            {/* Live Web Chat Teaser for V2 */}
-            <button
-              disabled
-              className="w-full font-bold text-[10.5px] tracking-widest uppercase py-4 px-6 rounded-full flex items-center justify-center space-x-2 border border-dashed border-gray-200 dark:border-slate-800 bg-gray-50/40 dark:bg-slate-900/30 text-slate-400 dark:text-slate-500 cursor-not-allowed mt-4"
-            >
-              <MessageSquareCode className="w-4 h-4 text-slate-400 dark:text-slate-600" />
-              <span>In-App Live Chat (Coming in V2)</span>
-            </button>
+            {/* Direct WhatsApp Ordering */}
 
             {/* Social Share Link Card / Open Graph Preview Card Mockup */}
           </div>

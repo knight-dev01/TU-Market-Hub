@@ -14,7 +14,6 @@ import { getRelativeTime } from '../utils';
 import { Product, Category, StoreSettings } from '../types';
 import { forceResetDatabase } from '../data/seed';
 import imageCompression from 'browser-image-compression';
-import MarketplaceChat from './MarketplaceChat';
 
 interface AdminViewProps {
   user: FirebaseUser | null;

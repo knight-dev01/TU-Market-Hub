@@ -163,19 +163,12 @@ export default function HomeView({
                   {slide.subtitle}
                 </motion.p>
 
-                <div className="pt-2 sm:pt-4 flex flex-row flex-wrap justify-center gap-2.5 sm:gap-4 w-full sm:w-auto px-1 sm:px-0">
+                <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full max-w-xl mx-auto px-4 sm:px-0">
                   <motion.button
                     onClick={() => onViewChange('shop')}
-                    animate={{
-                      scale: [1, 1.04, 1],
-                      boxShadow: ["0px 0px 0px rgba(249, 115, 22, 0)", "0px 0px 14px rgba(249, 115, 22, 0.45)", "0px 0px 0px rgba(249, 115, 22, 0)"]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                    className="bg-slate-900 dark:bg-orange-600/90 text-white hover:bg-slate-800 dark:hover:bg-orange-700/90 font-bold text-[9px] sm:text-xs tracking-widest uppercase py-3 px-5 sm:px-8 transition-colors cursor-pointer flex items-center justify-center space-x-1 sm:space-x-2 rounded-full shadow-md shrink-0"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full sm:w-44 bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-400 font-bold text-xs tracking-wider uppercase py-3.5 px-6 transition-colors cursor-pointer flex items-center justify-center space-x-2 rounded-full shadow-sm shrink-0"
                   >
                     <span>Shop Now</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -183,20 +176,12 @@ export default function HomeView({
 
                   <motion.button
                     onClick={() => onViewChange('admin')}
-                    animate={{
-                      scale: [1, 1.04, 1],
-                      boxShadow: ["0px 0px 0px rgba(249, 115, 22, 0)", "0px 0px 14px rgba(249, 115, 22, 0.35)", "0px 0px 0px rgba(249, 115, 22, 0)"]
-                    }}
-                    transition={{
-                      duration: 2,
-                      delay: 0.3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                    className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white shadow-3xs font-bold text-[9px] sm:text-xs tracking-widest uppercase py-3 px-5 sm:px-8 transition-colors cursor-pointer flex items-center justify-center space-x-1 sm:space-x-2 rounded-full border border-gray-150 dark:border-slate-700 shrink-0"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full sm:w-44 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-850 dark:text-white shadow-3xs font-bold text-xs tracking-wider uppercase py-3.5 px-6 transition-colors cursor-pointer flex items-center justify-center space-x-2 rounded-full border border-gray-200 dark:border-slate-700 shrink-0"
                   >
                     <span>Sell Items</span>
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Sparkles className="w-3.5 h-3.5 text-orange-brand" />
                   </motion.button>
 
                   <motion.button
@@ -206,13 +191,11 @@ export default function HomeView({
                         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                       }
                     }}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    animate={{ rotate: [0, 1, -1, 0] }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 5 }}
-                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[9px] sm:text-xs tracking-widest uppercase py-3 px-4 sm:px-6 transition-colors cursor-pointer flex items-center justify-center space-x-1 sm:space-x-2 rounded-full border border-emerald-500/20 shadow-3xs shrink-0"
+                    className="w-full sm:w-44 bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs tracking-wider uppercase py-3.5 px-6 transition-colors cursor-pointer flex items-center justify-center space-x-2 rounded-full border border-transparent hover:border-gray-300 dark:hover:border-slate-700 shrink-0"
                   >
-                    <Star className="w-3.5 h-3.5 fill-current" />
+                    <Star className="w-3.5 h-3.5 fill-current text-amber-500" />
                     <span>Featured Items</span>
                   </motion.button>
                 </div>

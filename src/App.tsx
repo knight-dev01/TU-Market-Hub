@@ -3,7 +3,7 @@ import {
   collection, query, doc, getDoc, onSnapshot, orderBy, where, addDoc, serverTimestamp, updateDoc
 } from 'firebase/firestore';
 import { onAuthStateChanged, User as FirebaseUser, signOut } from 'firebase/auth';
-import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store, ArrowRight, LogIn, Sparkles, UserCheck, ShieldAlert, HeartHandshake, DownloadCloud } from 'lucide-react';
+import { ShoppingBag, X, MessageSquare, RefreshCw, Trash2, ArrowUpRight, Store, ArrowRight, LogIn, Sparkles, UserCheck, ShieldAlert, HeartHandshake, DownloadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { db, auth, loginWithGoogle, logoutUser, handleFirestoreError, OperationType } from './firebase';
@@ -37,6 +37,33 @@ interface CartItem {
 }
 
 export default function App() {
+  // Toast notifications state
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'info' }[]>([]);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4500);
+  };
+
+  useEffect(() => {
+    const originalAlert = window.alert;
+    window.alert = (message: string) => {
+      const lower = message.toLowerCase();
+      let type: 'success' | 'error' | 'info' = 'info';
+      if (lower.includes('success') || lower.includes('secured') || lower.includes('copied') || lower.includes('agree') || lower.includes('successful') || lower.includes('activated') || lower.includes('login successful')) {
+        type = 'success';
+      } else if (lower.includes('failed') || lower.includes('error') || lower.includes('denied') || lower.includes('invalid') || lower.includes('cannot') || lower.includes('issue')) {
+        type = 'error';
+      }
+      showToast(message, type);
+    };
+    return () => {
+      window.alert = originalAlert;
+    };
+  }, []);
   
   // Dark Theme State
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -1237,6 +1264,41 @@ ${buyerSection}Where is your hostel meetup point on campus? Please let me know w
           />
         </motion.button>
       )}
+
+      {/* Floating Minimalist Toast Overlay */}
+      <div className="fixed bottom-6 left-6 z-[120] flex flex-col gap-3.5 w-full max-w-sm pointer-events-none">
+        <AnimatePresence>
+          {toasts.map((toast) => (
+            <motion.div
+              key={toast.id}
+              initial={{ opacity: 0, y: 25, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92, y: 10 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className={`pointer-events-auto flex items-start justify-between p-4 rounded-2xl shadow-xl border text-xs font-semibold backdrop-blur-md ${
+                toast.type === 'success' 
+                  ? 'bg-emerald-500/95 dark:bg-emerald-600/95 border-emerald-400/20 text-white shadow-emerald-500/10' 
+                  : toast.type === 'error' 
+                    ? 'bg-red-500/95 dark:bg-red-600/95 border-red-400/20 text-white shadow-red-500/10' 
+                    : 'bg-slate-900/95 dark:bg-slate-850/95 border-slate-700/35 text-white shadow-slate-900/20'
+              }`}
+            >
+              <div className="flex items-start space-x-3 pr-2">
+                {toast.type === 'success' && <CheckCircle2 className="w-4 h-4 text-white shrink-0 mt-0.5" />}
+                {toast.type === 'error' && <AlertCircle className="w-4 h-4 text-white shrink-0 mt-0.5" />}
+                {toast.type === 'info' && <Sparkles className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />}
+                <p className="leading-relaxed font-sans">{toast.message}</p>
+              </div>
+              <button 
+                onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} 
+                className="text-white/75 hover:text-white transition-colors cursor-pointer p-0.5 rounded-lg hover:bg-white/10"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
 
     </div>
   );
