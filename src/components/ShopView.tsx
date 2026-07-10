@@ -60,6 +60,15 @@ export default function ShopView({
     { label: 'Not Available (Paused)', value: 'not_available' }
   ];
 
+  // Compute dynamic live count per category based on active products matching general criteria
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    products.forEach(p => {
+      counts[p.category] = (counts[p.category] || 0) + 1;
+    });
+    return counts;
+  }, [products]);
+
   // Filtering & Sorting Logic Optimized for low-end devices
   const filteredProducts = useMemo(() => {
     return products
@@ -72,12 +81,13 @@ export default function ShopView({
         // 2. Category filter
         const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
 
-        // 3. Price filter
+        // 3. Price filter (computed based on final post-discount price)
+        const finalPrice = product.discountPercentage ? (product.price * (1 - product.discountPercentage / 100)) : product.price;
         let matchesPrice = true;
-        if (priceRange === 'under-5') matchesPrice = product.price < 5000;
-        else if (priceRange === '5-20') matchesPrice = product.price >= 5000 && product.price <= 20000;
-        else if (priceRange === '20-50') matchesPrice = product.price >= 20000 && product.price <= 50000;
-        else if (priceRange === 'over-50') matchesPrice = product.price > 50000;
+        if (priceRange === 'under-5') matchesPrice = finalPrice < 5000;
+        else if (priceRange === '5-20') matchesPrice = finalPrice >= 5000 && finalPrice <= 20000;
+        else if (priceRange === '20-50') matchesPrice = finalPrice >= 20000 && finalPrice <= 50000;
+        else if (priceRange === 'over-50') matchesPrice = finalPrice > 50000;
 
         // 4. Stock filter
         let matchesStock = true;
@@ -98,8 +108,16 @@ export default function ShopView({
           const timeB = b.updatedAt?.seconds || b.createdAt?.seconds || b.createdAt?.toMillis?.() || 0;
           return timeB - timeA;
         }
-        if (sortBy === 'price-asc') return a.price - b.price;
-        if (sortBy === 'price-desc') return b.price - a.price;
+        if (sortBy === 'price-asc') {
+          const finalPriceA = a.discountPercentage ? (a.price * (1 - a.discountPercentage / 100)) : a.price;
+          const finalPriceB = b.discountPercentage ? (b.price * (1 - b.discountPercentage / 100)) : b.price;
+          return finalPriceA - finalPriceB;
+        }
+        if (sortBy === 'price-desc') {
+          const finalPriceA = a.discountPercentage ? (a.price * (1 - a.discountPercentage / 100)) : a.price;
+          const finalPriceB = b.discountPercentage ? (b.price * (1 - b.discountPercentage / 100)) : b.price;
+          return finalPriceB - finalPriceA;
+        }
         if (sortBy === 'popular') return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
         return 0;
       });
@@ -226,7 +244,7 @@ export default function ShopView({
                   <span className="truncate max-w-[130px]">{cat.name}</span>
                   <span className={`text-[9px] font-mono font-bold px-1.5 rounded-full flex items-center gap-1 ${selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-slate-brand/5 text-slate-brand/40'}`}>
                     <span className={`w-1 h-1 rounded-full alive-blink ${selectedCategory === cat.id ? 'bg-white' : 'bg-emerald-500'}`} />
-                    {cat.productCount}
+                    {categoryCounts[cat.id] || 0}
                   </span>
                 </button>
               ))}
@@ -339,7 +357,7 @@ export default function ShopView({
                     }`}
                   >
                     <span>{cat.name}</span>
-                    <span className="opacity-75 font-bold">({cat.productCount})</span>
+                    <span className="opacity-75 font-bold">({categoryCounts[cat.id] || 0})</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 alive-blink shrink-0" />
                   </button>
                 ))}

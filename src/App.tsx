@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { 
   collection, query, doc, getDoc, onSnapshot, orderBy, where, addDoc, serverTimestamp, updateDoc
 } from 'firebase/firestore';
@@ -40,30 +40,46 @@ export default function App() {
   // Toast notifications state
   const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'info' }[]>([]);
 
-  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+  const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts(prev => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 4500);
-  };
+  }, []);
 
-  useEffect(() => {
-    const originalAlert = window.alert;
+  const showToastRef = useRef<(m: string, t?: 'success' | 'error' | 'info') => void>(showToast);
+  showToastRef.current = showToast;
+
+  // Synchronously override window.alert on every render pass so background callbacks get immediate access
+  if (typeof window !== 'undefined') {
     window.alert = (message: string) => {
       const lower = message.toLowerCase();
       let type: 'success' | 'error' | 'info' = 'info';
-      if (lower.includes('success') || lower.includes('secured') || lower.includes('copied') || lower.includes('agree') || lower.includes('successful') || lower.includes('activated') || lower.includes('login successful')) {
+      if (
+        lower.includes('success') || 
+        lower.includes('secured') || 
+        lower.includes('copied') || 
+        lower.includes('agree') || 
+        lower.includes('successful') || 
+        lower.includes('activated') || 
+        lower.includes('login successful') ||
+        lower.includes('welcome')
+      ) {
         type = 'success';
-      } else if (lower.includes('failed') || lower.includes('error') || lower.includes('denied') || lower.includes('invalid') || lower.includes('cannot') || lower.includes('issue')) {
+      } else if (
+        lower.includes('failed') || 
+        lower.includes('error') || 
+        lower.includes('denied') || 
+        lower.includes('invalid') || 
+        lower.includes('cannot') || 
+        lower.includes('issue')
+      ) {
         type = 'error';
       }
-      showToast(message, type);
+      showToastRef.current(message, type);
     };
-    return () => {
-      window.alert = originalAlert;
-    };
-  }, []);
+  }
   
   // Dark Theme State
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
