@@ -1,6 +1,6 @@
 {
   "name": "TU Market Hub",
-  "description": "Premium multi-vendor campus marketplace designed for college students in Nigeria to buy, sell, and swap electronics, textbooks, hostel utensils, and academic essentials commission-free.",
+  "description": "Trinity University Campus Marketplace. Keep WhatsApp for conversations, use TU Market Hub for organized buying & selling. Centralized, searchable campus peer listings with zero spam and zero commissions.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
