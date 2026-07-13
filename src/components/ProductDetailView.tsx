@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight, MessageSquareCode, ArrowUpRight, Star } from 'lucide-react';
 import { User as FirebaseUser } from 'firebase/auth';
 import { Product, Category } from '../types';
-import { calculateDiscount, updateProductSEO, resetSEO } from '../utils';
+import { calculateDiscount } from '../utils';
+import { injectProductSchema, resetProductSchema } from '../utils/seo';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -71,9 +72,9 @@ export default function ProductDetailView({
 
   // Dynamically update document head SEO tags on product and active image change, and restore on unmount
   useEffect(() => {
-    updateProductSEO(product, activeImageIndex);
+    injectProductSchema(product, activeImageIndex);
     return () => {
-      resetSEO();
+      resetProductSchema();
     };
   }, [product, activeImageIndex]);
 
