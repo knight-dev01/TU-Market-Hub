@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, MessageSquare, ZoomIn, X, ShieldAlert, ShoppingBag, CheckCircle, ArrowRight, ClipboardCheck, MessageCircle, Share2, Sparkles, ChevronLeft, ChevronRight, MessageSquareCode, ArrowUpRight, Star } from 'lucide-react';
 import { User as FirebaseUser } from 'firebase/auth';
 import { Product, Category } from '../types';
-import { calculateDiscount } from '../utils';
+import { calculateDiscount, updateProductSEO, resetSEO } from '../utils';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -68,6 +68,14 @@ export default function ProductDetailView({
     const cleanUrl = `${window.location.origin}${window.location.pathname}?product=${product.id}&img=${activeImageIndex}`;
     window.history.replaceState({}, '', cleanUrl);
   }, [activeImageIndex, product]);
+
+  // Dynamically update document head SEO tags on product and active image change, and restore on unmount
+  useEffect(() => {
+    updateProductSEO(product, activeImageIndex);
+    return () => {
+      resetSEO();
+    };
+  }, [product, activeImageIndex]);
 
   const formatWhatsAppLink = (number: string): string => {
     let cleaned = number.replace(/\D/g, '');
