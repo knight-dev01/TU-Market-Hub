@@ -63,7 +63,7 @@ export default function AboutView() {
 
         <div className="relative h-96 rounded-3xl overflow-hidden border border-gray-150 dark:border-slate-800 shadow-md">
           <img
-            src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80"
+            src="https://images.unsplash.com/photo-1557044411-4add046a8c7e?q=80&w=977&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Students on campus study desk"
             className="w-full h-full object-cover object-center filter saturate-[0.85]"
             loading="lazy"

@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import confetti from 'canvas-confetti';
 import { getRelativeTime, calculateDiscount } from '../utils';
 import { Product, Category } from '../types';
+import CampusStoryDesk from './CampusStoryDesk';
 
 interface HomeViewProps {
   products: Product[];
@@ -25,6 +26,65 @@ const getCategoryIcon = (id: string, className: string) => {
     default: return <ShoppingBag className={className} />;
   }
 };
+
+function TypewriterHeading() {
+  const [displayText, setDisplayText] = useState('');
+  const [highlightText, setHighlightText] = useState('');
+  const [showPeriod, setShowPeriod] = useState(false);
+
+  useEffect(() => {
+    const part1 = "Buying & selling shouldn't fill your WhatsApp groups with ";
+    const part2 = "endless screenshots";
+    
+    let isMounted = true;
+    let i = 0;
+    let interval1: NodeJS.Timeout;
+    let interval2: NodeJS.Timeout;
+
+    // Start typing part1
+    interval1 = setInterval(() => {
+      if (!isMounted) return;
+      if (i < part1.length) {
+        setDisplayText(part1.substring(0, i + 1));
+        i++;
+      } else {
+        clearInterval(interval1);
+        
+        // Start typing part2
+        let j = 0;
+        interval2 = setInterval(() => {
+          if (!isMounted) return;
+          if (j < part2.length) {
+            setHighlightText(part2.substring(0, j + 1));
+            j++;
+          } else {
+            clearInterval(interval2);
+            setShowPeriod(true);
+          }
+        }, 75);
+      }
+    }, 55);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval1);
+      clearInterval(interval2);
+    };
+  }, []);
+
+  return (
+    <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold font-display leading-tight tracking-tight text-slate-900 dark:text-white max-w-3xl mx-auto min-h-[110px] sm:min-h-[170px] md:min-h-[200px]">
+      <span>{displayText}</span>
+      {highlightText && (
+        <span className="text-emerald-brand underline decoration-wavy decoration-emerald-500/30">
+          {highlightText}
+        </span>
+      )}
+      {showPeriod && <span>.</span>}
+      <span className="inline-block w-1 h-6 sm:h-10 md:h-12 bg-emerald-500 ml-1.5 align-middle animate-pulse" />
+    </h1>
+  );
+}
 
 export default function HomeView({
   products,
@@ -94,27 +154,38 @@ export default function HomeView({
             <span>Trinity University Organized Campus Marketplace</span>
           </span>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold font-display leading-tight tracking-tight text-slate-900 dark:text-white max-w-3xl mx-auto">
-            Buying & selling shouldn't fill your WhatsApp groups with <span className="text-emerald-brand underline decoration-wavy decoration-emerald-500/30">endless screenshots</span>.
-          </h1>
+          <TypewriterHeading />
 
           <p className="text-xs sm:text-base text-slate-600 dark:text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
             Welcome to the centralized campus platform that gives every listing a permanent, searchable home. 
             <strong> Keep WhatsApp for direct conversations—use TU Market Hub for organized peer-to-peer commerce.</strong>
           </p>
 
-          <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md mx-auto">
+          <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-xl mx-auto">
             <button
               onClick={() => onViewChange('shop')}
-              className="w-full sm:w-1/2 bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-400 font-bold text-xs tracking-wider uppercase py-3.5 px-6 transition-all cursor-pointer flex items-center justify-center space-x-2 rounded-xl shadow-sm active:scale-98"
+              className="w-full sm:w-1/3 bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-400 font-bold text-xs tracking-wider uppercase py-3.5 px-4 transition-all cursor-pointer flex items-center justify-center space-x-2 rounded-xl shadow-sm active:scale-98"
             >
               <span>Browse Listings</span>
               <ArrowUpRight className="w-4 h-4" />
             </button>
 
             <button
+              onClick={() => {
+                const element = document.getElementById('featured-listings-section');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="w-full sm:w-1/3 bg-amber-500/10 hover:bg-amber-500/15 text-amber-700 dark:text-amber-400 font-bold text-xs tracking-wider uppercase py-3.5 px-4 transition-all cursor-pointer flex items-center justify-center space-x-2 rounded-xl border border-amber-500/25 active:scale-98"
+            >
+              <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+              <span>Featured Listings</span>
+            </button>
+
+            <button
               onClick={() => onViewChange('admin')}
-              className="w-full sm:w-1/2 bg-white dark:bg-slate-900 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-xs tracking-wider uppercase py-3.5 px-6 transition-all cursor-pointer flex items-center justify-center space-x-2 rounded-xl border border-gray-200 dark:border-slate-800 active:scale-98"
+              className="w-full sm:w-1/3 bg-white dark:bg-slate-900 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-xs tracking-wider uppercase py-3.5 px-4 transition-all cursor-pointer flex items-center justify-center space-x-2 rounded-xl border border-gray-200 dark:border-slate-800 active:scale-98"
             >
               <span>List an Item</span>
               <Sparkles className="w-4 h-4 text-emerald-brand animate-pulse" />
@@ -137,204 +208,9 @@ export default function HomeView({
             </div>
           </div>
         </div>
-      </section>
-
-      {/* 2. THE CHAT CHAOS PROBLEM SECTION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-150 dark:border-slate-850 p-6 sm:p-12 shadow-3xs">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-            
-            {/* Visual Comparison / Clutter representation */}
-            <div className="space-y-4 order-2 lg:order-1">
-              <div className="bg-rose-500/5 dark:bg-rose-950/10 border border-rose-500/10 rounded-2xl p-4 sm:p-5 space-y-3.5">
-                <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5" />
-                  <span>The WhatsApp Group Chat Problem</span>
-                </span>
-                <div className="space-y-2.5 text-xs text-slate-600 dark:text-slate-400 font-sans leading-relaxed">
-                  <div className="flex items-start gap-2.5 bg-rose-500/5 p-2 rounded-xl border border-rose-500/5">
-                    <span className="text-rose-500 font-bold shrink-0">❌</span>
-                    <p><strong>Immediate Disappearance:</strong> Listings get buried under hundreds of unrelated group messages in minutes.</p>
-                  </div>
-                  <div className="flex items-start gap-2.5 bg-rose-500/5 p-2 rounded-xl border border-rose-500/5">
-                    <span className="text-rose-500 font-bold shrink-0">❌</span>
-                    <p><strong>Spam & Repetition:</strong> Students must manually copy-paste the exact same screenshots day after day to stay visible.</p>
-                  </div>
-                  <div className="flex items-start gap-2.5 bg-rose-500/5 p-2 rounded-xl border border-rose-500/5">
-                    <span className="text-rose-500 font-bold shrink-0">❌</span>
-                    <p><strong>Annoyance & Muting:</strong> Vital academic discussions get drowned out, prompting group members to mute notifications entirely.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Connected Visual Block */}
-              <div className="bg-emerald-500/5 dark:bg-emerald-950/10 border border-emerald-500/15 rounded-2xl p-4 sm:p-5 space-y-3.5">
-                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>The TU Market Hub Solution</span>
-                </span>
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-sans font-medium">
-                  We turn this chaos into a structured database. List your item <strong>once</strong>. It remains beautifully indexed and searchable until sold. Buyers search instantly, compare pricing transparently, and initiate one-click custom WhatsApp checkout scripts only when they are ready to transact.
-                </p>
-              </div>
-            </div>
-
-            {/* Explanatory Text */}
-            <div className="space-y-5 order-1 lg:order-2">
-              <span className="text-emerald-brand font-mono font-bold text-xs uppercase tracking-[0.2em] block">THE EVERYDAY EXPERIENCE</span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold font-display tracking-tight text-slate-brand dark:text-white leading-tight">
-                Relieving the Campus from Marketplace Clutter
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-brand/70 dark:text-slate-350 leading-relaxed font-sans">
-                At Trinity University, hostel lists and study plazas are hives of student commerce. However, relying entirely on random chat channels to post drawing boards, textbooks, kettles, or fashion items creates friction for both sides.
-              </p>
-              <p className="text-xs sm:text-sm text-slate-brand/70 dark:text-slate-350 leading-relaxed font-sans">
-                By offering a persistent, searchable catalog, we keep hostel and department groups clean for academic announcements, while expanding your listing's reach to student peers and external off-campus buyers alike.
-              </p>
-              <div className="pt-1.5">
-                <button
-                  onClick={() => onViewChange('about')}
-                  className="inline-flex items-center space-x-1.5 text-xs font-bold text-emerald-brand hover:underline uppercase tracking-wider"
-                >
-                  <span>Read our full Vision Story</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 3. CORE PLATFORM BENEFITS SECTION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <div className="text-center space-y-2 max-w-xl mx-auto">
-          <span className="text-emerald-brand font-mono font-bold text-[10px] uppercase tracking-widest block">TAILORED ADVANTAGES</span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-display text-slate-brand dark:text-white">
-            Designed for Campus Needs
-          </h2>
-          <div className="w-10 h-1 bg-emerald-brand mx-auto rounded-full" />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* For Sellers */}
-          <div className="bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-850 p-6 sm:p-8 rounded-2xl space-y-4">
-            <div className="w-10 h-10 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <h3 className="font-display font-bold text-base sm:text-lg text-slate-brand dark:text-white">For Student Sellers</h3>
-            <ul className="space-y-2 text-xs text-slate-650 dark:text-slate-400 leading-relaxed font-sans font-medium list-disc list-inside">
-              <li><strong>List Once, Stay Visible:</strong> No need to repeatedly spam screenshots.</li>
-              <li><strong>Rich Listings:</strong> Showcase multiple high-res photos.</li>
-              <li><strong>Broadened Reach:</strong> Get discovered by external off-campus buyers.</li>
-              <li><strong>No Commission Costs:</strong> Keep 100% of your listed value.</li>
-            </ul>
-          </div>
-
-          {/* For Buyers */}
-          <div className="bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-850 p-6 sm:p-8 rounded-2xl space-y-4">
-            <div className="w-10 h-10 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5" />
-            </div>
-            <h3 className="font-display font-bold text-base sm:text-lg text-slate-brand dark:text-white">For Smart Buyers</h3>
-            <ul className="space-y-2 text-xs text-slate-650 dark:text-slate-400 leading-relaxed font-sans font-medium list-disc list-inside">
-              <li><strong>Instant Search Queries:</strong> Find study guides or appliances immediately.</li>
-              <li><strong>Category Filtering:</strong> Sift through items with clean filter tools.</li>
-              <li><strong>Condition Status Grades:</strong> Know whether an item is New or Like New.</li>
-              <li><strong>One-Click Chat Drafts:</strong> Contact vendors without messy introductions.</li>
-            </ul>
-          </div>
-
-          {/* For the University */}
-          <div className="bg-slate-50 dark:bg-slate-900 border border-gray-150 dark:border-slate-850 p-6 sm:p-8 rounded-2xl space-y-4">
-            <div className="w-10 h-10 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center">
-              <Home className="w-5 h-5" />
-            </div>
-            <h3 className="font-display font-bold text-base sm:text-lg text-slate-brand dark:text-white">For the TU Community</h3>
-            <ul className="space-y-2 text-xs text-slate-650 dark:text-slate-400 leading-relaxed font-sans font-medium list-disc list-inside">
-              <li><strong>Cleaner WhatsApp Groups:</strong> Maintain chat channels for announcement alerts.</li>
-              <li><strong>Sustainable Peer Reuse:</strong> Keep high-quality goods circulating on campus.</li>
-              <li><strong>Academic Preservation:</strong> Reduce visual spam that disrupts study groups.</li>
-              <li><strong>Secure Peer Meetups:</strong> Encourage safe, transparent physical exchanges.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. DESIGNED WORKFLOW */}
-      <section className="py-12 sm:py-16 bg-slate-50 dark:bg-slate-900 border-y border-gray-150 dark:border-slate-850">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-12">
-          
-          <div className="text-center max-w-xl mx-auto space-y-1.5">
-            <span className="text-xs font-mono font-bold text-emerald-brand uppercase tracking-[0.2em] block">SIMPLE & LINEAR</span>
-            <h2 className="text-xl sm:text-3xl font-extrabold font-display text-slate-brand dark:text-white">
-              The Hub Workspace Flow
-            </h2>
-            <p className="text-[11px] sm:text-xs text-slate-brand/60 dark:text-slate-400 font-semibold font-sans">
-              Designed as a streamlined, non-intrusive utility with direct student communication.
-            </p>
-          </div>
-
-          {/* Steps Timeline Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 sm:gap-4 text-center relative">
-            
-            {/* Step 1 */}
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto border border-emerald-500/20">
-                1
-              </div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-brand dark:text-white">List Item once</h4>
-              <p className="text-[10.5px] text-slate-500 leading-relaxed font-sans px-2">
-                Sellers log in securely and post their items, prices, conditions, and WhatsApp contact lines.
-              </p>
-            </div>
-
-            {/* Step 2 */}
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto border border-emerald-500/20">
-                2
-              </div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-brand dark:text-white">Browse Marketplace</h4>
-              <p className="text-[10.5px] text-slate-500 leading-relaxed font-sans px-2">
-                Buyers search listings easily and filter items by category, condition, or listing types.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto border border-emerald-500/20">
-                3
-              </div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-brand dark:text-white">Find your Match</h4>
-              <p className="text-[10.5px] text-slate-500 leading-relaxed font-sans px-2">
-                View detailed specs and read transparent seller notes about the item's condition.
-              </p>
-            </div>
-
-            {/* Step 4 */}
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto border border-emerald-500/20">
-                4
-              </div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-brand dark:text-white">Open WhatsApp</h4>
-              <p className="text-[10.5px] text-slate-500 leading-relaxed font-sans px-2">
-                The platform prepares a fully pre-filled, editable inquiry draft directly addressed to the seller.
-              </p>
-            </div>
-
-            {/* Step 5 */}
-            <div className="space-y-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center mx-auto border border-emerald-500/20">
-                5
-              </div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-brand dark:text-white">Complete Deal</h4>
-              <p className="text-[10.5px] text-slate-500 leading-relaxed font-sans px-2">
-                Meet in open campus daylight spots to inspect the item first and conclude the purchase safely.
-              </p>
-            </div>
-
-          </div>
-        </div>
+      </section>      {/* 2. DYNAMIC INTERACTIVE CAMPUS STORY & WALKTHROUGH BOARD */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <CampusStoryDesk onViewChange={onViewChange} />
       </section>
 
       {/* 5. SHOP BY CATEGORY SEGMENT */}
