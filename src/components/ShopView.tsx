@@ -73,10 +73,62 @@ export default function ShopView({
   const filteredProducts = useMemo(() => {
     return products
       .filter((product) => {
-        // 1. Search filter
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              (product.vendorName && product.vendorName.toLowerCase().includes(searchQuery.toLowerCase()));
+        // 1. Search filter (highly sensitive global text-match indexing down to characters and subsequence patterns)
+        const cleanQuery = searchQuery.toLowerCase().trim();
+        let matchesSearch = true;
+        
+        if (cleanQuery) {
+          // Find category label for global text-match indexing
+          const categoryObj = categories.find(c => c.id === product.category);
+          const categoryLabel = categoryObj ? categoryObj.name.toLowerCase() : '';
+          
+          // Build consolidated search target containing all searchable attributes
+          const fields = [
+            product.name,
+            product.description,
+            categoryLabel,
+            product.vendorName || '',
+            product.condition || '',
+            product.category || ''
+          ];
+          const fullTargetText = fields.join(' ').toLowerCase();
+
+          // A match is made if any of these conditions are met:
+          // A. Direct substring search
+          const directMatch = fullTargetText.includes(cleanQuery);
+
+          // B. Individual word substring search (all query terms are substrings in target)
+          const queryTerms = cleanQuery.split(/\s+/).filter(Boolean);
+          const wordsMatch = queryTerms.every(term => fullTargetText.includes(term));
+
+          // C. Subsequence match of individual terms (allows typos/missing characters in words)
+          const subsequenceTermsMatch = queryTerms.every(term => {
+            let tIdx = 0;
+            let qIdx = 0;
+            while (tIdx < fullTargetText.length && qIdx < term.length) {
+              if (fullTargetText[tIdx] === term[qIdx]) {
+                qIdx++;
+              }
+              tIdx++;
+            }
+            return qIdx === term.length;
+          });
+
+          // D. Subsequence match of the entire space-stripped query
+          const queryNoSpaces = cleanQuery.replace(/\s+/g, '');
+          const targetNoSpaces = fullTargetText.replace(/\s+/g, '');
+          let tIdx = 0;
+          let qIdx = 0;
+          while (tIdx < targetNoSpaces.length && qIdx < queryNoSpaces.length) {
+            if (targetNoSpaces[tIdx] === queryNoSpaces[qIdx]) {
+              qIdx++;
+            }
+            tIdx++;
+          }
+          const fullSubsequenceMatch = qIdx === queryNoSpaces.length;
+
+          matchesSearch = directMatch || wordsMatch || subsequenceTermsMatch || fullSubsequenceMatch;
+        }
         
         // 2. Category filter
         const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
@@ -549,9 +601,9 @@ export default function ShopView({
                           );
                         })()}
                       </div>
-                      <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-1.5 px-3.5 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 dark:hover:text-white hover:border-emerald-brand dark:hover:border-emerald-500 transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-3xs group-hover:scale-[1.02]">
+                      <button className="text-[11px] font-bold text-slate-600 dark:text-slate-300 transition-all cursor-pointer flex items-center gap-1 py-1 px-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
                         <span>View Listing</span>
-                        <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 group-hover:text-white transition-colors duration-300 shrink-0" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       </button>
                     </div>
                   </div>

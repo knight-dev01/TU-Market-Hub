@@ -472,9 +472,9 @@ export default function HomeView({
                         );
                       })()}
                     </div>
-                    <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 py-1.5 px-3 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 hover:border-emerald-brand dark:hover:border-emerald-500 transition-all cursor-pointer flex items-center gap-1 shadow-3xs">
+                    <button className="text-[11px] font-bold text-slate-600 dark:text-slate-300 transition-all cursor-pointer flex items-center gap-1 py-1 px-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
                       <span>View Listing</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     </button>
                   </div>
                 </div>
@@ -584,9 +584,9 @@ export default function HomeView({
                         );
                       })()}
                     </div>
-                    <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 py-1.5 px-3 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 hover:border-emerald-brand dark:hover:border-emerald-500 transition-all cursor-pointer flex items-center gap-1 shadow-3xs">
+                    <button className="text-[11px] font-bold text-slate-600 dark:text-slate-300 transition-all cursor-pointer flex items-center gap-1 py-1 px-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
                       <span>View Listing</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     </button>
                   </div>
                 </div>

@@ -133,12 +133,7 @@ ${buyerSection}Please confirm availability and delivery meetup details!`;
           </p>
         </div>
 
-        {/* Brand Value Proposition Alert Box */}
-        <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-[10.5px] leading-relaxed text-slate-700 dark:text-emerald-300">
-          <p className="font-sans">
-            💡 <strong>No More Group Spam:</strong> This platform completely eliminates the chaos of sending listings into WhatsApp groups. Listings are organized, search-friendly, and open to both <strong>on-campus students</strong> and <strong>off-campus external buyers</strong>!
-          </p>
-        </div>
+
 
         {/* Toggle Switch between On-Campus and Off-Campus / Outsider */}
         <div className="space-y-1.5">

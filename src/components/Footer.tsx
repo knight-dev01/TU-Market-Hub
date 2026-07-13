@@ -137,7 +137,7 @@ export default function Footer({
         {/* Bottom Bar */}
         <div className="mt-8 pt-6 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 text-xs text-gray-500 font-medium">
           <div>
-            &copy; {new Date().getFullYear()} TU MARKET HUB. Built with ❤️ for student peer-to-peer exchanges in Nigeria.
+            &copy; {new Date().getFullYear()} TU MARKET HUB. Built with ❤️ for the Trinity University student community.
           </div>
           <div className="flex space-x-5">
             {onInstallClick && (

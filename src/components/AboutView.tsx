@@ -34,7 +34,7 @@ export default function AboutView() {
           Decluttering Campus Commerce, One Sale at a Time.
         </h1>
         <p className="text-sm sm:text-base text-slate-brand/60 dark:text-slate-400 font-light leading-relaxed">
-          How we turned a traditional e-commerce concept into Nigeria's premiere peer-to-peer student marketplace—eliminating chaotic WhatsApp group spam and introducing secure, unified campus listings.
+          How we turned a traditional peer-to-peer commerce concept into Trinity University's organized student marketplace—eliminating chaotic WhatsApp group spam and introducing secure, unified campus listings.
         </p>
         <div className="w-16 h-1 bg-emerald-brand mx-auto rounded-sm mt-4 animate-pulse" />
       </section>
