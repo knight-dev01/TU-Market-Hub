@@ -140,20 +140,7 @@ h1, h2, h3, h4, h5, h6 {
   animation: liveBlink 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-/* Security Protection - Screenshot, Screen Grab, Print and Copy Deterrents */
-@media print {
-  html, body, #root, .app-root {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-  }
-}
 
-.screenshot-shielded {
-  filter: blur(15px) !important;
-  pointer-events: none !important;
-  user-select: none !important;
-}
 
 
 

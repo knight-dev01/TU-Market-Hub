@@ -104,48 +104,7 @@ export default function App() {
     }
   }, [isDarkMode]);
 
-  // Screenshot / Screen Recording Prevention Systems
-  const [isScreenShielded, setIsScreenShielded] = useState(false);
 
-  useEffect(() => {
-    const handleBlur = () => {
-      setIsScreenShielded(true);
-    };
-
-    const handleFocus = () => {
-      setIsScreenShielded(false);
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'PrintScreen') {
-        e.preventDefault();
-        setIsScreenShielded(true);
-        navigator.clipboard?.writeText?.("Content Protected by TU Market Hub Security Shields");
-        alert("Screenshots are blocked to safeguard vendor items and credential values.");
-        setTimeout(() => setIsScreenShielded(false), 2000);
-      }
-      
-      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-        e.preventDefault();
-        alert("Printing pages has been shielded to prevent external screen recordings.");
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'S' || e.key === 's')) {
-        setIsScreenShielded(true);
-        setTimeout(() => setIsScreenShielded(false), 2500);
-      }
-    };
-
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('blur', handleBlur);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
 
   // Views navigation and Selection
   const [currentView, setCurrentView] = useState<'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding'>(() => {
@@ -858,32 +817,8 @@ ${buyerSection}Where is your meetup point? Please let me know when you are free!
   }, [selectedProductId, displayProducts]);
 
   return (
-    <div id="application-root" className={`min-h-screen bg-white dark:bg-[#0b0f19] flex flex-col justify-between font-sans leading-normal tracking-normal text-slate-800 dark:text-slate-100 transition-colors duration-200 ${isScreenShielded ? 'screenshot-shielded' : ''}`}>
+    <div id="application-root" className="min-h-screen bg-white dark:bg-[#0b0f19] flex flex-col justify-between font-sans leading-normal tracking-normal text-slate-800 dark:text-slate-100 transition-colors duration-200">
       
-      {/* Screen Shielding Guard Overlay */}
-      {isScreenShielded && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-2xl z-[9999] flex flex-col items-center justify-center text-center p-6 select-none pointer-events-auto">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-5"
-          >
-            <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto alive-pulse">
-              <ShieldAlert className="w-7 h-7" />
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-base font-bold text-white font-display tracking-wide uppercase">Security Shield Active</h4>
-              <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
-                Screenshots, screen recording, and unauthorized page snaps are blocked to secure our student & external vendor listings.
-              </p>
-            </div>
-            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest animate-pulse">
-              Refocus or tap screen to unlock content
-            </p>
-          </motion.div>
-        </div>
-      )}
-
       <NetworkStatusBanner isOffline={isOffline} />
 
       {/* Dynamic Header Component */}
