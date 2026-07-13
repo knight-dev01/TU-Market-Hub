@@ -27,9 +27,9 @@ export default function Header({
 
   const navItems = [
     { label: 'Home', value: 'home' as const },
-    { label: 'Browse Shop', value: 'shop' as const },
-    { label: 'About Us', value: 'about' as const },
-    { label: 'Contact', value: 'contact' as const }
+    { label: 'Marketplace', value: 'shop' as const },
+    { label: 'Our Story', value: 'about' as const },
+    { label: 'Contact & Safety', value: 'contact' as const }
   ];
 
   const handleNavClick = (view: 'home' | 'shop' | 'about' | 'contact' | 'admin' | 'onboarding') => {
@@ -109,7 +109,7 @@ export default function Header({
                     className="text-[10px] bg-emerald-brand hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg cursor-pointer leading-none uppercase tracking-wider flex items-center gap-1 alive-blink"
                   >
                     <Sparkles className="w-3 h-3 alive-blink text-amber-300" />
-                    <span>Stall</span>
+                    <span>Sell</span>
                   </button>
                 )}
               </div>
@@ -188,7 +188,7 @@ export default function Header({
                   onClick={() => handleNavClick('admin')}
                   className="bg-emerald-brand hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl leading-none cursor-pointer uppercase tracking-wider"
                 >
-                  My Store
+                  My Stall
                 </button>
               </div>
             ) : (

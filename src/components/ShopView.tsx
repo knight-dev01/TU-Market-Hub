@@ -146,10 +146,10 @@ export default function ShopView({
         </button>
         <div className="space-y-1">
           <h1 className="text-xl sm:text-4xl font-extrabold font-display tracking-tight text-slate-brand">
-            Campus Storefront
+            Campus Marketplace
           </h1>
           <p className="text-[11px] sm:text-sm text-slate-brand/60 font-medium">
-            Showing <span className="text-emerald-brand font-bold">{filteredProducts.length}</span> verified student listings available. Buy or bargain instantly!
+            Showing <span className="text-emerald-brand font-bold">{filteredProducts.length}</span> verified campus listings available. Peer-to-peer bargain without commission!
           </p>
         </div>
       </div>
@@ -513,7 +513,7 @@ export default function ShopView({
                           {product.name}
                         </h3>
                         <p className="text-[10px] text-slate-brand/50 dark:text-slate-400 line-clamp-1 font-medium">
-                          From: <span className="font-bold text-slate-brand dark:text-slate-200">{product.vendorName || 'TU Peer Store'}</span>
+                          From: <span className="font-bold text-slate-brand dark:text-slate-200">{product.vendorName || 'Student Seller'}</span>
                           <span className={`ml-1 text-[9px] font-bold ${isOutside ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                             ({isOutside ? 'Outside' : 'Student'})
                           </span>
@@ -550,7 +550,7 @@ export default function ShopView({
                         })()}
                       </div>
                       <button className="text-[10px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-1.5 px-3.5 rounded-xl hover:bg-emerald-brand hover:text-white dark:hover:bg-emerald-500 dark:hover:text-white hover:border-emerald-brand dark:hover:border-emerald-500 transition-all duration-300 cursor-pointer flex items-center gap-1 shadow-3xs group-hover:scale-[1.02]">
-                        <span>View Deal</span>
+                        <span>View Listing</span>
                         <ArrowUpRight className="w-3.5 h-3.5 text-emerald-brand dark:text-emerald-400 group-hover:text-white transition-colors duration-300 shrink-0" />
                       </button>
                     </div>

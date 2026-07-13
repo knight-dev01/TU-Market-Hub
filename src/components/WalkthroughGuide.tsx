@@ -10,33 +10,33 @@ interface WalkthroughProps {
 export default function WalkthroughGuide({ onFinish }: WalkthroughProps) {
   const steps = [
     {
-      title: "1. Discover Stalls",
-      description: "Browse peer gadgets, study files, and hostel essentials inside local university networks.",
+      title: "1. Find Listings",
+      description: "Browse peer-to-peer textbooks, study guides, drawing boards, and hostal items easily.",
       icon: Search,
       color: "text-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/20"
     },
     {
-      title: "2. Check Quality",
-      description: "Inspect high-resolution upload shots and verification badges (e.g., 'Like New' or 'Available').",
+      title: "2. Check Specs",
+      description: "Review photos, prices, and clear conditions ('Like New', 'Fair') described by student sellers.",
       icon: Sliders,
       color: "text-blue-500 bg-blue-500/10 dark:bg-blue-500/20"
     },
     {
-      title: "3. Build Drafts",
-      description: "Add target items to your local order drawer to consolidate peer requests in one click.",
+      title: "3. Direct Drafts",
+      description: "Formulate your custom offer details. The Hub builds a tailored message ready for WhatsApp.",
       icon: ShoppingBag,
       color: "text-purple-500 bg-purple-500/10 dark:bg-purple-500/20"
     },
     {
-      title: "4. WhatsApp Chat",
-      description: "Open pre-loaded WhatsApp chat templates with seller numbers and item specifications.",
+      title: "4. Open WhatsApp",
+      description: "Open the pre-filled message inside WhatsApp directly to the student seller's inbox.",
       icon: MessageSquare,
       color: "text-green-500 bg-green-500/10 dark:bg-green-500/20"
     },
     {
-      title: "5. Become a Seller",
-      description: "Log in with Google to activate your own student hostel stall with zero commissions.",
-      icon: Sparkles,
+      title: "5. Safe Meetup",
+      description: "Meet up safely on campus in broad daylight to inspect the items before trading.",
+      icon: ShieldCheck,
       color: "text-amber-500 bg-amber-500/10 dark:bg-amber-500/20"
     }
   ];

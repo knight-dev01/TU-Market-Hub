@@ -33,7 +33,7 @@ export default function Footer({
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed font-light">
-              Nigeria's premier decentralized student marketplace. Buying and selling previous semester study tools, utensils, gadget accessories, and hostel essentials, completely commission-free.
+              Trinity University's organized campus marketplace. Keeping hostel and department WhatsApp chats clean by hosting searchable peer listings in one permanent, searchable hub.
             </p>
             <div className="flex items-center space-x-3 pt-1">
               <a href={instagramUrl} target="_blank" rel="noreferrer" className="p-2 bg-gray-800 hover:bg-emerald-brand rounded-full text-white transition-colors alive-blink">
@@ -87,17 +87,17 @@ export default function Footer({
               </li>
               <li>
                 <button onClick={() => onViewChange('about')} className="hover:text-emerald-brand transition-colors text-left cursor-pointer text-gray-400 hover:text-white">
-                  About Our Vision
+                  Our Story
                 </button>
               </li>
               <li>
                 <button onClick={() => onViewChange('contact')} className="hover:text-emerald-brand transition-colors text-left cursor-pointer text-gray-400 hover:text-white">
-                  Meetup Points & Support
+                  Safety & Support
                 </button>
               </li>
               <li>
                 <button onClick={() => onViewChange('admin')} className="hover:text-emerald-brand transition-colors text-left cursor-pointer text-gray-400 hover:text-white">
-                  Launch Student Stall
+                  Seller Stall Console
                 </button>
               </li>
             </ul>
@@ -152,7 +152,7 @@ export default function Footer({
               </>
             )}
             <button onClick={() => onViewChange('admin')} className="hover:text-emerald-brand cursor-pointer alive-blink">
-              Seller Portal
+              Seller Console
             </button>
             <span>&bull;</span>
             <span>Zero Platform Commissions, Forever</span>
