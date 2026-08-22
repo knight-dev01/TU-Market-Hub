@@ -28,7 +28,7 @@ export default function AboutView() {
       {/* Narrative Hero Header */}
       <section className="text-center max-w-3xl mx-auto space-y-4">
         <span className="text-emerald-brand font-mono font-bold text-xs uppercase tracking-[0.25em] block">
-          THE VISION BEHIND myKaya
+          THE VISION BEHIND myKAYA
         </span>
         <h1 className="text-4xl sm:text-5xl font-extrabold font-display tracking-tight text-slate-brand dark:text-white leading-tight">
           Decluttering Campus Commerce, One Sale at a Time.
@@ -56,7 +56,7 @@ export default function AboutView() {
               This created absolute <strong>Chat Chaos</strong>. Listings were lost within minutes, image qualities were compressed, and pricing negotiations were repetitive and messy.
             </p>
             <p>
-              <strong>myKaya</strong> was designed to replace this mess. By establishing a central, persistent, searchable index of available campus listings, students keep their group chats clean while reaching both on-campus residents and external off-campus buyers with direct, structured, one-click WhatsApp checkouts.
+              <strong>myKAYA</strong> was designed to replace this mess. By establishing a central, persistent, searchable index of available campus listings, students keep their group chats clean while reaching both on-campus residents and external off-campus buyers with direct, structured, one-click WhatsApp checkouts.
             </p>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function AboutView() {
             Structured Commerce vs. Chat Chaos
           </h3>
           <p className="text-xs sm:text-sm text-slate-brand/70 dark:text-slate-400 leading-relaxed font-sans">
-            Traditional WhatsApp groups compress images, fragment catalogs, limit visibility, and inundate users with alerts. myKaya provides dedicated web space with categorized, searchable listings, pricing transparency, condition grades, and seamless customized checkout links.
+            Traditional WhatsApp groups compress images, fragment catalogs, limit visibility, and inundate users with alerts. myKAYA provides dedicated web space with categorized, searchable listings, pricing transparency, condition grades, and seamless customized checkout links.
           </p>
           <div className="flex flex-wrap gap-2 pt-2">
             <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-500/20">

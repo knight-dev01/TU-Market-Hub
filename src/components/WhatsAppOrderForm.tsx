@@ -61,7 +61,7 @@ export default function WhatsAppOrderForm({
 
     const bodyText = `Hello vendor ${vendorName},
 
-I saw your listing on myKaya and would like to order:
+I saw your listing on myKAYA and would like to order:
 
 ${orderDetailLines}*Total Est. Value:* ₦${totalVal.toLocaleString()}
 

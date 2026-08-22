@@ -25,8 +25,8 @@ export default function Footer({
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-4">
             <div className="flex items-center space-x-2.5">
-              <div className="w-9 h-9 rounded-full bg-emerald-brand flex items-center justify-center">
-                <span className="text-white font-bold text-base font-display">TU</span>
+              <div className="w-9 h-9 rounded-full bg-emerald-brand flex items-center justify-center overflow-hidden">
+                <img src="/og-image.jpg" alt="myKAYA Logo" className="w-full h-full object-cover" />
               </div>
               <span className="font-display font-black text-lg tracking-wider text-white">
                 my<span className="text-emerald-brand">KAYA</span>

@@ -1,16 +1,16 @@
-# myKaya 🎯
+# myKAYA 🎯
 
-myKaya is a premium, secure, multi-vendor circular economy marketplace designed specifically for college campuses. It provides a frictionless platform to list, search, buy, sell, or swap school items—such as textbooks, laptops, hostel utensils, study accessories, and clothing—completely commission-free. 
+myKAYA is a premium, secure, multi-vendor circular economy marketplace designed specifically for college campuses. It provides a frictionless platform to list, search, buy, sell, or swap school items—such as textbooks, laptops, hostel utensils, study accessories, and clothing—completely commission-free. 
 
 The platform supports both **on-campus student/staff vendors** and **external off-campus buyers (outsiders)**, establishing a structured, searchable, and highly intuitive trading alternative to chaotic chat networks.
 
 ---
 
-## 🌟 Why myKaya is Preferred over WhatsApp Group Chats
+## 🌟 Why myKAYA is Preferred over WhatsApp Group Chats
 
-Traditional WhatsApp commerce suffers from **Chat Chaos**. By moving student-to-student and student-to-outsider trade to myKaya, the community gains significant structural and social benefits:
+Traditional WhatsApp commerce suffers from **Chat Chaos**. By moving student-to-student and student-to-outsider trade to myKAYA, the community gains significant structural and social benefits:
 
-| Feature / Metric | WhatsApp Group Chats | myKaya |
+| Feature / Metric | WhatsApp Group Chats | myKAYA |
 | :--- | :--- | :--- |
 | **Catalog Persistence** | ❌ **Extremely Poor.** Listings get buried under hundreds of chat messages in minutes. |  **Permanent.** Structured, searchable listings indexed beautifully with filter criteria. |
 | **Search & Discovery** | ❌ **Non-existent.** Users must scroll backward through weeks of chaotic history to find a item. |  **Robust.** Live search queries, instant category filters, condition sorting, and price range capping. |
@@ -39,7 +39,7 @@ Traditional WhatsApp commerce suffers from **Chat Chaos**. By moving student-to-
 
 ## ⚡ Architectural Scalability & Load Evaluation
 
-A common concern for student-led platforms is handling high concurrent user sessions, media asset uploads, and database queries. Below is a professional architectural assessment of how myKaya behaves under heavy utilization.
+A common concern for student-led platforms is handling high concurrent user sessions, media asset uploads, and database queries. Below is a professional architectural assessment of how myKAYA behaves under heavy utilization.
 
 ### 1. Concurrent User & Load Performance
 Because the front-end is built using **React 18+ and Vite** as a Single Page Application (SPA), server-side computation for rendering is zero.

@@ -71,7 +71,7 @@ function injectSEOTags(
   imgIndex: number, 
   hostOrigin: string
 ): string {
-  const title = `${product.name} | myKaya`;
+  const title = `${product.name} | myKAYA`;
   const description = `${product.description || ''}`.substring(0, 160);
   const imageUrl = product.images?.[imgIndex] || product.images?.[0] || '';
   const productUrl = `${hostOrigin}?product=${product.id}&img=${imgIndex}`;
@@ -121,7 +121,7 @@ function injectSEOTags(
       "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       "seller": {
         "@type": "Organization",
-        "name": "myKaya"
+        "name": "myKAYA"
       }
     }
   };

@@ -27,7 +27,7 @@ export default function ContactView({
   };
 
   const handleWhatsAppChat = () => {
-    const text = encodeURIComponent("Hello myKaya, I have an inquiry or need assistance setting up my campus student stall!");
+    const text = encodeURIComponent("Hello myKAYA, I have an inquiry or need assistance setting up my campus student stall!");
     window.open(`https://wa.me/${formatWhatsAppLink(whatsappNumber)}?text=${text}`, '_blank');
   };
 

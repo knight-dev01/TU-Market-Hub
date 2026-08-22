@@ -51,7 +51,7 @@ export default function WalkthroughGuide({ onFinish }: WalkthroughProps) {
           <span>Frictionless Student Commerce</span>
         </span>
         <h2 className="text-xl sm:text-2xl font-extrabold font-display tracking-tight text-slate-900 dark:text-white">
-          How to Use myKaya
+          How to Use myKAYA
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-md mx-auto leading-relaxed">
           Five simple steps to secure, commission-free peer transactions across the campus.
