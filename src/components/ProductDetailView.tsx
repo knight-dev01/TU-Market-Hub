@@ -100,7 +100,7 @@ export default function ProductDetailView({
     if (type === 'buy' && onCheckoutDirect) {
       onCheckoutDirect(
         product.vendorId || 'admin',
-        product.vendorName || 'TU MARKET HUB Seller',
+        product.vendorName || 'myKaya Seller',
         targetWhatsApp,
         [{ product, quantity: 1, size: selectedSize }]
       );
@@ -111,8 +111,8 @@ export default function ProductDetailView({
     const sizeLine = isFashion && selectedSize ? `\nSize Preference: ${selectedSize}` : '';
 
     const greeting = type === 'buy'
-      ? `Hello ${product.vendorName || 'TU MARKET HUB Seller'},\n\nI would like to BUY your listing instantly on campus:`
-      : `Hello ${product.vendorName || 'TU MARKET HUB Seller'},\n\nI am interested in your listing on TU Market Hub. Can we NEGOTIATE the price?`;
+      ? `Hello ${product.vendorName || 'myKaya Seller'},\n\nI would like to BUY your listing instantly on campus:`
+      : `Hello ${product.vendorName || 'myKaya Seller'},\n\nI am interested in your listing on myKaya. Can we NEGOTIATE the price?`;
 
     const text = `${greeting}
   
@@ -134,7 +134,7 @@ Please let me know if it's available so we can arrange a secure meetup!`;
     const shareUrl = `${window.location.origin}?product=${product.id}&img=${activeImageIndex}`;
     const shareData = {
       title: product.name,
-      text: `Check out image #${activeImageIndex + 1} of ${product.name} on TU Market Hub!`,
+      text: `Check out image #${activeImageIndex + 1} of ${product.name} on myKaya!`,
       url: shareUrl
     };
 
@@ -373,7 +373,7 @@ Please let me know if it's available so we can arrange a secure meetup!`;
             </h4>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-brand dark:text-slate-200">{product.vendorName || 'TU MARKET HUB Seller'}</p>
+                <p className="text-sm font-semibold text-slate-brand dark:text-slate-200">{product.vendorName || 'myKaya Seller'}</p>
                 <p className="text-xs text-slate-brand/45 dark:text-slate-400">Active response: Within 1 hour</p>
               </div>
               <a 

@@ -45,11 +45,11 @@ export default function Header({
           {/* Brand Logo & Name */}
           <div className="flex-shrink-0 cursor-pointer flex items-center space-x-2.5" onClick={() => handleNavClick('home')}>
             <div className="w-10 h-10 rounded-xl bg-emerald-brand flex items-center justify-center overflow-hidden">
-              <img src="/og-image.jpg" alt="TU Market Hub Logo" className="w-full h-full object-cover" />
+              <img src="/og-image.jpg" alt="myKaya Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
               <span className="font-display font-black text-lg sm:text-xl tracking-wider text-slate-brand dark:text-white leading-none">
-                TU <span className="text-emerald-brand">MARKET</span> HUB
+                my<span className="text-emerald-brand">KAYA</span>
               </span>
             </div>
           </div>

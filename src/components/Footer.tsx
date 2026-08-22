@@ -29,7 +29,7 @@ export default function Footer({
                 <span className="text-white font-bold text-base font-display">TU</span>
               </div>
               <span className="font-display font-black text-lg tracking-wider text-white">
-                TU <span className="text-emerald-brand">MARKET</span> HUB
+                my<span className="text-emerald-brand">KAYA</span>
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed font-light">
@@ -131,13 +131,13 @@ export default function Footer({
         {/* Disclaimer Area */}
         <div className="mt-12 text-xs text-gray-500 font-light leading-relaxed max-w-4xl border-t border-gray-800 pt-8">
           <p className="mb-2"><strong className="text-gray-400 font-semibold">Disclaimer & Responsibility:</strong> This platform is provided strictly as a peer-to-peer connection board. We do not independently verify listings or process payments. All buying and selling must be done securely between students on campus. Please use this platform responsibly and exercise caution when making financial commitments.</p>
-          <p>By using TU MARKET HUB, you agree to comply with our academic and community guidelines.</p>
+          <p>By using myKAYA, you agree to comply with our academic and community guidelines.</p>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-8 pt-6 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 text-xs text-gray-500 font-medium">
           <div>
-            &copy; {new Date().getFullYear()} TU MARKET HUB. Built with ❤️ for the Trinity University student community.
+            &copy; {new Date().getFullYear()} myKAYA. Built with ❤️ for the Trinity University student community.
           </div>
           <div className="flex space-x-5">
             {onInstallClick && (

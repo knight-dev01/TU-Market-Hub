@@ -183,7 +183,7 @@ export default function CampusStoryDesk({ onViewChange }: CampusStoryDeskProps) 
                 <div className="bg-emerald-500/5 dark:bg-emerald-950/10 border border-emerald-500/15 rounded-2xl p-4 space-y-3">
                   <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                    <span>TU Market Hub (After)</span>
+                    <span>myKaya (After)</span>
                   </span>
                   <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-sans font-medium">
                     List once, stay visible forever. Search with lightning speed, filter by campus hostels, and initiate direct WhatsApp deals with polite auto-written text.

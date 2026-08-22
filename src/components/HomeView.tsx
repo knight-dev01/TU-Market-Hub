@@ -132,7 +132,7 @@ export default function HomeView({
   };
 
   const handleSupportClick = () => {
-    const text = encodeURIComponent("Hello! I am browsing the TU Market Hub and would like to ask some questions about managing my listing or using the platform.");
+    const text = encodeURIComponent("Hello! I am browsing myKaya and would like to ask some questions about managing my listing or using the platform.");
     window.open(`https://wa.me/${formatWhatsAppLink(whatsappNumber)}?text=${text}`, '_blank');
   };
 
@@ -158,7 +158,7 @@ export default function HomeView({
 
           <p className="text-xs sm:text-base text-slate-600 dark:text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
             Welcome to the centralized campus platform that gives every listing a permanent, searchable home. 
-            <strong> Keep WhatsApp for direct conversations—use TU Market Hub for organized peer-to-peer commerce.</strong>
+            <strong> Keep WhatsApp for direct conversations—use myKaya for organized peer-to-peer commerce.</strong>
           </p>
 
           <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-xl mx-auto">
@@ -484,7 +484,7 @@ export default function HomeView({
               Ready to keep your WhatsApp group chats clean?
             </h2>
             <p className="text-xs sm:text-base text-slate-400 font-light max-w-lg mx-auto leading-relaxed">
-              List your books, devices, or room appliances on TU Market Hub once. Let peers find you organized, or reach verified external buyers looking to trade safely.
+              List your books, devices, or room appliances on myKaya once. Let peers find you organized, or reach verified external buyers looking to trade safely.
             </p>
             <div className="pt-2 flex flex-col sm:flex-row justify-center gap-4">
               <button

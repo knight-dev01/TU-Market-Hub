@@ -15,7 +15,7 @@ export function injectProductSchema(product: Product, activeImageIndex: number =
 
   const origin = window.location.origin;
   const productUrl = `${origin}?product=${product.id}&img=${activeImageIndex}`;
-  const title = `${product.name} | TU Market Hub`;
+  const title = `${product.name} | myKaya`;
   const description = `${product.description || ''}`.substring(0, 160);
   
   // Ensure the crawler detects the specific selected image
@@ -87,7 +87,7 @@ export function injectProductSchema(product: Product, activeImageIndex: number =
       "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       "seller": {
         "@type": "Organization",
-        "name": "TU Market Hub"
+        "name": "myKaya"
       }
     }
   };
@@ -112,7 +112,7 @@ export function resetProductSchema() {
   const origin = window.location.origin;
 
   // Restore Default Title
-  document.title = "TU Market Hub | Trinity University Campus Marketplace";
+  document.title = "myKaya | Trinity University Campus Marketplace";
 
   const setMetaTag = (attribute: 'name' | 'property', attrVal: string, contentVal: string) => {
     const element = document.querySelector(`meta[${attribute}="${attrVal}"]`);
@@ -122,10 +122,10 @@ export function resetProductSchema() {
   };
 
   // Restore default metas
-  const defaultDesc = "Keep WhatsApp for conversations, use TU Market Hub for organized buying & selling. Centralized, searchable campus peer listings with zero spam and zero commissions.";
+  const defaultDesc = "Keep WhatsApp for conversations, use myKaya for organized buying & selling. Centralized, searchable campus peer listings with zero spam and zero commissions.";
   
   setMetaTag('name', 'description', defaultDesc);
-  setMetaTag('property', 'og:title', "TU Market Hub | Trinity University Campus Marketplace");
+  setMetaTag('property', 'og:title', "myKaya | Trinity University Campus Marketplace");
   setMetaTag('property', 'og:description', defaultDesc);
   setMetaTag('property', 'og:image', `${origin}/og-image.jpg`);
   setMetaTag('property', 'og:url', origin);
@@ -134,12 +134,12 @@ export function resetProductSchema() {
   setMetaTag('property', 'og:image:height', '630');
 
   setMetaTag('name', 'twitter:card', 'summary_large_image');
-  setMetaTag('name', 'twitter:title', "TU Market Hub | Trinity University Campus Marketplace");
+  setMetaTag('name', 'twitter:title', "myKaya | Trinity University Campus Marketplace");
   setMetaTag('name', 'twitter:description', defaultDesc);
   setMetaTag('name', 'twitter:image', `${origin}/og-image.jpg`);
 
   setMetaTag('property', 'twitter:card', 'summary_large_image');
-  setMetaTag('property', 'twitter:title', "TU Market Hub | Trinity University Campus Marketplace");
+  setMetaTag('property', 'twitter:title', "myKaya | Trinity University Campus Marketplace");
   setMetaTag('property', 'twitter:description', defaultDesc);
   setMetaTag('property', 'twitter:image', `${origin}/og-image.jpg`);
 

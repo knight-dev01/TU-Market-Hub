@@ -200,7 +200,7 @@ export default function App() {
       console.log('Hub marketplace has been installed locally');
       // Toast notification for background install success
       setTimeout(() => {
-        alert('🚀 Platform Secured! TU Market Hub has been successfully installed in the background. You can now access it from your homescreen anytime!');
+        alert('🚀 Platform Secured! myKaya has been successfully installed in the background. You can now access it from your homescreen anytime!');
       }, 500);
     };
     window.addEventListener('appinstalled', handleAppInstalled);
@@ -218,7 +218,7 @@ export default function App() {
       if (userChoice.outcome === 'accepted') {
         setShowInstallBanner(false);
         setDeferredPrompt(null);
-        alert('🎉 Installation Successful! TU Market Hub has been safely added to your campus application library.');
+        alert('🎉 Installation Successful! myKaya has been safely added to your campus application library.');
       } else {
         setShowInstallBanner(false);
       }
@@ -595,7 +595,7 @@ export default function App() {
   const handleAddToCart = (product: Product, size: string) => {
     setCheckoutGroup({
       vendorId: product.vendorId || 'admin',
-      vendorName: product.vendorName || 'TU MARKET HUB Seller',
+      vendorName: product.vendorName || 'myKaya Seller',
       vendorNumber: product.vendorWhatsApp || settings?.whatsappNumber || '09047226729',
       items: [{ product, size, quantity: 1 }]
     });
@@ -691,7 +691,7 @@ export default function App() {
 
     const bodyText = buyerInfo?.customMessage || `Hello student seller ${vendorName},
 
-I saw your listing on the TU MARKET HUB and would like to purchase these items:
+I saw your listing on myKaya and would like to purchase these items:
 
 ${orderDetailLines}*Total Listed Value:* ₦${totalVal.toLocaleString()}
 
@@ -1206,7 +1206,7 @@ ${buyerSection}Where is your meetup point? Please let me know when you are free!
                 <strong className="text-slate-900 dark:text-white font-bold">Disclaimer & Responsibility:</strong> This platform is provided strictly as a peer-to-peer connection board. We do not independently verify listings or process payments. All buying and selling must be done securely between students on campus. Please use this platform responsibly and exercise caution when making financial commitments.
               </p>
               <p className="font-medium text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800/20">
-                By using TU MARKET HUB, you agree to comply with our academic and community guidelines.
+                By using myKaya, you agree to comply with our academic and community guidelines.
               </p>
             </div>
             <button
@@ -1235,7 +1235,7 @@ ${buyerSection}Where is your meetup point? Please let me know when you are free!
                   <span className="alive-blink animate-pulse">🚀</span>
                 </span>
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-white leading-none">Install TU Market Hub</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-white leading-none">Install myKaya</h4>
                   <p className="text-[10px] text-emerald-400 font-mono font-bold uppercase tracking-wider mt-0.5 animate-pulse">Enforced Platform Application</p>
                 </div>
               </div>
@@ -1276,7 +1276,7 @@ ${buyerSection}Where is your meetup point? Please let me know when you are free!
           whileTap={{ scale: 0.9 }}
           onClick={() => setShowInstallBanner(true)}
           className="fixed bottom-6 right-6 z-[45] w-12 h-12 bg-emerald-brand text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer border-2 border-white dark:border-slate-800"
-          title="Install TU Market Hub"
+          title="Install myKaya"
         >
           <DownloadCloud className="w-5 h-5" />
           <motion.span 

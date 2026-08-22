@@ -1,6 +1,6 @@
 {
-  "name": "TU Market Hub",
-  "short_name": "TU Market",
+  "name": "myKaya",
+  "short_name": "myKaya",
   "description": "Nigeria's premier decentralized student marketplace.",
   "start_url": "/",
   "display": "standalone",
