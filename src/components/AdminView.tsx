@@ -153,7 +153,7 @@ export default function AdminView({
   const [prodStock, setProdStock] = useState<number>(1);
   const [prodFeatured, setProdFeatured] = useState<boolean>(false);
   const [prodStatus, setProdStatus] = useState<'active' | 'draft' | 'out_of_stock'>('active');
-  const [prodCondition, setProdCondition] = useState<'new' | 'like_new' | 'used' | 'ready' | 'not_ready'>('like_new');
+  const [prodCondition, setProdCondition] = useState<string>('like_new');
   const [prodDealType, setProdDealType] = useState<'sell' | 'swap' | 'both'>('sell');
   const [prodDiscount, setProdDiscount] = useState<number>(0);
   const [prodWhatsApp, setProdWhatsApp] = useState('');
